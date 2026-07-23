@@ -4386,8 +4386,31 @@ function grupoPlanificacionView(){
     empty.innerHTML=`<h3>Sin plan todavía</h3><p>Crea la Semana 1 para este horario.</p>`;
     wrap.appendChild(empty);
   }
+
+  if(horario.weeks.length>1){
+    const jumpWrap=document.createElement('div'); jumpWrap.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;';
+    jumpWrap.innerHTML=`<label style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">Ir directamente a:</label>`;
+    const jumpSelect=document.createElement('select'); jumpSelect.style.cssText='max-width:220px;';
+    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + horario.weeks.map(w=>`<option value="${w.id||''}">Semana ${w.numero}</option>`).join('');
+    jumpSelect.onchange=()=>{
+      const target = horario.weeks.find(w=>w.id===jumpSelect.value);
+      if(!target) return;
+      semanasColapsadas.delete(target.id);
+      render();
+      setTimeout(()=>{
+        const el = document.getElementById('semana-'+target.id);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 60);
+    };
+    jumpWrap.appendChild(jumpSelect);
+    wrap.appendChild(jumpWrap);
+  }
+
   horario.weeks.forEach((week,wIdx)=>{
-    wrap.appendChild(weekBlockGrupo(clase, horario, week, wIdx));
+    if(!week.id) week.id = uid();
+    const bloque = weekBlockGrupo(clase, horario, week, wIdx);
+    bloque.id = 'semana-'+week.id;
+    wrap.appendChild(bloque);
   });
 
   const addWeekBtn=document.createElement('button');
@@ -4402,18 +4425,34 @@ function grupoPlanificacionView(){
 }
 
 function weekBlockGrupo(clase, horario, week, wIdx){
+  if(!week.id) week.id = uid();
   const isRotativa = clase.tipo==='rotativa';
   const block=document.createElement('div'); block.className='week-block';
+  const colapsada = semanasColapsadas.has(week.id);
+
   const head=document.createElement('div'); head.className='week-head';
-  head.innerHTML=`<h3>Semana ${week.numero}</h3>`;
+  head.style.cssText='display:flex;align-items:center;gap:10px;cursor:pointer;';
+  const arrowBtn=document.createElement('button'); arrowBtn.type='button';
+  arrowBtn.style.cssText='background:none;border:none;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;padding:2px;';
+  arrowBtn.innerHTML = flechaColapso(colapsada);
+  arrowBtn.onclick=(e)=>{ e.stopPropagation(); if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
+  head.appendChild(arrowBtn);
+  const tituloWrap=document.createElement('div'); tituloWrap.style.cssText='flex:1;';
+  tituloWrap.innerHTML=`<h3 style="margin:0;">Semana ${week.numero}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
+  tituloWrap.onclick=()=>{ if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
+  head.appendChild(tituloWrap);
   const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent='Eliminar semana';
-  delWeekBtn.onclick=()=>{ showConfirm('¿Eliminar esta semana del plan?', ()=>{ horario.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
+  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm('¿Eliminar esta semana del plan?', ()=>{ horario.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
   head.appendChild(delWeekBtn);
   block.appendChild(head);
 
+  if(colapsada) return block;
+
+  const body=document.createElement('div');
+
   const matBoxWrap=document.createElement('div'); matBoxWrap.style.padding='10px 16px 0';
   matBoxWrap.appendChild(renderMaterialBox(week.items));
-  block.appendChild(matBoxWrap);
+  body.appendChild(matBoxWrap);
 
   const gridCols = isRotativa ? '1fr 1fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto' : '1.3fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto';
   const headerRow=document.createElement('div'); headerRow.className='ex-row header-row';
@@ -4421,43 +4460,52 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   headerRow.innerHTML = isRotativa
     ? `<div>Ejercicio</div><div>Estación</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`
     : `<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
-  block.appendChild(headerRow);
+  body.appendChild(headerRow);
 
   let diaAnteriorGrupo = null;
   week.items.forEach((item,iIdx)=>{
+    if(!item.id) item.id = uid();
     if(item.diaSesion && item.diaSesion!==diaAnteriorGrupo){
       diaAnteriorGrupo = item.diaSesion;
       const diaHeader=document.createElement('div');
       diaHeader.style.cssText='grid-column:1/-1;padding:10px 16px 4px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);';
       diaHeader.textContent = `Día ${item.diaSesion}`;
-      block.appendChild(diaHeader);
+      body.appendChild(diaHeader);
     }
     const ex = state.exercises.find(e=>e.id===item.exerciseId);
+    const itemColapsado = itemsColapsados.has(item.id);
     const row=document.createElement('div'); row.className='ex-row';
     row.style.gridTemplateColumns = gridCols;
     if(item.supersetId) row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
-    const exNameHtml = `<div class="exname">${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}<span>${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''}</div>`;
-    row.innerHTML = (isRotativa ? exNameHtml+`<div><input value="${escapeHtml(item.estacion||'')}" data-f="estacion" placeholder="Estación 1"></div>` : exNameHtml) + `
-      <div><input value="${escapeHtml(item.series)}" data-f="series"></div>
-      <div><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
-      <div><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
-      <div><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
-      <div style="display:flex;flex-direction:column;gap:2px;">
+    const exNameHtml = `<div class="exname">
+      <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
+      ${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}
+      <span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''}
+    </div>`;
+    row.innerHTML = (isRotativa ? exNameHtml+`<div class="ex-campo"><input value="${escapeHtml(item.estacion||'')}" data-f="estacion" placeholder="Estación 1"></div>` : exNameHtml) + `
+      <div class="ex-campo"><input value="${escapeHtml(item.series)}" data-f="series"></div>
+      <div class="ex-campo"><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
+      <div class="ex-campo"><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
+      <div class="ex-campo"><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
+      <div class="ex-campo" style="display:flex;flex-direction:column;gap:2px;">
         <input value="${escapeHtml(item.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
         <input value="${escapeHtml(item.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
       </div>
-      <div class="dif-slot"></div>
-      <div><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
-      <div></div>
+      <div class="ex-campo dif-slot"></div>
+      <div class="ex-campo"><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
+      <div class="ex-campo"></div>
     `;
+    if(itemColapsado) row.querySelectorAll('.ex-campo').forEach(c=>c.style.display='none');
+    row.querySelector('.ex-fold-btn').onclick=(e)=>{ e.stopPropagation(); if(itemColapsado) itemsColapsados.delete(item.id); else itemsColapsados.add(item.id); render(); };
+    row.querySelector('.ex-nombre-click').onclick=()=>abrirInfoEjercicio(ex);
     row.querySelectorAll('input').forEach(inp=>{
-      inp.oninput=()=>{ item[inp.dataset.f]=inp.value; scheduleSave(); };
+      inp.oninput=()=>{ item[inp.dataset.f]=inp.value; marcarModificada(week); scheduleSave(); };
     });
-    row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; scheduleSave(); render(); }));
+    row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; marcarModificada(week); scheduleSave(); render(); }));
     const rmBtn=document.createElement('button'); rmBtn.className='btn btn-sm btn-ghost'; rmBtn.textContent='✕';
-    rmBtn.onclick=()=>{ week.items.splice(iIdx,1); scheduleSave(); render(); };
+    rmBtn.onclick=()=>{ week.items.splice(iIdx,1); marcarModificada(week); scheduleSave(); render(); };
     row.lastElementChild.appendChild(rmBtn);
-    block.appendChild(row);
+    body.appendChild(row);
   });
 
   const foot=document.createElement('div'); foot.className='week-foot';
@@ -4479,9 +4527,9 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   const notesInput=document.createElement('input'); notesInput.className='search'; notesInput.style.minWidth='260px';
   notesInput.placeholder='Notas de la semana (variedad, foco...)';
   notesInput.value=week.notas||'';
-  notesInput.oninput=()=>{ week.notas=notesInput.value; scheduleSave(); };
+  notesInput.oninput=()=>{ week.notas=notesInput.value; marcarModificada(week); scheduleSave(); };
   foot.appendChild(notesInput);
-  block.appendChild(foot);
+  body.appendChild(foot);
 
   const ratingBox=document.createElement('div');
   ratingBox.style.cssText='padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12.5px;';
@@ -4493,9 +4541,10 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   const rightInfo=document.createElement('div'); rightInfo.style.cssText='display:flex;align-items:center;gap:8px;';
   const label=document.createElement('span'); label.style.color='var(--ink-soft)'; label.innerHTML='<strong>Valoración de la sesión:</strong>';
   rightInfo.appendChild(label);
-  rightInfo.appendChild(renderEstrellas(week.estrellas||0, (v)=>{ week.estrellas = (week.estrellas===v ? 0 : v); scheduleSave(); render(); }));
+  rightInfo.appendChild(renderEstrellas(week.estrellas||0, (v)=>{ week.estrellas = (week.estrellas===v ? 0 : v); marcarModificada(week); scheduleSave(); render(); }));
   ratingBox.appendChild(rightInfo);
-  block.appendChild(ratingBox);
+  body.appendChild(ratingBox);
+  block.appendChild(body);
   return block;
 }
 
@@ -4506,11 +4555,10 @@ function openAddExerciseToGroupWeek(week, clase){
   }
   const isRotativa = clase.tipo==='rotativa';
   const overlay=document.createElement('div'); overlay.className='overlay';
-  const options = state.exercises.map(e=>`<option value="${e.id}">${escapeHtml(e.nombre)} — ${escapeHtml(e.grupoMuscular||'')}</option>`).join('');
   overlay.innerHTML=`
     <div class="modal" style="max-width:460px;">
       <div class="modal-head"><h2>Añadir ejercicio</h2><button class="close-x">✕</button></div>
-      <div class="field"><label>Ejercicio de la batería</label><select id="pick-ex">${options}</select></div>
+      ${htmlBuscadorEjercicio()}
       ${isRotativa?`<div class="field"><label>Estación</label><input id="pick-estacion" placeholder="Estación 1"></div>`:''}
       <div class="field-row">
         <div class="field"><label>Series</label><input id="pick-series" value="3"></div>
@@ -4528,6 +4576,7 @@ function openAddExerciseToGroupWeek(week, clase){
   document.body.appendChild(overlay);
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  conectarBuscadorEjercicio(overlay);
   overlay.querySelector('#confirm-add').onclick=()=>{
     week.items.push({
       exerciseId: overlay.querySelector('#pick-ex').value,
@@ -4538,6 +4587,7 @@ function openAddExerciseToGroupWeek(week, clase){
       descanso: overlay.querySelector('#pick-descanso').value,
       notas: overlay.querySelector('#pick-notas').value,
     });
+    marcarModificada(week);
     scheduleSave(); overlay.remove(); render();
   };
 }
@@ -4706,8 +4756,30 @@ function sesionesView(){
     wrap.appendChild(empty);
   }
 
+  if(program.weeks.length>1){
+    const jumpWrap=document.createElement('div'); jumpWrap.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;';
+    jumpWrap.innerHTML=`<label style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">Ir directamente a:</label>`;
+    const jumpSelect=document.createElement('select'); jumpSelect.style.cssText='max-width:220px;';
+    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + program.weeks.map(w=>`<option value="${w.id||''}">Semana ${w.numero}</option>`).join('');
+    jumpSelect.onchange=()=>{
+      const target = program.weeks.find(w=>w.id===jumpSelect.value);
+      if(!target) return;
+      semanasColapsadas.delete(target.id);
+      render();
+      setTimeout(()=>{
+        const el = document.getElementById('semana-'+target.id);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 60);
+    };
+    jumpWrap.appendChild(jumpSelect);
+    wrap.appendChild(jumpWrap);
+  }
+
   program.weeks.forEach((week,wIdx)=>{
-    wrap.appendChild(weekBlock(unitClients, program, week, wIdx));
+    if(!week.id) week.id = uid();
+    const bloque = weekBlock(unitClients, program, week, wIdx);
+    bloque.id = 'semana-'+week.id;
+    wrap.appendChild(bloque);
   });
 
   const addWeekBtn=document.createElement('button');
@@ -5002,6 +5074,92 @@ function abrirModalSuperseries(week){
   };
 }
 
+// ---------- Plegado de ejercicios/semanas y ficha de información ----------
+let itemsColapsados = new Set();
+let semanasColapsadas = new Set();
+function marcarModificada(week){
+  week.ultimaModificacion = new Date().toISOString();
+}
+function formatearFechaModificacion(iso){
+  if(!iso) return 'sin cambios registrados';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+}
+function abrirInfoEjercicio(ex){
+  if(!ex) return;
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-head"><h2>${escapeHtml(ex.nombre)}</h2><button class="close-x">✕</button></div>
+      ${ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" style="width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px;" onerror="this.style.display='none'">`:''}
+      <span class="tag">${escapeHtml(ex.grupoMuscular||'General')}</span>
+      ${ex.esPareja?'<span class="tag" style="background:rgba(127,179,217,.16);color:var(--accent-b);margin-left:6px;">En pareja</span>':''}
+      ${ex.esDinamicaGrupal?'<span class="tag" style="background:rgba(232,178,78,.16);color:var(--accent-2);margin-left:6px;">Dinámica de grupo</span>':''}
+      <p style="margin-top:12px;">${escapeHtml(ex.descripcion||'Sin descripción todavía.')}</p>
+      ${ex.material?`<p style="font-size:12.5px;"><strong>Material:</strong> ${escapeHtml(ex.material)}</p>`:''}
+      ${ex.zonasRiesgo?`<p style="font-size:12.5px;"><strong>Precaución si:</strong> ${escapeHtml(ex.zonasRiesgo)}</p>`:''}
+      ${ex.precauciones?`<div class="precaucion">⚠ ${escapeHtml(ex.precauciones)}</div>`:''}
+      ${ex.videoUrl?`<p style="margin-top:10px;"><a href="${escapeHtml(ex.videoUrl)}" target="_blank" rel="noopener" style="color:var(--accent);">▶ Ver vídeo</a></p>`:''}
+      <div class="actions" style="margin-top:16px;justify-content:flex-end;">
+        <button class="btn btn-sm" id="info-editar">✎ Editar ficha del ejercicio</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#info-editar').onclick=()=>{ overlay.remove(); openExerciseModal(ex.id); };
+}
+function flechaColapso(colapsado){
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .15s;transform:rotate(${colapsado?'-90':'0'}deg);flex-shrink:0;"><path d="M6 9l6 6 6-6"/></svg>`;
+}
+
+// Buscador/filtro de ejercicios reutilizable, para los cuadros de "Añadir ejercicio" (personal y grupos)
+function htmlBuscadorEjercicio(){
+  const gruposUnicos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const materialesUnicos = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
+  return `
+    <div class="field"><label>Buscar ejercicio por nombre</label><input id="pick-buscar" placeholder="Escribe para filtrar..."></div>
+    <div class="field-row">
+      <div class="field"><label>Grupo muscular</label>
+        <select id="pick-filtro-grupo"><option value="">Todos</option>${gruposUnicos.map(g=>`<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Material</label>
+        <select id="pick-filtro-material"><option value="">Todo</option>${materialesUnicos.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label>Ejercicio de la batería (👥 pareja · 👪 dinámica de grupo) — <span id="pick-contador" style="text-transform:none;font-weight:400;"></span></label>
+      <select id="pick-ex" size="6" style="height:auto;"></select>
+    </div>
+  `;
+}
+function conectarBuscadorEjercicio(overlay){
+  const buscar = overlay.querySelector('#pick-buscar');
+  const filtroGrupo = overlay.querySelector('#pick-filtro-grupo');
+  const filtroMaterial = overlay.querySelector('#pick-filtro-material');
+  const select = overlay.querySelector('#pick-ex');
+  const contador = overlay.querySelector('#pick-contador');
+  function actualizar(){
+    const q = buscar.value.trim().toLowerCase();
+    const grupo = filtroGrupo.value;
+    const material = filtroMaterial.value;
+    const filtrados = state.exercises.filter(e=>{
+      const coincideNombre = !q || e.nombre.toLowerCase().includes(q);
+      const coincideGrupo = !grupo || e.grupoMuscular===grupo;
+      const coincideMaterial = !material || (e.material||'').split(',').map(m=>m.trim()).includes(material);
+      return coincideNombre && coincideGrupo && coincideMaterial;
+    });
+    const valorPrevio = select.value;
+    select.innerHTML = filtrados.map(e=>`<option value="${e.id}" data-pareja="${e.esPareja?'1':'0'}">${e.esPareja?'👥 ':''}${e.esDinamicaGrupal?'👪 ':''}${escapeHtml(e.nombre)} — ${escapeHtml(e.grupoMuscular||'')}</option>`).join('');
+    if(filtrados.some(e=>e.id===valorPrevio)) select.value = valorPrevio;
+    contador.textContent = `${filtrados.length} resultado${filtrados.length===1?'':'s'}`;
+    select.dispatchEvent(new Event('change'));
+  }
+  buscar.addEventListener('input', actualizar);
+  filtroGrupo.addEventListener('change', actualizar);
+  filtroMaterial.addEventListener('change', actualizar);
+  actualizar();
+}
+
 function materialNecesarioDeItems(items){
   const set = new Set();
   items.forEach(item=>{
@@ -5055,117 +5213,156 @@ function mediaDificultadSemana(items){
 }
 
 function weekBlock(unitClients, program, week, wIdx){
+  if(!week.id) week.id = uid();
   const isPair = unitClients.length===2;
   const block=document.createElement('div'); block.className='week-block';
+  const colapsada = semanasColapsadas.has(week.id);
+
   const head=document.createElement('div'); head.className='week-head';
-  head.innerHTML=`<h3>Semana ${week.numero}</h3>`;
+  head.style.cssText='display:flex;align-items:center;gap:10px;cursor:pointer;';
+  const arrowBtn=document.createElement('button'); arrowBtn.type='button';
+  arrowBtn.style.cssText='background:none;border:none;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;padding:2px;';
+  arrowBtn.innerHTML = flechaColapso(colapsada);
+  arrowBtn.onclick=(e)=>{ e.stopPropagation(); if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
+  head.appendChild(arrowBtn);
+  const tituloWrap=document.createElement('div'); tituloWrap.style.cssText='flex:1;';
+  tituloWrap.innerHTML=`<h3 style="margin:0;">Semana ${week.numero}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
+  tituloWrap.onclick=()=>{ if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
+  head.appendChild(tituloWrap);
   const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent='Eliminar semana';
-  delWeekBtn.onclick=()=>{ showConfirm('¿Eliminar esta semana del plan?', ()=>{ program.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
+  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm('¿Eliminar esta semana del plan?', ()=>{ program.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
   head.appendChild(delWeekBtn);
   block.appendChild(head);
 
+  if(colapsada) return block;
+
+  const body=document.createElement('div');
+
   const matBoxWrap=document.createElement('div'); matBoxWrap.style.padding='10px 16px 0';
   matBoxWrap.appendChild(renderMaterialBox(week.items));
-  block.appendChild(matBoxWrap);
+  body.appendChild(matBoxWrap);
 
   const gridCols = '1.3fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto';
+
+  function nombreExClickeable(ex, textoExtra){
+    return `<span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${textoExtra||''}`;
+  }
 
   if(!isPair){
     const headerRow=document.createElement('div'); headerRow.className='ex-row header-row'; headerRow.style.gridTemplateColumns=gridCols;
     headerRow.innerHTML=`<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
-    block.appendChild(headerRow);
+    body.appendChild(headerRow);
 
     let diaAnterior = null;
     week.items.forEach((item,iIdx)=>{
+      if(!item.id) item.id = uid();
       if(item.diaSesion && item.diaSesion!==diaAnterior){
         diaAnterior = item.diaSesion;
         const diaHeader=document.createElement('div');
         diaHeader.style.cssText='grid-column:1/-1;padding:10px 16px 4px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);';
         diaHeader.textContent = `Día ${item.diaSesion}`;
-        block.appendChild(diaHeader);
+        body.appendChild(diaHeader);
       }
       const ex = state.exercises.find(e=>e.id===item.exerciseId);
+      const itemColapsado = itemsColapsados.has(item.id);
       const row=document.createElement('div'); row.className='ex-row'; row.style.gridTemplateColumns=gridCols;
       if(item.supersetId) row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
       row.innerHTML=`
-        <div class="exname">${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}<span>${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''}</div>
-        <div><input value="${escapeHtml(item.series)}" data-f="series"></div>
-        <div><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
-        <div><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
-        <div><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
-        <div style="display:flex;flex-direction:column;gap:2px;">
+        <div class="exname">
+          <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
+          ${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}
+          ${nombreExClickeable(ex, (item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''))}
+        </div>
+        <div class="ex-campo"><input value="${escapeHtml(item.series)}" data-f="series"></div>
+        <div class="ex-campo"><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
+        <div class="ex-campo"><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
+        <div class="ex-campo"><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
+        <div class="ex-campo" style="display:flex;flex-direction:column;gap:2px;">
           <input value="${escapeHtml(item.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
           <input value="${escapeHtml(item.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
         </div>
-        <div class="dif-slot"></div>
-        <div><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
-        <div></div>
+        <div class="ex-campo dif-slot"></div>
+        <div class="ex-campo"><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
+        <div class="ex-campo"></div>
       `;
+      if(itemColapsado) row.querySelectorAll('.ex-campo').forEach(c=>c.style.display='none');
+      row.querySelector('.ex-fold-btn').onclick=(e)=>{ e.stopPropagation(); if(itemColapsado) itemsColapsados.delete(item.id); else itemsColapsados.add(item.id); render(); };
+      row.querySelector('.ex-nombre-click').onclick=()=>abrirInfoEjercicio(ex);
       row.querySelectorAll('input').forEach(inp=>{
-        inp.oninput=()=>{ item[inp.dataset.f]=inp.value; scheduleSave(); };
+        inp.oninput=()=>{ item[inp.dataset.f]=inp.value; marcarModificada(week); scheduleSave(); };
       });
-      row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; scheduleSave(); render(); }));
+      row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; marcarModificada(week); scheduleSave(); render(); }));
       const rmBtn=document.createElement('button'); rmBtn.className='btn btn-sm btn-ghost'; rmBtn.textContent='✕';
-      rmBtn.onclick=()=>{ week.items.splice(iIdx,1); scheduleSave(); render(); };
+      rmBtn.onclick=()=>{ week.items.splice(iIdx,1); marcarModificada(week); scheduleSave(); render(); };
       row.lastElementChild.appendChild(rmBtn);
-      block.appendChild(row);
+      body.appendChild(row);
     });
   } else {
     const colsHead=document.createElement('div'); colsHead.className='pair-cols-head'; colsHead.style.gridTemplateColumns=gridCols.replace('1.3fr','110px');
     colsHead.innerHTML=`<div>Persona</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
-    block.appendChild(colsHead);
+    body.appendChild(colsHead);
 
     let diaAnteriorPar = null;
     week.items.forEach((item,iIdx)=>{
+      if(!item.id) item.id = uid();
       if(item.diaSesion && item.diaSesion!==diaAnteriorPar){
         diaAnteriorPar = item.diaSesion;
         const diaHeader=document.createElement('div');
         diaHeader.style.cssText='padding:10px 0 4px;font-family:\'IBM Plex Mono\',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);';
         diaHeader.textContent = `Día ${item.diaSesion}`;
-        block.appendChild(diaHeader);
+        body.appendChild(diaHeader);
       }
       const ex = state.exercises.find(e=>e.id===item.exerciseId);
+      const itemColapsado = itemsColapsados.has(item.id);
       const wrap=document.createElement('div'); wrap.className='pair-item';
       const headEl=document.createElement('div'); headEl.className='pair-item-head';
       const soloNombre = item.soloPara==='a' ? unitClients[0].nombre : item.soloPara==='b' ? unitClients[1].nombre : null;
       const otroNombre = item.soloPara==='a' ? unitClients[1].nombre : item.soloPara==='b' ? unitClients[0].nombre : null;
-      headEl.innerHTML=`<span class="exname">${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.esPareja?'<span class="pair-badge">Ejercicio en pareja</span>':''}${soloNombre?`<span class="pair-badge" style="background:var(--surface-2);color:var(--ink-soft);">Solo ${escapeHtml(soloNombre)}</span>`:''}`;
+      headEl.innerHTML=`
+        <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
+        <span class="exname">${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}${nombreExClickeable(ex)}</span>
+        ${item.esPareja?'<span class="pair-badge">Ejercicio en pareja</span>':''}${soloNombre?`<span class="pair-badge" style="background:var(--surface-2);color:var(--ink-soft);">Solo ${escapeHtml(soloNombre)}</span>`:''}
+      `;
       if(soloNombre){
         const syncBtn=document.createElement('button'); syncBtn.className='btn btn-sm btn-ghost'; syncBtn.textContent=`🔗 También para ${otroNombre}`;
-        syncBtn.onclick=()=>{ item.soloPara=null; scheduleSave(); render(); };
+        syncBtn.onclick=()=>{ item.soloPara=null; marcarModificada(week); scheduleSave(); render(); };
         headEl.appendChild(syncBtn);
       }
       const rmBtn=document.createElement('button'); rmBtn.className='btn btn-sm btn-ghost'; rmBtn.textContent='✕ Quitar';
-      rmBtn.onclick=()=>{ week.items.splice(iIdx,1); scheduleSave(); render(); };
+      rmBtn.onclick=()=>{ week.items.splice(iIdx,1); marcarModificada(week); scheduleSave(); render(); };
       headEl.appendChild(rmBtn);
+      headEl.querySelector('.ex-fold-btn').onclick=()=>{ if(itemColapsado) itemsColapsados.delete(item.id); else itemsColapsados.add(item.id); render(); };
+      headEl.querySelector('.ex-nombre-click').onclick=()=>abrirInfoEjercicio(ex);
       wrap.appendChild(headEl);
 
-      ['a','b'].forEach((slot,pi)=>{
-        if(item.soloPara && item.soloPara!==slot) return;
-        const person = unitClients[pi];
-        const data = item[slot];
-        const pr=document.createElement('div'); pr.className='person-row'+(slot==='b'?' person-b':''); pr.style.gridTemplateColumns=gridCols.replace('1.3fr','110px');
-        pr.innerHTML=`
-          <div class="person-name">${escapeHtml(person.nombre)}</div>
-          <div><input value="${escapeHtml(data.series)}" data-f="series"></div>
-          <div><input value="${escapeHtml(data.reps)}" data-f="reps"></div>
-          <div><input value="${escapeHtml(data.carga)}" data-f="carga"></div>
-          <div><input value="${escapeHtml(data.descanso)}" data-f="descanso"></div>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <input value="${escapeHtml(data.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
-            <input value="${escapeHtml(data.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
-          </div>
-          <div class="dif-slot"></div>
-          <div><input value="${escapeHtml(data.notas)}" data-f="notas"></div>
-          <div></div>
-        `;
-        pr.querySelectorAll('input').forEach(inp=>{
-          inp.oninput=()=>{ data[inp.dataset.f]=inp.value; scheduleSave(); };
+      if(!itemColapsado){
+        ['a','b'].forEach((slot,pi)=>{
+          if(item.soloPara && item.soloPara!==slot) return;
+          const person = unitClients[pi];
+          const data = item[slot];
+          const pr=document.createElement('div'); pr.className='person-row'+(slot==='b'?' person-b':''); pr.style.gridTemplateColumns=gridCols.replace('1.3fr','110px');
+          pr.innerHTML=`
+            <div class="person-name">${escapeHtml(person.nombre)}</div>
+            <div><input value="${escapeHtml(data.series)}" data-f="series"></div>
+            <div><input value="${escapeHtml(data.reps)}" data-f="reps"></div>
+            <div><input value="${escapeHtml(data.carga)}" data-f="carga"></div>
+            <div><input value="${escapeHtml(data.descanso)}" data-f="descanso"></div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <input value="${escapeHtml(data.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
+              <input value="${escapeHtml(data.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
+            </div>
+            <div class="dif-slot"></div>
+            <div><input value="${escapeHtml(data.notas)}" data-f="notas"></div>
+            <div></div>
+          `;
+          pr.querySelectorAll('input').forEach(inp=>{
+            inp.oninput=()=>{ data[inp.dataset.f]=inp.value; marcarModificada(week); scheduleSave(); };
+          });
+          pr.querySelector('.dif-slot').appendChild(renderDificultad(data.dificultad||null, (v)=>{ data.dificultad=v; marcarModificada(week); scheduleSave(); render(); }));
+          wrap.appendChild(pr);
         });
-        pr.querySelector('.dif-slot').appendChild(renderDificultad(data.dificultad||null, (v)=>{ data.dificultad=v; scheduleSave(); render(); }));
-        wrap.appendChild(pr);
-      });
-      block.appendChild(wrap);
+      }
+      body.appendChild(wrap);
     });
   }
 
@@ -5188,9 +5385,9 @@ function weekBlock(unitClients, program, week, wIdx){
   const notesInput=document.createElement('input'); notesInput.className='search'; notesInput.style.minWidth='260px';
   notesInput.placeholder='Notas de la semana (variedad, foco...)';
   notesInput.value=week.notas||'';
-  notesInput.oninput=()=>{ week.notas=notesInput.value; scheduleSave(); };
+  notesInput.oninput=()=>{ week.notas=notesInput.value; marcarModificada(week); scheduleSave(); };
   foot.appendChild(notesInput);
-  block.appendChild(foot);
+  body.appendChild(foot);
 
   const ratingBox=document.createElement('div');
   ratingBox.style.cssText='padding:10px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12.5px;';
@@ -5202,10 +5399,11 @@ function weekBlock(unitClients, program, week, wIdx){
   const rightInfo=document.createElement('div'); rightInfo.style.cssText='display:flex;align-items:center;gap:8px;';
   const label=document.createElement('span'); label.style.color='var(--ink-soft)'; label.innerHTML='<strong>Valoración de la sesión:</strong>';
   rightInfo.appendChild(label);
-  rightInfo.appendChild(renderEstrellas(week.estrellas||0, (v)=>{ week.estrellas = (week.estrellas===v ? 0 : v); scheduleSave(); render(); }));
+  rightInfo.appendChild(renderEstrellas(week.estrellas||0, (v)=>{ week.estrellas = (week.estrellas===v ? 0 : v); marcarModificada(week); scheduleSave(); render(); }));
   ratingBox.appendChild(rightInfo);
-  block.appendChild(ratingBox);
+  body.appendChild(ratingBox);
 
+  block.appendChild(body);
   return block;
 }
 
@@ -5216,11 +5414,10 @@ function openAddExerciseToWeek(week, unitClients){
   }
   const isPair = unitClients.length===2;
   const overlay=document.createElement('div'); overlay.className='overlay';
-  const options = state.exercises.map(e=>`<option value="${e.id}" data-pareja="${e.esPareja?'1':'0'}">${e.esPareja?'👥 ':''}${escapeHtml(e.nombre)} — ${escapeHtml(e.grupoMuscular||'')}</option>`).join('');
   overlay.innerHTML=`
     <div class="modal" style="max-width:${isPair?'620px':'460px'};">
       <div class="modal-head"><h2>Añadir ejercicio</h2><button class="close-x">✕</button></div>
-      <div class="field"><label>Ejercicio de la batería (👥 = pensado para pareja)</label><select id="pick-ex">${options}</select></div>
+      ${htmlBuscadorEjercicio()}
       ${isPair?`<div class="field" style="margin:4px 0 12px;"><label style="display:flex;align-items:center;gap:6px;flex-direction:row;text-transform:none;font-size:13px;"><input type="checkbox" id="pick-espareja" style="width:auto;"> Es un ejercicio ejecutado en pareja (a la vez, agarrados o enfrentados)</label></div>`:''}
       ${isPair?`<div class="field" style="margin-bottom:12px;"><label>Este ejercicio es para</label>
         <select id="pick-para">
@@ -5258,11 +5455,12 @@ function openAddExerciseToWeek(week, unitClients){
   document.body.appendChild(overlay);
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  conectarBuscadorEjercicio(overlay);
   if(isPair){
     const parejaCheck = overlay.querySelector('#pick-espareja');
     const selectEx = overlay.querySelector('#pick-ex');
-    const syncPareja = ()=>{ parejaCheck.checked = selectEx.selectedOptions[0].dataset.pareja==='1'; };
-    selectEx.onchange = syncPareja;
+    const syncPareja = ()=>{ if(selectEx.selectedOptions[0]) parejaCheck.checked = selectEx.selectedOptions[0].dataset.pareja==='1'; };
+    selectEx.addEventListener('change', syncPareja);
     syncPareja();
 
     const pickPara = overlay.querySelector('#pick-para');
@@ -5295,6 +5493,7 @@ function openAddExerciseToWeek(week, unitClients){
         b: { series:g('pick-series-b'), reps:g('pick-reps-b'), carga:g('pick-carga-b'), descanso:g('pick-descanso-b'), notas:g('pick-notas-b') },
       });
     }
+    marcarModificada(week);
     scheduleSave(); overlay.remove(); render();
   };
 }
