@@ -4870,10 +4870,11 @@ function generateRandomGroupWeek(clase, horario, week){
   const pedirDias = ()=>{
     const overlay=document.createElement('div'); overlay.className='overlay';
     overlay.innerHTML=`
-      <div class="modal" style="max-width:360px;">
+      <div class="modal" style="max-width:400px;">
         <div class="modal-head"><h2>Generar semana aleatoria</h2><button class="close-x">✕</button></div>
         <div class="field"><label>¿Cuántos días distintos se imparte esta clase esta semana?</label><input type="number" id="rw-dias" value="1" min="1" max="6"></div>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Se generará una sesión distinta (sin repetir ejercicios entre ellas) para cada día que indiques.</p>
+        ${htmlFiltrosGeneracion()}
         <div class="actions" style="margin-top:14px;justify-content:flex-end;">
           <button class="btn btn-accent" id="rw-confirm">Generar</button>
         </div>
@@ -4881,19 +4882,22 @@ function generateRandomGroupWeek(clase, horario, week){
     document.body.appendChild(overlay);
     overlay.querySelector('.close-x').onclick=()=>overlay.remove();
     overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+    const filtrosCtrl = conectarFiltrosGeneracion(overlay);
     overlay.querySelector('#rw-confirm').onclick=()=>{
       const dias = Math.max(1, Math.min(6, parseInt(overlay.querySelector('#rw-dias').value)||1));
+      const filtros = filtrosCtrl.leer();
       overlay.remove();
-      doGenerate(dias);
+      doGenerate(dias, filtros);
     };
   };
 
-  const doGenerate = (numDias)=>{
+  const doGenerate = (numDias, filtros)=>{
     // Filtra por precauciones de todos los inscritos que sean clientes con ficha (los invitados sin ficha no se pueden filtrar)
     const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
     let pool = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c)));
+    pool = aplicarFiltrosGeneracion(pool, filtros);
     if(pool.length===0){
-      showAlert('Ningún ejercicio de la batería es seguro para las precauciones combinadas de los inscritos. Añade ejercicios alternativos en la Batería.');
+      showAlert('Ningún ejercicio de la batería cumple los filtros elegidos y a la vez es seguro para las precauciones combinadas de los inscritos. Prueba a quitar algún filtro o añade ejercicios alternativos en la Batería.');
       return;
     }
     const usedElsewhere = new Set();
@@ -5846,6 +5850,82 @@ function construirSesionPorPresupuesto(disponibles, opciones){
   return chosen;
 }
 
+// Filtros opcionales de grupo muscular y material (selección múltiple) para el generador aleatorio
+function htmlFiltrosGeneracion(){
+  return `
+    <div class="field">
+      <label>Grupo(s) muscular(es) — opcional</label>
+      <div id="rw-grupos-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;"></div>
+      <input id="rw-grupos-buscar" placeholder="Escribe para buscar y añadir...">
+    </div>
+    <div class="field">
+      <label>Material(es) — opcional</label>
+      <div id="rw-materiales-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;"></div>
+      <input id="rw-materiales-buscar" placeholder="Escribe para buscar y añadir...">
+    </div>
+  `;
+}
+// Multi-selección compacta con buscador: escribes, aparecen sugerencias, seleccionas varias y quedan como chips
+function crearMultiSelectBuscable(inputEl, chipsContainer, opciones){
+  let seleccionados = [];
+  const wrapperPos=document.createElement('div'); wrapperPos.style.cssText='position:relative;';
+  inputEl.parentNode.insertBefore(wrapperPos, inputEl);
+  wrapperPos.appendChild(inputEl);
+  const dropdown=document.createElement('div');
+  dropdown.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:2px;max-height:170px;overflow-y:auto;z-index:70;display:none;box-shadow:0 6px 18px rgba(0,0,0,.35);';
+  wrapperPos.appendChild(dropdown);
+
+  function renderChips(){
+    chipsContainer.innerHTML = seleccionados.map(v=>`<span class="tag" data-val="${escapeHtml(v)}" style="display:inline-flex;align-items:center;gap:5px;">${escapeHtml(v)}<button type="button" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:12px;line-height:1;">✕</button></span>`).join('');
+    chipsContainer.querySelectorAll('.tag button').forEach(btn=>{
+      btn.onclick=()=>{
+        seleccionados = seleccionados.filter(v=>v!==btn.parentElement.dataset.val);
+        renderChips();
+      };
+    });
+  }
+  function mostrarSugerencias(){
+    const q = inputEl.value.trim().toLowerCase();
+    const disponibles = opciones.filter(o=>!seleccionados.includes(o));
+    const filtradas = q ? disponibles.filter(o=>o.toLowerCase().includes(q)) : disponibles;
+    if(filtradas.length===0){ dropdown.style.display='none'; dropdown.innerHTML=''; return; }
+    dropdown.innerHTML = filtradas.slice(0,40).map(o=>`<div class="ac-item" data-v="${escapeHtml(o)}" style="padding:7px 10px;font-size:12.5px;cursor:pointer;color:var(--ink);">${escapeHtml(o)}</div>`).join('');
+    dropdown.querySelectorAll('.ac-item').forEach(item=>{
+      item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
+      item.onmouseleave=()=>{ item.style.background='transparent'; };
+      item.onmousedown=(e)=>{
+        e.preventDefault();
+        seleccionados.push(item.dataset.v);
+        inputEl.value='';
+        renderChips();
+        dropdown.style.display='none';
+      };
+    });
+    dropdown.style.display='block';
+  }
+  inputEl.addEventListener('input', mostrarSugerencias);
+  inputEl.addEventListener('focus', mostrarSugerencias);
+  inputEl.addEventListener('blur', ()=>{ setTimeout(()=>{ dropdown.style.display='none'; }, 150); });
+  renderChips();
+  return { getSeleccionados: ()=>seleccionados };
+}
+function conectarFiltrosGeneracion(overlay){
+  const grupos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const materiales = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
+  const ctrlGrupos = crearMultiSelectBuscable(overlay.querySelector('#rw-grupos-buscar'), overlay.querySelector('#rw-grupos-chips'), grupos);
+  const ctrlMateriales = crearMultiSelectBuscable(overlay.querySelector('#rw-materiales-buscar'), overlay.querySelector('#rw-materiales-chips'), materiales);
+  return { leer: ()=>({ grupos: ctrlGrupos.getSeleccionados(), materiales: ctrlMateriales.getSeleccionados() }) };
+}
+function aplicarFiltrosGeneracion(pool, filtros){
+  let resultado = pool;
+  if(filtros.grupos.length>0) resultado = resultado.filter(ex=>filtros.grupos.includes(ex.grupoMuscular));
+  if(filtros.materiales.length>0) resultado = resultado.filter(ex=>{
+    const materialesEx = (ex.material||'').split(',').map(m=>m.trim());
+    return filtros.materiales.some(m=>materialesEx.includes(m));
+  });
+  return resultado;
+}
+
 function generateRandomWeek(program, week, unitClients){
   if(state.exercises.length===0){
     showAlert('La batería de ejercicios está vacía. Añade ejercicios primero en la pestaña "Batería de ejercicios" para poder generar sesiones aleatorias.');
@@ -5856,10 +5936,11 @@ function generateRandomWeek(program, week, unitClients){
   const pedirDias = ()=>{
     const overlay=document.createElement('div'); overlay.className='overlay';
     overlay.innerHTML=`
-      <div class="modal" style="max-width:360px;">
+      <div class="modal" style="max-width:400px;">
         <div class="modal-head"><h2>Generar semana aleatoria</h2><button class="close-x">✕</button></div>
         <div class="field"><label>¿Cuántos días de entrenamiento distintos tendrá esta semana?</label><input type="number" id="rw-dias" value="1" min="1" max="6"></div>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Se generará una sesión distinta (sin repetir ejercicios entre ellas) para cada día que indiques.</p>
+        ${htmlFiltrosGeneracion()}
         <div class="actions" style="margin-top:14px;justify-content:flex-end;">
           <button class="btn btn-accent" id="rw-confirm">Generar</button>
         </div>
@@ -5867,21 +5948,24 @@ function generateRandomWeek(program, week, unitClients){
     document.body.appendChild(overlay);
     overlay.querySelector('.close-x').onclick=()=>overlay.remove();
     overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+    const filtrosCtrl = conectarFiltrosGeneracion(overlay);
     overlay.querySelector('#rw-confirm').onclick=()=>{
       const dias = Math.max(1, Math.min(6, parseInt(overlay.querySelector('#rw-dias').value)||1));
+      const filtros = filtrosCtrl.leer();
       overlay.remove();
-      doGenerate(dias);
+      doGenerate(dias, filtros);
     };
   };
 
-  const doGenerate = (numDias)=>{
+  const doGenerate = (numDias, filtros)=>{
     let pool = state.exercises.filter(ex=>isExerciseSafeForUnit(ex, unitClients));
     if(!isPair){
       // En sesiones individuales no tiene sentido sugerir ejercicios pensados para ejecutarse en pareja
       pool = pool.filter(ex=>!ex.esPareja);
     }
+    pool = aplicarFiltrosGeneracion(pool, filtros);
     if(pool.length===0){
-      showAlert('Ningún ejercicio de la batería es seguro (y aplicable) para este cliente/pareja según las zonas de riesgo marcadas. Añade ejercicios alternativos en la Batería.');
+      showAlert('Ningún ejercicio de la batería cumple los filtros elegidos (grupo muscular / material) y a la vez es seguro para este cliente/pareja. Prueba a quitar algún filtro o añade ejercicios alternativos en la Batería.');
       return;
     }
     // Evita repetir exactamente los mismos ejercicios usados en otras semanas del mismo plan, para forzar variedad real
