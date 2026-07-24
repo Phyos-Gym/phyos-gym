@@ -229,8 +229,8 @@ function limpiarFranjasVacias(){
   if(!state.horario) return;
   state.horario.horas = state.horario.horas.filter(hora=>{
     if(HORAS_BASE.includes(hora)) return true; // las horas base siempre se conservan aunque estén vacías
-    const diasUsados = state.horario.dias.some(dia=>!esOficinaOVacio(state.horario.grid[dia+'|'+hora]));
-    const excepcionesUsadas = Object.keys(state.horario.excepciones).some(k=>k.endsWith('|'+hora) && !esOficinaOVacio(state.horario.excepciones[k]));
+    const diasUsados = state.horario.dias.some(dia=>(state.horario.grid[dia+'|'+hora]||'').trim());
+    const excepcionesUsadas = Object.keys(state.horario.excepciones).some(k=>k.endsWith('|'+hora) && (state.horario.excepciones[k]||'').trim());
     const reservada = (state.horario.franjasReservadas||[]).some(r=>r.endsWith('|'+hora));
     return diasUsados || excepcionesUsadas || reservada;
   });
@@ -2399,6 +2399,10 @@ function startOfWeekStr(str){
   return fromDate(d);
 }
 function nombreDiaEs(str){ return DIAS_ES[toDate(str).getDay()]; }
+function diasDeLaSemana(fecha){
+  const inicio = startOfWeekStr(fecha);
+  return [0,1,2,3,4].map(i=>addDaysStr(inicio,i));
+}
 function esFinde(str){ const dow=toDate(str).getDay(); return dow===0||dow===6; }
 
 function gridVigentePara(fechaStr){
@@ -2681,9 +2685,9 @@ function horariosView(){
     `;
     wrap.appendChild(leyenda);
 
-    const addNotaWrap=document.createElement('div'); addNotaWrap.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;';
-    const notaFecha=document.createElement('input'); notaFecha.type='date'; notaFecha.value=horarioFecha; notaFecha.style.cssText='padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;';
-    const notaHora=document.createElement('input'); notaHora.type='time'; notaHora.step='60'; notaHora.style.cssText='padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;';
+    const addNotaWrap=document.createElement('div'); addNotaWrap.id='add-nota-wrap'; addNotaWrap.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;';
+    const notaFecha=document.createElement('input'); notaFecha.id='add-nota-fecha'; notaFecha.type='date'; notaFecha.value=horarioFecha; notaFecha.style.cssText='padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;';
+    const notaHora=document.createElement('input'); notaHora.id='add-nota-hora'; notaHora.type='time'; notaHora.step='60'; notaHora.style.cssText='padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;';
     const notaModo=document.createElement('select'); notaModo.style.cssText='padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;';
     notaModo.innerHTML=`
       <option value="semana">Solo esta semana (fecha concreta)</option>
@@ -2727,16 +2731,24 @@ function horariosView(){
     notaHora.addEventListener('change', cargarSiYaExiste);
 
     function guardarFranja(fechaObjetivo, horaFinal, valorFinal, duracionMin){
-      if(notaModo.value==='permanente'){
-        const dia = nombreDiaEs(fechaObjetivo);
-        gridVigentePara(fechaObjetivo)[dia+'|'+horaFinal] = valorFinal;
-        delete state.horario.excepciones[fechaObjetivo+'|'+horaFinal];
-        limpiarExcepcionesDeDia(dia, horaFinal);
-        scheduleSave();
+      const escribirDeVerdad = ()=>{
+        if(notaModo.value==='permanente'){
+          const dia = nombreDiaEs(fechaObjetivo);
+          gridVigentePara(fechaObjetivo)[dia+'|'+horaFinal] = valorFinal;
+          delete state.horario.excepciones[fechaObjetivo+'|'+horaFinal];
+          limpiarExcepcionesDeDia(dia, horaFinal);
+          scheduleSave();
+        } else {
+          horarioSet(fechaObjetivo, horaFinal, valorFinal);
+        }
+        if(valorFinal.trim()) aplicarDuracionFranja(fechaObjetivo, horaFinal, duracionMin);
+        render();
+      };
+      if(valorFinal.trim()){
+        verificarSolapeAntesDeGuardar(fechaObjetivo, horaFinal, duracionMin, horaFinal, escribirDeVerdad);
       } else {
-        horarioSet(fechaObjetivo, horaFinal, valorFinal);
+        escribirDeVerdad();
       }
-      if(!esOficinaOVacio(valorFinal)) aplicarDuracionFranja(fechaObjetivo, horaFinal, duracionMin);
     }
 
     function valorActualEnDestino(fechaObjetivo, horaFinal){
@@ -2764,7 +2776,9 @@ function horariosView(){
       if(!notaTexto.value.trim()){
         if(notaTipo.value==='oficina'){
           const horaFinal = notaHora.value;
-          confirmarYGuardar(notaFecha.value, horaFinal, 'Oficina', 60, ()=>{
+          const finElegidoOficina = notaFin.value || sumarMinutos(horaFinal, 60);
+          const duracionOficina = minutosEntreHoras(horaFinal, finElegidoOficina);
+          confirmarYGuardar(notaFecha.value, horaFinal, 'Oficina', duracionOficina, ()=>{
             horarioFecha = notaFecha.value;
             render();
           });
@@ -2786,11 +2800,12 @@ function horariosView(){
       });
     };
     addNotaWrap.appendChild(notaFecha); addNotaWrap.appendChild(notaHora); addNotaWrap.appendChild(notaFinLabel); addNotaWrap.appendChild(notaFin); addNotaWrap.appendChild(notaModo); addNotaWrap.appendChild(notaTipo); addNotaWrap.appendChild(notaTexto); addNotaWrap.appendChild(addNotaBtn);
+    crearAutocompleteTexto(notaTexto, nombresConocidosParaHorario);
     wrap.appendChild(addNotaWrap);
   }
 
-  if(horarioModo==='dia') wrap.appendChild(horarioDiaView());
-  else if(horarioModo==='semana') wrap.appendChild(horarioSemanaView());
+  if(horarioModo==='dia') wrap.appendChild(horarioDiaViewEscala());
+  else if(horarioModo==='semana') wrap.appendChild(horarioSemanaViewEscala());
   else wrap.appendChild(horarioMesView());
 
   return wrap;
@@ -2866,15 +2881,21 @@ function horaBase(hora){
   return String(h).padStart(2,'0')+':00';
 }
 function esFranjaContinuacion(fecha, hora){
-  if(HORAS_BASE.includes(hora)) return false;
   const valPropio = horarioValor(fecha, hora);
   if(valPropio.trim()) return false;
   const reservada = (state.horario.franjasReservadas||[]).includes(fecha+'|'+hora);
   if(reservada) return false;
-  const base = horaBase(hora);
-  if(base===hora) return false;
-  const valBase = horarioValor(fecha, base);
-  return !!valBase.trim();
+  // Mira la hora inmediatamente anterior entre todas las que se muestran ese día (sean en punto o media),
+  // y comprueba si su duración real se alarga hasta cubrir esta hora — así funciona sea cual sea la hora de inicio.
+  const horasOrdenadas = [...new Set([...HORAS_BASE, ...state.horario.horas])].sort();
+  const idx = horasOrdenadas.indexOf(hora);
+  if(idx<=0) return false;
+  const horaAnt = horasOrdenadas[idx-1];
+  const valAnt = horarioValor(fecha, horaAnt);
+  if(!valAnt.trim()) return false;
+  const dur = duracionDeFranja(fecha, horaAnt);
+  const finAnt = sumarMinutos(horaAnt, dur);
+  return finAnt > hora; // la franja anterior, con su duración real, se alarga hasta esta hora o más
 }
 function renderCellContent(container, fecha, hora){
   container.innerHTML='';
@@ -2952,8 +2973,187 @@ function duracionDeFranja(fecha, hora){
 function finDeFranja(fecha, hora){
   return sumarMinutos(hora, duracionDeFranja(fecha,hora));
 }
+
+// ---------- MOTOR DE LÍNEA TEMPORAL A ESCALA REAL (vistas Día y Semana) ----------
+const PX_POR_MIN_TIMELINE = 1.1;
+function minutosDesdeMedianoche(horaStr){
+  const [h,m] = horaStr.split(':').map(Number);
+  return h*60+m;
+}
+function construirEventosDelDia(fecha){
+  const horasOrdenadas = [...new Set([...HORAS_BASE, ...state.horario.horas])].sort();
+  const eventos = [];
+  horasOrdenadas.forEach(hora=>{
+    const val = horarioValor(fecha, hora);
+    if(!val.trim()) return;
+    if(esFranjaContinuacion(fecha, hora)) return; // es la continuación de un evento anterior, no su propio inicio
+    const dur = duracionDeFranja(fecha, hora);
+    let finMin = minutosDesdeMedianoche(hora) + dur;
+    eventos.push({ hora, iniMin: minutosDesdeMedianoche(hora), finMin, duracion: dur, valor: val });
+  });
+  return eventos;
+}
+function rangoTimelineParaFechas(fechas){
+  let inicioMin = 8*60, finMin = 20*60;
+  fechas.forEach(fecha=>{
+    construirEventosDelDia(fecha).forEach(e=>{
+      if(e.iniMin<inicioMin) inicioMin = Math.floor(e.iniMin/60)*60;
+      if(e.finMin>finMin) finMin = Math.ceil(e.finMin/60)*60;
+    });
+  });
+  return {inicioMin, finMin};
+}
+function gutterHorasTimeline(inicioMin, finMin){
+  const gutter=document.createElement('div');
+  gutter.style.cssText=`position:relative;width:46px;flex-shrink:0;height:${(finMin-inicioMin)*PX_POR_MIN_TIMELINE}px;`;
+  for(let m=inicioMin; m<=finMin; m+=60){
+    const lbl=document.createElement('div');
+    lbl.style.cssText=`position:absolute;top:${(m-inicioMin)*PX_POR_MIN_TIMELINE-6}px;right:6px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft);`;
+    lbl.textContent = String(Math.floor(m/60)).padStart(2,'0')+':00';
+    gutter.appendChild(lbl);
+  }
+  return gutter;
+}
+function agruparEventosSolapados(eventos){
+  const ordenados = [...eventos].sort((a,b)=>a.iniMin-b.iniMin);
+  const clusters = [];
+  let actual = [];
+  let finMaxActual = -Infinity;
+  ordenados.forEach(ev=>{
+    if(actual.length===0 || ev.iniMin < finMaxActual){
+      actual.push(ev);
+      finMaxActual = Math.max(finMaxActual, ev.finMin);
+    } else {
+      clusters.push(actual);
+      actual = [ev];
+      finMaxActual = ev.finMin;
+    }
+  });
+  if(actual.length) clusters.push(actual);
+  return clusters;
+}
+function columnaDiaTimeline(fecha, inicioMin, finMin){
+  const alturaTotal = (finMin-inicioMin)*PX_POR_MIN_TIMELINE;
+  const col=document.createElement('div');
+  col.style.cssText=`position:relative;height:${alturaTotal}px;flex:1;min-width:0;border-left:1px solid var(--line);background:var(--surface);border-radius:0 0 8px 8px;`;
+  for(let m=inicioMin; m<=finMin; m+=60){
+    const linea=document.createElement('div');
+    linea.style.cssText=`position:absolute;top:${(m-inicioMin)*PX_POR_MIN_TIMELINE}px;left:0;right:0;border-top:1px solid var(--line);`;
+    col.appendChild(linea);
+  }
+  // Zona clicable de fondo: pulsar en un hueco vacío abre el creador ya con la fecha/hora aproximada
+  col.addEventListener('click', (e)=>{
+    if(e.target!==col) return;
+    const rect = col.getBoundingClientRect();
+    const yRel = e.clientY - rect.top;
+    const minAprox = inicioMin + Math.round(yRel/PX_POR_MIN_TIMELINE/15)*15;
+    const horaAprox = String(Math.floor(minAprox/60)).padStart(2,'0')+':'+String(minAprox%60).padStart(2,'0');
+    const fechaInput = document.getElementById('add-nota-fecha');
+    const horaInput = document.getElementById('add-nota-hora');
+    if(fechaInput && horaInput){
+      fechaInput.value = fecha; horaInput.value = horaAprox;
+      horaInput.dispatchEvent(new Event('change'));
+      document.getElementById('add-nota-wrap').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+  const clusters = agruparEventosSolapados(construirEventosDelDia(fecha));
+  clusters.forEach(cluster=>{
+    const enConflicto = cluster.length>1;
+    const anchoPct = 100/cluster.length;
+    cluster.forEach((ev,i)=>{
+      const top = (ev.iniMin-inicioMin)*PX_POR_MIN_TIMELINE;
+      const alto = Math.max((ev.finMin-ev.iniMin)*PX_POR_MIN_TIMELINE, 22);
+      const tipo = tipoCelda(ev.valor);
+      const bloque=document.createElement('div');
+      const izq = `calc(${anchoPct*i}% + ${i===0?3:1.5}px)`;
+      const anchoCss = `calc(${anchoPct}% - ${cluster.length>1?3:6}px)`;
+      bloque.style.cssText=`position:absolute;top:${top}px;left:${izq};width:${anchoCss};height:${alto}px;background:${fondoCelda(tipo)==='transparent'?'var(--surface-2)':fondoCelda(tipo)};border-left:3px solid ${colorPorTipo(tipo)==='transparent'?'var(--line)':colorPorTipo(tipo)};${enConflicto?'outline:2px dashed var(--danger);outline-offset:-2px;':''}border-radius:5px;padding:3px 6px;overflow:hidden;cursor:pointer;transition:filter .1s;box-sizing:border-box;`;
+      bloque.title = enConflicto ? 'Esta franja se solapa con otra a la vez' : '';
+      bloque.innerHTML=`<div style="font-size:11.5px;font-weight:600;color:${textoColorParaTipo(tipo)};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${enConflicto?'⚠ ':''}${escapeHtml(textoLimpio(ev.valor))}</div>${alto>32?`<div style="font-size:10px;color:var(--ink-soft);">${ev.hora}–${sumarMinutos(ev.hora,ev.duracion)}</div>`:''}`;
+      bloque.onmouseenter=()=>{ bloque.style.filter='brightness(1.15)'; bloque.style.zIndex='5'; };
+      bloque.onmouseleave=()=>{ bloque.style.filter='none'; bloque.style.zIndex='auto'; };
+      bloque.onclick=(e)=>{ e.stopPropagation(); openMoverFranjaModal(fecha, ev.hora, ev.valor); };
+      col.appendChild(bloque);
+    });
+  });
+  return col;
+}
+function horarioDiaViewEscala(){
+  const wrap=document.createElement('div');
+  const titulo=document.createElement('h3'); titulo.style.cssText='margin-bottom:4px;text-transform:capitalize;';
+  titulo.textContent = formatFechaLarga(horarioFecha);
+  wrap.appendChild(titulo);
+  const hint=document.createElement('p'); hint.style.cssText='font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;';
+  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Haz clic en un bloque para moverlo o editarlo.';
+  wrap.appendChild(hint);
+
+  const {inicioMin, finMin} = rangoTimelineParaFechas([horarioFecha]);
+  const fila=document.createElement('div'); fila.style.cssText='display:flex;max-width:520px;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
+  fila.appendChild(gutterHorasTimeline(inicioMin, finMin));
+  fila.appendChild(columnaDiaTimeline(horarioFecha, inicioMin, finMin));
+  wrap.appendChild(fila);
+  return wrap;
+}
+function horarioSemanaViewEscala(){
+  const wrap=document.createElement('div');
+  const dias = diasDeLaSemana(horarioFecha);
+  const {inicioMin, finMin} = rangoTimelineParaFechas(dias);
+  const dIni=toDate(dias[0]), dFin=toDate(dias[4]);
+  const mesIni=dIni.toLocaleDateString('es-ES',{month:'long'}), mesFin=dFin.toLocaleDateString('es-ES',{month:'long'});
+  const titulo=document.createElement('h3'); titulo.style.cssText='margin-bottom:4px;';
+  titulo.textContent = (mesIni===mesFin)
+    ? `${dIni.getDate()} – ${dFin.getDate()} de ${mesIni} de ${dFin.getFullYear()}`
+    : `${dIni.getDate()} de ${mesIni} – ${dFin.getDate()} de ${mesFin} de ${dFin.getFullYear()}`;
+  wrap.appendChild(titulo);
+  const hint=document.createElement('p'); hint.style.cssText='font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;';
+  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Haz clic en un bloque para moverlo o editarlo.';
+  wrap.appendChild(hint);
+
+  const cabecera=document.createElement('div'); cabecera.style.cssText='display:flex;';
+  const gutterVacio=document.createElement('div'); gutterVacio.style.cssText='width:46px;flex-shrink:0;';
+  cabecera.appendChild(gutterVacio);
+  dias.forEach(fecha=>{
+    const d=document.createElement('div');
+    d.style.cssText='flex:1;min-width:0;text-align:center;font-size:11.5px;font-family:\'IBM Plex Mono\',monospace;color:var(--ink-soft);text-transform:capitalize;padding:4px 0;';
+    d.textContent = nombreDiaEs(fecha).slice(0,3)+' '+toDate(fecha).getDate();
+    cabecera.appendChild(d);
+  });
+  wrap.appendChild(cabecera);
+
+  const fila=document.createElement('div'); fila.style.cssText='display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
+  fila.appendChild(gutterHorasTimeline(inicioMin, finMin));
+  dias.forEach(fecha=>{
+    fila.appendChild(columnaDiaTimeline(fecha, inicioMin, finMin));
+  });
+  wrap.appendChild(fila);
+  return wrap;
+}
 // Guarda la duración real de una franja (si difiere de la hora en punto siguiente) y libera el resto de la hora
 // esa semana concreta, para que no parezca ocupada cuando en realidad queda tiempo libre.
+function eventosSolapados(fecha, iniMin, finMin, horaAExcluir){
+  return construirEventosDelDia(fecha).filter(ev=>{
+    if(ev.hora===horaAExcluir) return false;
+    return ev.iniMin < finMin && ev.finMin > iniMin; // solape real de rangos horarios
+  });
+}
+function verificarSolapeAntesDeGuardar(fecha, horaInicio, duracionMin, horaAExcluir, alTerminar){
+  const iniMin = minutosDesdeMedianoche(horaInicio);
+  const finMin = iniMin + duracionMin;
+  const conflictos = eventosSolapados(fecha, iniMin, finMin, horaAExcluir===null?horaInicio:horaAExcluir);
+  if(conflictos.length>0){
+    const lista = conflictos.map(ev=>`"${textoLimpio(ev.valor)}" (${ev.hora}–${sumarMinutos(ev.hora,ev.duracion)})`).join(', ');
+    showAvisoSolape(
+      `Esto se solapa en el tiempo con: ${lista}. ¿Qué quieres hacer?`,
+      alTerminar,
+      ()=>{
+        conflictos.forEach(ev=>{ horarioSet(fecha, ev.hora, ''); });
+        alTerminar();
+      }
+    );
+  } else {
+    alTerminar();
+  }
+}
 function aplicarDuracionFranja(fecha, horaInicio, duracionMin){
   const clave = fecha+'|'+horaInicio;
   if(!state.horario.duracionPorFranja) state.horario.duracionPorFranja = {};
@@ -3010,6 +3210,7 @@ function openMoverFranjaModal(fecha, hora, valor){
   document.body.appendChild(overlay);
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  crearAutocompleteTexto(overlay.querySelector('#mv-nombre'), nombresConocidosParaHorario);
 
   overlay.querySelector('#mv-eliminar').onclick=()=>{
     const modo = overlay.querySelector('#mv-modo').value;
@@ -3084,35 +3285,43 @@ function openMoverFranjaModal(fecha, hora, valor){
     const notaActual = overlay.querySelector('#mv-notas').value.trim();
 
     const ejecutar = ()=>{
-      if(!state.horario.horas.includes(nuevaHora) && !esOficinaOVacio(valorConTipo)){ state.horario.horas.push(nuevaHora); state.horario.horas.sort(); }
-      let nuevaFechaFinal = fecha;
-      if(modo==='semana'){
-        const nuevaFecha = overlay.querySelector('#mv-fecha').value;
-        nuevaFechaFinal = nuevaFecha;
-        horarioSet(nuevaFecha, nuevaHora, valorConTipo);
-        if(nuevaFecha!==fecha || nuevaHora!==hora){
-          horarioSet(fecha, hora, '');
+      const escribirDeVerdad = ()=>{
+        if(!state.horario.horas.includes(nuevaHora) && valorConTipo.trim()){ state.horario.horas.push(nuevaHora); state.horario.horas.sort(); }
+        let nuevaFechaFinal = fecha;
+        if(modo==='semana'){
+          const nuevaFecha = overlay.querySelector('#mv-fecha').value;
+          nuevaFechaFinal = nuevaFecha;
+          horarioSet(nuevaFecha, nuevaHora, valorConTipo);
+          if(nuevaFecha!==fecha || nuevaHora!==hora){
+            horarioSet(fecha, hora, '');
+          }
+          if(valorConTipo.trim()) aplicarDuracionFranja(nuevaFecha, nuevaHora, duracionMin);
+        } else {
+          const nuevoDia = overlay.querySelector('#mv-dia').value;
+          gridVigentePara(fecha)[nuevoDia+'|'+nuevaHora] = valorConTipo;
+          if(nuevoDia!==diaActual || nuevaHora!==hora){
+            gridVigentePara(fecha)[diaActual+'|'+hora] = '';
+            limpiarExcepcionesDeDia(diaActual, hora);
+          }
+          limpiarExcepcionesDeDia(nuevoDia, nuevaHora);
+          delete state.horario.excepciones[fecha+'|'+hora];
+          scheduleSave();
+          if(valorConTipo.trim()) aplicarDuracionFranja(fecha, nuevaHora, duracionMin);
         }
-        if(!esOficinaOVacio(valorConTipo)) aplicarDuracionFranja(nuevaFecha, nuevaHora, duracionMin);
+        if(nuevaFechaFinal!==fecha || nuevaHora!==hora){
+          delete state.horario.notasPorFranja[fecha+'|'+hora];
+          delete state.horario.duracionPorFranja[fecha+'|'+hora];
+        }
+        if(notaActual) state.horario.notasPorFranja[nuevaFechaFinal+'|'+nuevaHora] = notaActual;
+        else delete state.horario.notasPorFranja[nuevaFechaFinal+'|'+nuevaHora];
+        overlay.remove(); render();
+      };
+      if(valorConTipo.trim()){
+        const fechaParaComprobar = modo==='semana' ? (overlay.querySelector('#mv-fecha').value||fecha) : fecha;
+        verificarSolapeAntesDeGuardar(fechaParaComprobar, nuevaHora, duracionMin, hora, escribirDeVerdad);
       } else {
-        const nuevoDia = overlay.querySelector('#mv-dia').value;
-        gridVigentePara(fecha)[nuevoDia+'|'+nuevaHora] = valorConTipo;
-        if(nuevoDia!==diaActual || nuevaHora!==hora){
-          gridVigentePara(fecha)[diaActual+'|'+hora] = '';
-          limpiarExcepcionesDeDia(diaActual, hora);
-        }
-        limpiarExcepcionesDeDia(nuevoDia, nuevaHora);
-        delete state.horario.excepciones[fecha+'|'+hora];
-        scheduleSave();
-        if(!esOficinaOVacio(valorConTipo)) aplicarDuracionFranja(fecha, nuevaHora, duracionMin);
+        escribirDeVerdad();
       }
-      if(nuevaFechaFinal!==fecha || nuevaHora!==hora){
-        delete state.horario.notasPorFranja[fecha+'|'+hora];
-        delete state.horario.duracionPorFranja[fecha+'|'+hora];
-      }
-      if(notaActual) state.horario.notasPorFranja[nuevaFechaFinal+'|'+nuevaHora] = notaActual;
-      else delete state.horario.notasPorFranja[nuevaFechaFinal+'|'+nuevaHora];
-      overlay.remove(); render();
     };
 
     let destinoOcupado;
@@ -3718,6 +3927,49 @@ function crearAutocompleteCliente(inputEl, listaClientes, onSelect){
   inputEl.onfocus = mostrarSugerencias;
   inputEl.onblur = ()=>{ setTimeout(()=>{ sugerencias.style.display='none'; }, 150); };
 }
+// Autocompletado genérico de texto libre: sugiere mientras se escribe a partir de una lista de strings
+// (nombres de clientes, clases de grupo, u otros textos ya usados en el horario), y rellena el propio campo al elegir.
+function crearAutocompleteTexto(inputEl, listaTextos){
+  const contenedor=document.createElement('div'); contenedor.style.cssText='position:relative;';
+  inputEl.parentNode.insertBefore(contenedor, inputEl);
+  contenedor.appendChild(inputEl);
+  const sugerencias=document.createElement('div');
+  sugerencias.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:2px;max-height:180px;overflow-y:auto;z-index:60;display:none;box-shadow:0 6px 18px rgba(0,0,0,.35);';
+  contenedor.appendChild(sugerencias);
+  function mostrarSugerencias(){
+    const q=inputEl.value.trim().toLowerCase();
+    if(!q){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
+    const unicos = [...new Set(listaTextos())].sort((a,b)=>a.localeCompare(b,'es'));
+    const coincidencias = unicos.filter(t=>t.toLowerCase().includes(q) && t.toLowerCase()!==q).slice(0,8);
+    if(coincidencias.length===0){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
+    sugerencias.innerHTML = coincidencias.map(t=>`<div class="ac-item" style="padding:8px 10px;font-size:13px;cursor:pointer;color:var(--ink);">${escapeHtml(t)}</div>`).join('');
+    sugerencias.querySelectorAll('.ac-item').forEach(item=>{
+      item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
+      item.onmouseleave=()=>{ item.style.background='transparent'; };
+      item.onmousedown=(e)=>{
+        e.preventDefault();
+        inputEl.value = item.textContent;
+        sugerencias.style.display='none';
+        inputEl.dispatchEvent(new Event('change'));
+      };
+    });
+    sugerencias.style.display='block';
+  }
+  inputEl.addEventListener('input', mostrarSugerencias);
+  inputEl.addEventListener('focus', mostrarSugerencias);
+  inputEl.addEventListener('blur', ()=>{ setTimeout(()=>{ sugerencias.style.display='none'; }, 150); });
+}
+// Recopila todos los nombres/textos "conocidos" del sistema: clientes, clases de grupo y textos ya usados en el horario
+function nombresConocidosParaHorario(){
+  const nombres = new Set();
+  state.clients.forEach(c=>nombres.add(c.nombre));
+  state.grupos.forEach(clase=>nombres.add(clase.nombre));
+  const recogerDe = (obj)=>{ Object.values(obj||{}).forEach(v=>{ const t=textoLimpio(v||'').trim(); if(t && t.toLowerCase()!=='oficina') nombres.add(t); }); };
+  recogerDe(state.horario.grid);
+  recogerDe(state.horario.excepciones);
+  (state.horario.plantillasFuturas||[]).forEach(p=>recogerDe(p.grid));
+  return [...nombres];
+}
 
 // Los diálogos nativos confirm()/alert() del navegador quedan bloqueados dentro de esta vista incrustada,
 // así que usamos modales propios para confirmaciones y avisos.
@@ -3735,6 +3987,24 @@ function showConfirm(message, onConfirm){
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   overlay.querySelector('#cancel-confirm').onclick=()=>overlay.remove();
   overlay.querySelector('#ok-confirm').onclick=()=>{ overlay.remove(); onConfirm(); };
+}
+// Aviso específico para solapes de horario: permite cancelar, mantener las dos franjas a la vez, o borrar la otra y quedarse solo con esta
+function showAvisoSolape(mensaje, alMantenerAmbas, alEliminarOtra){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:420px;">
+      <p style="font-size:14px;color:var(--ink);margin:0 0 18px;">${escapeHtml(mensaje)}</p>
+      <div class="actions" style="justify-content:flex-end;flex-wrap:wrap;gap:8px;">
+        <button class="btn" id="solape-cancelar">Cancelar</button>
+        <button class="btn btn-danger" id="solape-eliminar-otra">Eliminar la otra franja</button>
+        <button class="btn btn-accent" id="solape-mantener">Mantener las dos</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#solape-cancelar').onclick=()=>overlay.remove();
+  overlay.querySelector('#solape-mantener').onclick=()=>{ overlay.remove(); alMantenerAmbas(); };
+  overlay.querySelector('#solape-eliminar-otra').onclick=()=>{ overlay.remove(); alEliminarOtra(); };
 }
 function showAlert(message){
   const overlay=document.createElement('div'); overlay.className='overlay';
@@ -4560,9 +4830,15 @@ function openAddExerciseToGroupWeek(week, clase){
       <div class="modal-head"><h2>Añadir ejercicio</h2><button class="close-x">✕</button></div>
       ${htmlBuscadorEjercicio()}
       ${isRotativa?`<div class="field"><label>Estación</label><input id="pick-estacion" placeholder="Estación 1"></div>`:''}
+      <div class="field" style="margin-bottom:10px;"><label>Medir por</label>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="btn btn-sm toggle-medida" data-val="reps" style="flex:1;">Repeticiones</button>
+          <button type="button" class="btn btn-sm toggle-medida" data-val="tiempo" style="flex:1;">Tiempo</button>
+        </div>
+      </div>
       <div class="field-row">
         <div class="field"><label>Series</label><input id="pick-series" value="3"></div>
-        <div class="field"><label>Reps</label><input id="pick-reps" value="12"></div>
+        <div class="field"><label id="pick-reps-label">Reps</label><input id="pick-reps" value="12"></div>
       </div>
       <div class="field-row">
         <div class="field"><label>Carga</label><input id="pick-carga" placeholder="p.ej. 6kg / banda media"></div>
@@ -4577,6 +4853,7 @@ function openAddExerciseToGroupWeek(week, clase){
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   conectarBuscadorEjercicio(overlay);
+  conectarToggleMedida(overlay, ['']);
   overlay.querySelector('#confirm-add').onclick=()=>{
     week.items.push({
       exerciseId: overlay.querySelector('#pick-ex').value,
@@ -5159,6 +5436,33 @@ function conectarBuscadorEjercicio(overlay){
   filtroMaterial.addEventListener('change', actualizar);
   actualizar();
 }
+// Interruptor "Repeticiones / Tiempo" para el campo de reps al añadir un ejercicio
+function conectarToggleMedida(overlay, sufijos){
+  const botones = overlay.querySelectorAll('.toggle-medida');
+  function idPara(base, suf){ return suf ? `${base}-${suf}` : base; }
+  function aplicar(modo){
+    botones.forEach(b=>{
+      const activo = b.dataset.val===modo;
+      b.classList.toggle('btn-accent', activo);
+    });
+    sufijos.forEach(suf=>{
+      const input = overlay.querySelector('#'+idPara('pick-reps', suf));
+      const label = overlay.querySelector('#'+idPara('pick-reps-label', suf));
+      if(!input) return;
+      if(modo==='tiempo'){
+        if(label) label.textContent = 'Tiempo';
+        if(input.value==='12'||input.value==='') input.value = '30s';
+        input.placeholder = 'p.ej. 30s / 1 min';
+      } else {
+        if(label) label.textContent = 'Reps';
+        if(input.value==='30s') input.value = '12';
+        input.placeholder = '';
+      }
+    });
+  }
+  botones.forEach(b=>{ b.onclick=(e)=>{ e.preventDefault(); aplicar(b.dataset.val); }; });
+  aplicar('reps');
+}
 
 function materialNecesarioDeItems(items){
   const set = new Set();
@@ -5427,9 +5731,15 @@ function openAddExerciseToWeek(week, unitClients){
         </select>
       </div>`:''}
       <div class="field-group-title" id="pick-titulo-a" style="margin-top:4px;">${isPair?unitClients[0].nombre:'Series y carga'}</div>
+      <div class="field" style="margin-bottom:10px;"><label>Medir por</label>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="btn btn-sm toggle-medida" data-val="reps" style="flex:1;">Repeticiones</button>
+          <button type="button" class="btn btn-sm toggle-medida" data-val="tiempo" style="flex:1;">Tiempo</button>
+        </div>
+      </div>
       <div class="field-row" id="pick-fila1-a">
         <div class="field"><label>Series</label><input id="pick-series-a" value="3"></div>
-        <div class="field"><label>Reps</label><input id="pick-reps-a" value="12"></div>
+        <div class="field"><label id="pick-reps-label-a">Reps</label><input id="pick-reps-a" value="12"></div>
       </div>
       <div class="field-row" id="pick-fila2-a">
         <div class="field"><label>Carga</label><input id="pick-carga-a" placeholder="p.ej. 6kg / banda media"></div>
@@ -5440,7 +5750,7 @@ function openAddExerciseToWeek(week, unitClients){
       <div class="field-group-title" id="pick-titulo-b">${unitClients[1].nombre}</div>
       <div class="field-row" id="pick-fila1-b">
         <div class="field"><label>Series</label><input id="pick-series-b" value="3"></div>
-        <div class="field"><label>Reps</label><input id="pick-reps-b" value="12"></div>
+        <div class="field"><label id="pick-reps-label-b">Reps</label><input id="pick-reps-b" value="12"></div>
       </div>
       <div class="field-row" id="pick-fila2-b">
         <div class="field"><label>Carga</label><input id="pick-carga-b" placeholder="p.ej. 6kg / banda media"></div>
@@ -5456,6 +5766,7 @@ function openAddExerciseToWeek(week, unitClients){
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   conectarBuscadorEjercicio(overlay);
+  conectarToggleMedida(overlay, isPair ? ['a','b'] : ['a']);
   if(isPair){
     const parejaCheck = overlay.querySelector('#pick-espareja');
     const selectEx = overlay.querySelector('#pick-ex');
