@@ -414,7 +414,7 @@ const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
 }));
 
 const SALA = {
-  materialDisponible: "Rack de dos poleas, Barra de dominadas, mancuernas, bandas elásticas, miniband, bandas circulares, kettlebell, bici ciclo indoor, aros de pilates, bolas blandas de 1 kg, rulo de yoga, plataformas inestables, step, cajón de pliometría, barra olímpica con discos, banco, landmine, diana hyrox (en pared, para wallballs), wallballs, barra con guía Smith.",
+  materialDisponible: "Rack de dos poleas, Barra de dominadas, mancuernas, bandas elásticas, miniband, bandas circulares, kettlebell, bici ciclo indoor, aros de pilates, bolas blandas de 1 kg, rulo de yoga, plataformas inestables, step, cajón de pliometría, barra olímpica con discos, banco, landmine, diana hyrox (en pared, para wallballs), wallballs, barra con guía Smith, peso corporal (sin material).",
   reglas: [
     "Prohibido el ejercicio de peso muerto.",
     "Sesiones de 60 minutos.",
@@ -508,7 +508,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Extensión de tríceps en polea', grupoMuscular:'Brazo', material:'Rack de dos poleas',
     descripcion:'Desde la polea alta, extender el codo empujando hacia abajo manteniendo el codo pegado al cuerpo.',
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha frontal', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Plancha frontal', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Apoyo en antebrazos y puntas de los pies, manteniendo el cuerpo alineado y el abdomen activado.',
     precauciones:'Evitar bracing intenso en clientes con hernia abdominal, ostomía o abdominoplastia reciente.', zonasRiesgo:'abdomen, muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rodamiento de aro de pilates (core)', grupoMuscular:'Core', material:'Aros de pilates',
@@ -574,16 +574,16 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Extensión de tríceps sobre la cabeza con mancuerna', grupoMuscular:'Brazo', material:'Mancuernas',
     descripcion:'De pie o sentado, mancuerna sujeta con ambas manos por encima de la cabeza, flexionar y extender codos.',
     precauciones:'Cuidado con molestias de hombro al elevar el brazo.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Dead bug', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Dead bug', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, extender brazo y pierna contraria de forma alterna manteniendo la zona lumbar pegada al suelo.',
     precauciones:'Muy recomendable como core seguro para zona lumbar.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha lateral', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Plancha lateral', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Apoyo en antebrazo y lateral del pie, manteniendo el cuerpo alineado sin dejar caer la cadera.',
     precauciones:'Evitar en molestias de hombro o muñeca; reducir tiempo si hay bracing restringido.', zonasRiesgo:'hombro, muñeca, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Pallof press con banda', grupoMuscular:'Core (antirrotación)', material:'Bandas elásticas',
     descripcion:'De pie, banda anclada al lateral, empujar la banda al frente resistiendo la rotación del tronco.',
     precauciones:'Buena opción de core sin flexión lumbar.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Bird dog', grupoMuscular:'Core / Equilibrio', material:'',
+  { id: uid(), nombre:'Bird dog', grupoMuscular:'Core / Equilibrio', material:'Peso corporal',
     descripcion:'En cuadrupedia, extender brazo y pierna contraria manteniendo la espalda neutra.',
     precauciones:'Ejercicio seguro y recomendable en la mayoría de casos.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Equilibrio a una pierna sobre step', grupoMuscular:'Equilibrio', material:'Step',
@@ -634,16 +634,16 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Encogimientos de hombros con mancuernas', grupoMuscular:'Trapecio', material:'Mancuernas',
     descripcion:'De pie, elevar los hombros hacia las orejas y bajar de forma controlada.',
     precauciones:'Evitar en hernias cervicales o molestias de cuello.', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Mountain Climber', grupoMuscular:'Core / Cardio', material:'',
+  { id: uid(), nombre:'Mountain Climber', grupoMuscular:'Core / Cardio', material:'Peso corporal',
     descripcion:'Posición de plancha alta, llevar las rodillas al pecho de forma alterna y rápida.',
     precauciones:'Evitar en molestias de muñeca u hombro; reducir ritmo en clientes de bajo nivel.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Puente de glúteo a una pierna', grupoMuscular:'Glúteo', material:'',
+  { id: uid(), nombre:'Puente de glúteo a una pierna', grupoMuscular:'Glúteo', material:'Peso corporal',
     descripcion:'Puente de glúteo elevando una pierna extendida, manteniendo la cadera nivelada.',
     precauciones:'Progresión del puente de glúteo bipodal; cuidado con molestias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Wall Sit', grupoMuscular:'Piernas', material:'',
+  { id: uid(), nombre:'Wall Sit', grupoMuscular:'Piernas', material:'Peso corporal',
     descripcion:'Espalda apoyada en la pared, mantener la posición de sentadilla estática el tiempo indicado.',
     precauciones:'Evitar en molestias de rodilla; reducir el tiempo si hace falta.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estocada lateral', grupoMuscular:'Piernas / Aductores', material:'',
+  { id: uid(), nombre:'Estocada lateral', grupoMuscular:'Piernas / Aductores', material:'Peso corporal',
     descripcion:'Paso amplio hacia un lateral, flexionando la pierna que se desplaza y manteniendo la otra extendida.',
     precauciones:'Requiere buena movilidad de cadera; evitar en molestias de rodilla.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Elevación de pelvis con rulo bajo los pies', grupoMuscular:'Glúteo / Core', material:'Rulo de yoga',
@@ -652,7 +652,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Rotación de columna sentado con aro', grupoMuscular:'Core / Movilidad', material:'Aros de pilates',
     descripcion:'Sentado con el aro sujeto entre las manos al frente, rotar el tronco de un lado a otro con control.',
     precauciones:'Movimiento suave, apto para trabajar movilidad torácica.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Swimming (extensión alterna en suelo)', grupoMuscular:'Espalda baja', material:'',
+  { id: uid(), nombre:'Swimming (extensión alterna en suelo)', grupoMuscular:'Espalda baja', material:'Peso corporal',
     descripcion:'Tumbado boca abajo, elevar de forma alterna brazo y pierna contraria imitando el movimiento de nadar.',
     precauciones:'Evitar en hernias lumbares activas; movimiento suave sin rebote.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Kettlebell halo', grupoMuscular:'Hombro / Core', material:'Kettlebell',
@@ -667,7 +667,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Superman con bola blanda', grupoMuscular:'Espalda baja', material:'Bolas blandas de 1 kg',
     descripcion:'Tumbado boca abajo con la bola entre las manos extendidas al frente, elevar brazos y piernas ligeramente.',
     precauciones:'Evitar en hernias lumbares; rango de movimiento pequeño y controlado.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Marcha con elevación de rodillas', grupoMuscular:'Cardio bajo impacto', material:'',
+  { id: uid(), nombre:'Marcha con elevación de rodillas', grupoMuscular:'Cardio bajo impacto', material:'Peso corporal',
     descripcion:'Caminar en el sitio elevando las rodillas de forma alterna a ritmo moderado.',
     precauciones:'Ideal para niveles de forma física muy bajos o inicio de sesión.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sit-to-Stand', grupoMuscular:'Piernas', material:'Banco',
@@ -676,7 +676,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Box Jump', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
     descripcion:'Salto con ambas piernas desde el suelo hasta la superficie del cajón, aterrizando con las rodillas flexionadas.',
     precauciones:'Ejercicio de impacto alto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Burpee (adaptado, bajo impacto)', grupoMuscular:'Full body / Cardio', material:'',
+  { id: uid(), nombre:'Burpee (adaptado, bajo impacto)', grupoMuscular:'Full body / Cardio', material:'Peso corporal',
     descripcion:'Desde de pie, apoyo de manos en el suelo, extensión de piernas hacia atrás y vuelta a de pie, sin salto final.',
     precauciones:'Evitar en molestias de muñeca, rodilla u osteoporosis; versión sin impacto para la mayoría de clientes.', zonasRiesgo:'muñeca, rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Renegade Row con mancuernas', grupoMuscular:'Espalda / Core', material:'Mancuernas',
@@ -685,7 +685,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Reverse Lunge con mancuernas', grupoMuscular:'Piernas', material:'Mancuernas',
     descripcion:'Paso hacia atrás en vez de hacia adelante, bajando la rodilla trasera de forma controlada.',
     precauciones:'Suele ser más suave para la rodilla delantera que la zancada tradicional.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Flexión de brazos (Push-Up)', grupoMuscular:'Pecho / Brazo', material:'',
+  { id: uid(), nombre:'Flexión de brazos (Push-Up)', grupoMuscular:'Pecho / Brazo', material:'Peso corporal',
     descripcion:'Desde plancha alta, flexionar los codos bajando el pecho hacia el suelo y volver a extender.',
     precauciones:'Adaptar a rodillas apoyadas si hace falta reducir la exigencia.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Dominadas asistidas con banda', grupoMuscular:'Espalda', material:'Barra de dominadas, Bandas elásticas',
@@ -709,7 +709,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Copenhagen Plank', grupoMuscular:'Aductores / Core', material:'Banco',
     descripcion:'Plancha lateral con el pie superior apoyado en el banco, trabajando los aductores de la pierna elevada.',
     precauciones:'Ejercicio avanzado; reducir el tiempo o apoyar la rodilla inferior para facilitarlo.', zonasRiesgo:'cadera, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Glute Bridge March', grupoMuscular:'Glúteo / Core', material:'',
+  { id: uid(), nombre:'Glute Bridge March', grupoMuscular:'Glúteo / Core', material:'Peso corporal',
     descripcion:'Desde el puente de glúteo mantenido, elevar una rodilla hacia el pecho de forma alterna sin bajar la cadera.',
     precauciones:'Progresión del puente de glúteo bipodal.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Around the World con bola blanda', grupoMuscular:'Hombro / Core', material:'Bolas blandas de 1 kg',
@@ -721,7 +721,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Tricep Kickback con mancuernas', grupoMuscular:'Brazo', material:'Mancuernas',
     descripcion:'Inclinado hacia adelante, extender el codo hacia atrás manteniendo el brazo pegado al cuerpo.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Elevación de piernas (Leg Raise)', grupoMuscular:'Core inferior', material:'',
+  { id: uid(), nombre:'Elevación de piernas (Leg Raise)', grupoMuscular:'Core inferior', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, elevar las piernas extendidas o semiflexionadas manteniendo la zona lumbar pegada al suelo.',
     precauciones:'Evitar en hernias lumbares; reducir el rango si la zona lumbar se despega del suelo.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Russian Twist con bola blanda', grupoMuscular:'Core (oblicuos)', material:'Bolas blandas de 1 kg',
@@ -730,19 +730,19 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Step Down excéntrico', grupoMuscular:'Piernas', material:'Step',
     descripcion:'De pie sobre el step, bajar una pierna hacia el suelo de forma lenta y controlada sin apoyar el peso, y volver a subir.',
     precauciones:'Muy usado en rehabilitación de rodilla; controlar el descenso.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Pilates Roll-Up', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Pilates Roll-Up', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, elevar el tronco vértebra a vértebra hasta sentarse, y bajar con el mismo control.',
     precauciones:'Evitar en hernias lumbares o discales; reducir el rango si cuesta controlar la bajada.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Spine Stretch Forward', grupoMuscular:'Movilidad / Columna', material:'',
+  { id: uid(), nombre:'Spine Stretch Forward', grupoMuscular:'Movilidad / Columna', material:'Peso corporal',
     descripcion:'Sentado con piernas extendidas, flexionar el tronco hacia adelante vértebra a vértebra, con brazos extendidos.',
     precauciones:'Movimiento suave, apto para la mayoría de niveles.', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Saw (Pilates)', grupoMuscular:'Core / Movilidad', material:'',
+  { id: uid(), nombre:'Saw (Pilates)', grupoMuscular:'Core / Movilidad', material:'Peso corporal',
     descripcion:'Sentado con piernas abiertas, rotar el tronco hacia un lado y flexionar hacia el pie contrario, como serrando.',
     precauciones:'Evitar en molestias lumbares agudas.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Side Kick Series (Pilates)', grupoMuscular:'Glúteo / Cadera', material:'',
+  { id: uid(), nombre:'Side Kick Series (Pilates)', grupoMuscular:'Glúteo / Cadera', material:'Peso corporal',
     descripcion:'Tumbado de lado con el cuerpo alineado, realizar patadas controladas hacia adelante y atrás con la pierna superior.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Pilates Scissors', grupoMuscular:'Core inferior', material:'',
+  { id: uid(), nombre:'Pilates Scissors', grupoMuscular:'Core inferior', material:'Peso corporal',
     descripcion:'Tumbado boca arriba con piernas elevadas, alternar el movimiento de tijera manteniendo la zona lumbar pegada al suelo.',
     precauciones:'Evitar en hernias lumbares; reducir el rango si la espalda baja se despega del suelo.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Kettlebell Row', grupoMuscular:'Espalda', material:'Kettlebell',
@@ -769,25 +769,25 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Straight-Arm Pulldown', grupoMuscular:'Espalda', material:'Rack de dos poleas',
     descripcion:'Desde la polea alta con los brazos extendidos, llevar la barra hacia abajo hasta los muslos sin flexionar los codos.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Side Plank with Rotation', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Side Plank with Rotation', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Desde plancha lateral, rotar el tronco llevando el brazo libre por debajo del cuerpo y volviendo a abrir.',
     precauciones:'Nivel intermedio-avanzado; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Hollow Body Hold', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Hollow Body Hold', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, elevar ligeramente piernas y hombros del suelo manteniendo la zona lumbar pegada al suelo.',
     precauciones:'Evitar en hernias lumbares; reducir el tiempo si cuesta mantener la zona lumbar apoyada.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Lateral Shuffle', grupoMuscular:'Cardio / Piernas', material:'',
+  { id: uid(), nombre:'Lateral Shuffle', grupoMuscular:'Cardio / Piernas', material:'Peso corporal',
     descripcion:'Desplazamientos laterales rápidos en posición semiflexionada, manteniendo el core activado.',
     precauciones:'Evitar en inestabilidad de rodilla o tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Single-Leg Balance Reach', grupoMuscular:'Equilibrio', material:'',
+  { id: uid(), nombre:'Single-Leg Balance Reach', grupoMuscular:'Equilibrio', material:'Peso corporal',
     descripcion:'De pie sobre una pierna, inclinar el tronco hacia adelante para tocar el suelo con la mano contraria, manteniendo el equilibrio.',
     precauciones:'Tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Cat-Cow', grupoMuscular:'Movilidad / Columna', material:'',
+  { id: uid(), nombre:'Cat-Cow', grupoMuscular:'Movilidad / Columna', material:'Peso corporal',
     descripcion:'En cuadrupedia, alternar entre arquear y redondear la espalda de forma suave y controlada.',
     precauciones:'Ejercicio muy seguro, ideal para calentamiento o clientes de nivel muy bajo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estiramiento de flexor de cadera en banco', grupoMuscular:'Movilidad / Cadera', material:'Banco',
     descripcion:'Una rodilla apoyada en el suelo y el pie contrario adelantado, apoyo del pie trasero en el banco para profundizar el estiramiento.',
     precauciones:'Movimiento suave, sin rebote.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Bear Crawl', grupoMuscular:'Full body / Core', material:'',
+  { id: uid(), nombre:'Bear Crawl', grupoMuscular:'Full body / Core', material:'Peso corporal',
     descripcion:'Desplazamiento a cuatro apoyos con las rodillas ligeramente elevadas del suelo, manteniendo el core activado.',
     precauciones:'Evitar en molestias de muñeca, hombro o rodilla.', zonasRiesgo:'muñeca, hombro, rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Back Squat con barra olímpica', grupoMuscular:'Piernas', material:'Barra olímpica con discos',
@@ -829,7 +829,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Plank Row (plancha con remo alterno)', grupoMuscular:'Espalda / Core', material:'Mancuernas',
     descripcion:'Posición de plancha alta con una mancuerna en cada mano, remo alterno sin rotar la cadera.',
     precauciones:'Requiere buena estabilidad de core; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha con elevación de pierna', grupoMuscular:'Core / Glúteo', material:'',
+  { id: uid(), nombre:'Plancha con elevación de pierna', grupoMuscular:'Core / Glúteo', material:'Peso corporal',
     descripcion:'Desde plancha frontal, elevar una pierna extendida manteniendo la cadera nivelada y el core activado.',
     precauciones:'Evitar en molestias lumbares o de muñeca.', zonasRiesgo:'muñeca, lumbar, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Face Pull en polea', grupoMuscular:'Espalda / Hombro', material:'Rack de dos poleas',
@@ -838,19 +838,19 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Jalón con agarre supino', grupoMuscular:'Espalda', material:'Rack de dos poleas, Barra de dominadas',
     descripcion:'Igual que el jalón al pecho pero con las palmas mirando hacia el propio cuerpo, dando más énfasis al bíceps y dorsal bajo.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Jump Squat', grupoMuscular:'Piernas / Potencia', material:'',
+  { id: uid(), nombre:'Jump Squat', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
     descripcion:'Sentadilla seguida de un salto vertical, aterrizando de nuevo en posición de sentadilla de forma controlada.',
     precauciones:'Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Jump Lunge', grupoMuscular:'Piernas / Potencia', material:'',
+  { id: uid(), nombre:'Jump Lunge', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
     descripcion:'Zancada alternando las piernas mediante un pequeño salto en el aire entre repetición y repetición.',
     precauciones:'Ejercicio de impacto alto; evitar en osteoporosis o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo con dos kettlebells', grupoMuscular:'Espalda', material:'Kettlebell',
     descripcion:'Inclinado hacia adelante con una kettlebell en cada mano, remo simultáneo llevando los codos hacia atrás.',
     precauciones:'Mantener la espalda neutra durante todo el movimiento.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadilla en pareja agarrados de las manos', grupoMuscular:'Piernas', material:'', esPareja:true,
+  { id: uid(), nombre:'Sentadilla en pareja agarrados de las manos', grupoMuscular:'Piernas', material:'Peso corporal', esPareja:true,
     descripcion:'De pie, uno frente al otro, agarrados de ambas manos, realizar la sentadilla a la vez usando el agarre mutuo para ayudarse con el equilibrio.',
     precauciones:'Adaptar la profundidad de la sentadilla al miembro con menos movilidad de la pareja.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha con choque de manos en pareja', grupoMuscular:'Core', material:'', esPareja:true,
+  { id: uid(), nombre:'Plancha con choque de manos en pareja', grupoMuscular:'Core', material:'Peso corporal', esPareja:true,
     descripcion:'Ambos en plancha frontal, uno enfrente del otro, chocando una mano cada vez de forma alterna sin perder la alineación del cuerpo.',
     precauciones:'Evitar en molestias de muñeca o hombro; reducir el tiempo si hace falta.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Pase de Wallball en pareja', grupoMuscular:'Full body', material:'Wallballs', esPareja:true,
@@ -862,19 +862,19 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sentadilla espalda con espalda con bola blanda', grupoMuscular:'Piernas / Core', material:'Bolas blandas de 1 kg', esPareja:true,
     descripcion:'De espaldas el uno contra el otro, sujetando la bola entre las dos espaldas, bajar y subir en sentadilla de forma sincronizada.',
     precauciones:'Requiere buena coordinación entre ambos; adaptar el ritmo al más lento de la pareja.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Zancadas caminando de la mano', grupoMuscular:'Piernas', material:'', esPareja:true,
+  { id: uid(), nombre:'Zancadas caminando de la mano', grupoMuscular:'Piernas', material:'Peso corporal', esPareja:true,
     descripcion:'Caminar en zancada alterna avanzando juntos mientras se sujetan de una mano para mantener el ritmo sincronizado.',
     precauciones:'Evitar en inestabilidad de rodilla o tobillo en cualquiera de los dos.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Abdominales con pase de bola pies con pies', grupoMuscular:'Core', material:'Bolas blandas de 1 kg', esPareja:true,
     descripcion:'Tumbados en el suelo con los pies enfrentados y sujetando la bola entre los pies, incorporar el tronco de forma alterna pasándose la bola con las piernas.',
     precauciones:'Evitar en molestias lumbares o abdominales; reducir el rango si hace falta.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento asistido de isquiotibiales en pareja', grupoMuscular:'Movilidad', material:'', esPareja:true,
+  { id: uid(), nombre:'Estiramiento asistido de isquiotibiales en pareja', grupoMuscular:'Movilidad', material:'Peso corporal', esPareja:true,
     descripcion:'Uno tumbado boca arriba, el compañero ayuda a elevar la pierna extendida con control hasta notar el estiramiento, sin forzar.',
     precauciones:'Comunicación constante entre ambos; parar si aparece dolor, no solo tensión.', zonasRiesgo:'cadera, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla con pase de kettlebell', grupoMuscular:'Piernas / Full body', material:'Kettlebell', esPareja:true,
     descripcion:'Uno frente al otro, cada uno hace su sentadilla y se pasan la kettlebell entre repetición y repetición.',
     precauciones:'Usar una kettlebell ligera para el pase; coordinar bien el momento del intercambio.', zonasRiesgo:'rodilla, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Puente de glúteo sincronizado agarrados de las manos', grupoMuscular:'Glúteo', material:'', esPareja:true,
+  { id: uid(), nombre:'Puente de glúteo sincronizado agarrados de las manos', grupoMuscular:'Glúteo', material:'Peso corporal', esPareja:true,
     descripcion:'Tumbados en paralelo, agarrados de las manos, realizar el puente de glúteo a la vez manteniendo el mismo ritmo.',
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Press con resistencia de banda controlada por el compañero', grupoMuscular:'Hombro / Pecho', material:'Bandas elásticas', esPareja:true,
@@ -883,25 +883,25 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Remo de toalla/banda enfrentados con giro', grupoMuscular:'Espalda / Core', material:'Bandas elásticas', esPareja:true,
     descripcion:'Sentados uno frente al otro con la banda compartida, combinar el tirón de remo con una ligera rotación de tronco alterna.',
     precauciones:'Evitar en molestias lumbares o de columna.', zonasRiesgo:'columna, lumbar, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Wall Sit en pareja espalda con espalda', grupoMuscular:'Piernas', material:'', esPareja:true,
+  { id: uid(), nombre:'Wall Sit en pareja espalda con espalda', grupoMuscular:'Piernas', material:'Peso corporal', esPareja:true,
     descripcion:'De espaldas el uno contra el otro, bajar hasta la posición de sentadilla isométrica apoyándose mutuamente sin necesidad de pared.',
     precauciones:'Requiere confianza y peso similar entre ambos; evitar en molestias de rodilla.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Carretilla asistida (distancia corta)', grupoMuscular:'Full body / Core', material:'', esPareja:true,
+  { id: uid(), nombre:'Carretilla asistida (distancia corta)', grupoMuscular:'Full body / Core', material:'Peso corporal', esPareja:true,
     descripcion:'Uno camina apoyado en las manos mientras el compañero sujeta con firmeza sus tobillos, avanzando una distancia corta y controlada.',
     precauciones:'Ejercicio avanzado; evitar en molestias de muñeca, hombro o core; reservar solo para clientes con buena base física.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estocada lateral con pase de bola en pareja', grupoMuscular:'Piernas / Aductores', material:'Bolas blandas de 1 kg', esPareja:true,
     descripcion:'Uno frente al otro, realizar la estocada lateral a la vez pasándose la bola por debajo de la pierna flexionada.',
     precauciones:'Requiere buena movilidad de cadera en ambos.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de cuádriceps de pie', grupoMuscular:'Movilidad', material:'',
+  { id: uid(), nombre:'Estiramiento de cuádriceps de pie', grupoMuscular:'Movilidad', material:'Peso corporal',
     descripcion:'De pie, sujetar el tobillo y llevar el talón hacia el glúteo manteniendo las rodillas juntas.',
     precauciones:'Usar apoyo (pared o banco) en clientes con problemas de equilibrio.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de gemelo en pared', grupoMuscular:'Movilidad', material:'',
+  { id: uid(), nombre:'Estiramiento de gemelo en pared', grupoMuscular:'Movilidad', material:'Peso corporal',
     descripcion:'Manos apoyadas en la pared, una pierna atrás con el talón en el suelo, inclinar el cuerpo hacia adelante.',
     precauciones:'', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estiramiento de pectoral en rack', grupoMuscular:'Movilidad', material:'Rack de dos poleas',
     descripcion:'Antebrazo apoyado en el rack a la altura del hombro, rotar el tronco hacia el lado contrario para estirar el pecho.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Supine Twist (torsión de columna tumbado)', grupoMuscular:'Movilidad / Columna', material:'',
+  { id: uid(), nombre:'Supine Twist (torsión de columna tumbado)', grupoMuscular:'Movilidad / Columna', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, dejar caer las rodillas flexionadas hacia un lado mientras los hombros permanecen en el suelo.',
     precauciones:'Movimiento suave, ideal para el final de la sesión.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Landmine 180', grupoMuscular:'Core / Potencia', material:'Landmine',
@@ -934,13 +934,13 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Farmer\'s Hold estático', grupoMuscular:'Core / Antebrazo', material:'Kettlebell',
     descripcion:'De pie sujetando una kettlebell en cada mano junto al cuerpo, mantener la posición con el core activado durante el tiempo indicado.',
     precauciones:'Evitar cargas altas en molestias lumbares o de muñeca.', zonasRiesgo:'lumbar, muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Jumping Jacks', grupoMuscular:'Cardio', material:'',
+  { id: uid(), nombre:'Jumping Jacks', grupoMuscular:'Cardio', material:'Peso corporal',
     descripcion:'Saltos abriendo y cerrando piernas y brazos de forma simultánea, a ritmo constante.',
     precauciones:'Ejercicio de impacto — evitar en osteoporosis, fascitis plantar o molestias de rodilla/tobillo; sustituir por marcha con elevación de rodillas si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rodillo abdominal con aro de pilates', grupoMuscular:'Core', material:'Aros de pilates',
     descripcion:'De rodillas, sujetar el aro con ambas manos y presionarlo mientras se inclina el tronco hacia adelante y se vuelve a la posición inicial.',
     precauciones:'Evitar en hernias lumbares o discales; nivel intermedio.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Fire Hydrant (perro de fuego)', grupoMuscular:'Glúteo (medio)', material:'',
+  { id: uid(), nombre:'Fire Hydrant (perro de fuego)', grupoMuscular:'Glúteo (medio)', material:'Peso corporal',
     descripcion:'En cuadrupedia, elevar una rodilla flexionada hacia el lateral manteniendo la cadera estable.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Shoulder Dislocates con banda', grupoMuscular:'Hombro (movilidad)', material:'Bandas elásticas',
@@ -958,31 +958,31 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Elevación de brazos sentado', grupoMuscular:'Hombro', material:'Banco',
     descripcion:'Sentado con la espalda apoyada, elevar los brazos al frente o lateralmente de forma controlada, con o sin peso ligero.',
     precauciones:'Buena opción para clientes con poco equilibrio o nivel muy bajo.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadilla con apoyo en pared (deslizante)', grupoMuscular:'Piernas', material:'',
+  { id: uid(), nombre:'Sentadilla con apoyo en pared (deslizante)', grupoMuscular:'Piernas', material:'Peso corporal',
     descripcion:'Espalda apoyada en la pared, deslizarse hacia abajo y hacia arriba en sentadilla de forma controlada.',
     precauciones:'Versión dinámica del wall sit, más suave para clientes con menos fuerza.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de isquiotibiales de pie', grupoMuscular:'Movilidad', material:'',
+  { id: uid(), nombre:'Estiramiento de isquiotibiales de pie', grupoMuscular:'Movilidad', material:'Peso corporal',
     descripcion:'Pie apoyado sobre un step o superficie baja, inclinar el tronco hacia adelante manteniendo la pierna extendida.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Postura del niño (Child\'s Pose)', grupoMuscular:'Movilidad / Espalda', material:'',
+  { id: uid(), nombre:'Postura del niño (Child\'s Pose)', grupoMuscular:'Movilidad / Espalda', material:'Peso corporal',
     descripcion:'De rodillas, sentarse sobre los talones y estirar los brazos hacia adelante apoyando el pecho cerca del suelo.',
     precauciones:'Excelente para el final de la sesión; evitar en molestias de rodilla apoyando algo blando debajo.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de trapecio', grupoMuscular:'Movilidad / Cuello', material:'',
+  { id: uid(), nombre:'Estiramiento de trapecio', grupoMuscular:'Movilidad / Cuello', material:'Peso corporal',
     descripcion:'Sentado o de pie, inclinar la cabeza hacia un lado ayudando suavemente con la mano, sin forzar.',
     precauciones:'Evitar en hernias cervicales; movimiento muy suave.', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de flexores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'',
+  { id: uid(), nombre:'Estiramiento de flexores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'Peso corporal',
     descripcion:'Brazo extendido con la palma hacia arriba, tirar suavemente de los dedos hacia atrás con la otra mano.',
     precauciones:'', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'90/90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'',
+  { id: uid(), nombre:'90/90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
     descripcion:'Sentado en el suelo con ambas piernas flexionadas a 90° en direcciones opuestas, mantener la posición con la espalda recta.',
     precauciones:'Requiere buena movilidad de cadera; ir con cuidado si hay molestias.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'World\'s Greatest Stretch', grupoMuscular:'Movilidad global', material:'',
+  { id: uid(), nombre:'World\'s Greatest Stretch', grupoMuscular:'Movilidad global', material:'Peso corporal',
     descripcion:'Desde zancada profunda, apoyar la mano en el suelo y rotar el tronco elevando el brazo contrario hacia el techo.',
     precauciones:'Requiere buena movilidad general; ir despacio y con control.', zonasRiesgo:'cadera, columna', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Scapular Wall Slide', grupoMuscular:'Hombro / Postura', material:'',
+  { id: uid(), nombre:'Scapular Wall Slide', grupoMuscular:'Hombro / Postura', material:'Peso corporal',
     descripcion:'Espalda y brazos apoyados en la pared en posición de "W", deslizar los brazos hacia arriba manteniendo el contacto con la pared.',
     precauciones:'Muy recomendable para mejorar la postura de hombros adelantados.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Elevaciones Y-T-W tumbado boca abajo', grupoMuscular:'Espalda alta / Hombro', material:'',
+  { id: uid(), nombre:'Elevaciones Y-T-W tumbado boca abajo', grupoMuscular:'Espalda alta / Hombro', material:'Peso corporal',
     descripcion:'Tumbado boca abajo, elevar los brazos formando las letras Y, T y W de forma consecutiva, con o sin peso muy ligero.',
     precauciones:'Cargas muy ligeras o sin peso; evitar en molestias cervicales.', zonasRiesgo:'hombro, cervical', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wrist Curl con mancuerna', grupoMuscular:'Antebrazo', material:'Mancuernas',
@@ -994,13 +994,13 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sentadilla a una pierna en plataforma inestable', grupoMuscular:'Equilibrio / Piernas', material:'Plataformas inestables',
     descripcion:'Sobre la plataforma inestable con una sola pierna, realizar una sentadilla parcial controlando el equilibrio.',
     precauciones:'Nivel avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Russian Twist sin material', grupoMuscular:'Core (oblicuos)', material:'',
+  { id: uid(), nombre:'Russian Twist sin material', grupoMuscular:'Core (oblicuos)', material:'Peso corporal',
     descripcion:'Sentado con el tronco ligeramente reclinado y las manos entrelazadas, rotar de lado a lado.',
     precauciones:'Evitar en molestias lumbares o de columna.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Elevación de pierna lateral tumbada', grupoMuscular:'Glúteo (medio)', material:'',
+  { id: uid(), nombre:'Elevación de pierna lateral tumbada', grupoMuscular:'Glúteo (medio)', material:'Peso corporal',
     descripcion:'Tumbado de lado con el cuerpo alineado, elevar la pierna superior extendida de forma controlada.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Puente de glúteo con pausa isométrica', grupoMuscular:'Glúteo', material:'',
+  { id: uid(), nombre:'Puente de glúteo con pausa isométrica', grupoMuscular:'Glúteo', material:'Peso corporal',
     descripcion:'Puente de glúteo clásico manteniendo la posición elevada durante varios segundos antes de bajar.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rotación de tronco de pie con banda', grupoMuscular:'Core (rotación)', material:'Bandas elásticas',
@@ -1009,7 +1009,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Zancada frontal con giro de tronco', grupoMuscular:'Piernas / Core', material:'Mancuernas',
     descripcion:'Zancada hacia adelante sujetando una mancuerna con ambas manos, rotando el tronco hacia el lado de la pierna adelantada.',
     precauciones:'Requiere buen equilibrio y control lumbar.', zonasRiesgo:'rodilla, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadilla con pausa (Pause Squat)', grupoMuscular:'Piernas', material:'',
+  { id: uid(), nombre:'Sentadilla con pausa (Pause Squat)', grupoMuscular:'Piernas', material:'Peso corporal',
     descripcion:'Sentadilla normal manteniendo una pausa de 2-3 segundos en el punto más bajo antes de subir.',
     precauciones:'Mejora el control técnico; reducir profundidad si hace falta.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Press de hombro alterno con mancuernas', grupoMuscular:'Hombro', material:'Mancuernas',
@@ -1024,43 +1024,43 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Puente de glúteo con bola blanda entre rodillas', grupoMuscular:'Glúteo / Aductores', material:'Bolas blandas de 1 kg',
     descripcion:'Puente de glúteo clásico presionando la bola entre las rodillas durante todo el movimiento.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de aductores en mariposa', grupoMuscular:'Movilidad / Cadera', material:'',
+  { id: uid(), nombre:'Estiramiento de aductores en mariposa', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
     descripcion:'Sentado con las plantas de los pies juntas, dejar caer las rodillas hacia los lados con suavidad.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadilla con salto en pareja', grupoMuscular:'Piernas / Potencia', material:'', esPareja:true,
+  { id: uid(), nombre:'Sentadilla con salto en pareja', grupoMuscular:'Piernas / Potencia', material:'Peso corporal', esPareja:true,
     descripcion:'Uno frente al otro, realizar sentadillas con salto sincronizadas, marcando el ritmo entre ambos.',
     precauciones:'Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo en cualquiera de los dos.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Círculos de brazos (Arm Circles)', grupoMuscular:'Hombro (calentamiento)', material:'',
+  { id: uid(), nombre:'Círculos de brazos (Arm Circles)', grupoMuscular:'Hombro (calentamiento)', material:'Peso corporal',
     descripcion:'Brazos extendidos lateralmente, realizar círculos pequeños y progresivamente más amplios.',
     precauciones:'Ideal para el calentamiento de hombro.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Balanceo de pierna (Leg Swings)', grupoMuscular:'Cadera (calentamiento)', material:'',
+  { id: uid(), nombre:'Balanceo de pierna (Leg Swings)', grupoMuscular:'Cadera (calentamiento)', material:'Peso corporal',
     descripcion:'Sujeto a un apoyo, balancear una pierna hacia adelante y atrás de forma controlada.',
     precauciones:'Buen calentamiento dinámico de cadera antes de sentadillas o zancadas.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Círculos de cadera (Hip Circles)', grupoMuscular:'Cadera (calentamiento)', material:'',
+  { id: uid(), nombre:'Círculos de cadera (Hip Circles)', grupoMuscular:'Cadera (calentamiento)', material:'Peso corporal',
     descripcion:'De pie, manos en la cadera, realizar círculos amplios con la cadera en ambas direcciones.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Rotaciones de tronco de pie (calentamiento)', grupoMuscular:'Core (calentamiento)', material:'',
+  { id: uid(), nombre:'Rotaciones de tronco de pie (calentamiento)', grupoMuscular:'Core (calentamiento)', material:'Peso corporal',
     descripcion:'De pie con los brazos relajados, rotar el tronco de un lado a otro con suavidad.',
     precauciones:'Movimiento suave de calentamiento, no forzar el rango.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Butt Kicks (talones al glúteo)', grupoMuscular:'Cardio bajo impacto', material:'',
+  { id: uid(), nombre:'Butt Kicks (talones al glúteo)', grupoMuscular:'Cardio bajo impacto', material:'Peso corporal',
     descripcion:'Trote suave en el sitio llevando los talones hacia el glúteo de forma alterna.',
     precauciones:'Reducir el ritmo en clientes de nivel muy bajo.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Tandem Stance (equilibrio en línea)', grupoMuscular:'Equilibrio', material:'',
+  { id: uid(), nombre:'Tandem Stance (equilibrio en línea)', grupoMuscular:'Equilibrio', material:'Peso corporal',
     descripcion:'De pie con un pie justo delante del otro, talón contra punta, mantener el equilibrio el tiempo indicado.',
     precauciones:'Muy recomendable para trabajar equilibrio en osteoporosis o riesgo de caídas; tener apoyo cerca.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plank Shoulder Taps', grupoMuscular:'Core / Hombro', material:'',
+  { id: uid(), nombre:'Plank Shoulder Taps', grupoMuscular:'Core / Hombro', material:'Peso corporal',
     descripcion:'Desde plancha alta, tocar el hombro contrario de forma alterna manteniendo la cadera lo más estable posible.',
     precauciones:'Evitar en molestias de muñeca; reducir el ritmo si la cadera se balancea mucho.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plank to Downward Dog', grupoMuscular:'Core / Movilidad', material:'',
+  { id: uid(), nombre:'Plank to Downward Dog', grupoMuscular:'Core / Movilidad', material:'Peso corporal',
     descripcion:'Desde plancha alta, elevar la cadera hacia arriba llevando el cuerpo a la posición de "perro boca abajo" y volver.',
     precauciones:'Buen ejercicio de transición entre fuerza y movilidad.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Single Leg Stretch (Pilates)', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Single Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, alternar la flexión de rodillas hacia el pecho mientras la otra pierna se extiende, manteniendo el tronco elevado.',
     precauciones:'Evitar en molestias lumbares o cervicales.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Double Leg Stretch (Pilates)', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'Double Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Tumbado con rodillas al pecho y tronco elevado, extender brazos y piernas a la vez y volver a recoger.',
     precauciones:'Nivel intermedio; evitar en hernias lumbares.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Criss-Cross (Pilates)', grupoMuscular:'Core (oblicuos)', material:'',
+  { id: uid(), nombre:'Criss-Cross (Pilates)', grupoMuscular:'Core (oblicuos)', material:'Peso corporal',
     descripcion:'Tumbado con manos tras la cabeza, rotar el tronco llevando el codo hacia la rodilla contraria de forma alterna.',
     precauciones:'Evitar en molestias cervicales o lumbares.', zonasRiesgo:'cervical, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Landmine Overhead Press a una mano', grupoMuscular:'Hombro', material:'Landmine',
@@ -1084,10 +1084,10 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sujeción de disco (Plate Pinch)', grupoMuscular:'Antebrazo / Agarre', material:'Barra olímpica con discos',
     descripcion:'Sujetar dos discos por su borde liso, uno contra otro, y mantener la sujeción el tiempo indicado.',
     precauciones:'', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de glúteo tumbado (Figure Four Stretch)', grupoMuscular:'Movilidad / Cadera', material:'',
+  { id: uid(), nombre:'Estiramiento de glúteo tumbado (Figure Four Stretch)', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
     descripcion:'Tumbado boca arriba, cruzar un tobillo sobre la rodilla contraria y llevar ambas piernas hacia el pecho.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de extensores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'',
+  { id: uid(), nombre:'Estiramiento de extensores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'Peso corporal',
     descripcion:'Brazo extendido con la palma hacia abajo, tirar suavemente de los dedos hacia el cuerpo con la otra mano.',
     precauciones:'', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Elevación lateral con banda de pie', grupoMuscular:'Hombro', material:'Bandas elásticas',
@@ -1120,13 +1120,13 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Pallof Press de rodillas', grupoMuscular:'Core (antirrotación)', material:'Bandas elásticas',
     descripcion:'De rodillas con la banda anclada al lateral, empujar al frente resistiendo la rotación del tronco.',
     precauciones:'Versión más exigente del Pallof press de pie, al reducir la base de apoyo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Equilibrio a una pierna con ojos cerrados', grupoMuscular:'Equilibrio', material:'',
+  { id: uid(), nombre:'Equilibrio a una pierna con ojos cerrados', grupoMuscular:'Equilibrio', material:'Peso corporal',
     descripcion:'De pie sobre una pierna, cerrar los ojos y mantener el equilibrio el mayor tiempo posible.',
     precauciones:'Solo para clientes sin mareos; tener apoyo cerca siempre.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'V-Sit Hold', grupoMuscular:'Core', material:'',
+  { id: uid(), nombre:'V-Sit Hold', grupoMuscular:'Core', material:'Peso corporal',
     descripcion:'Sentado en el suelo, elevar piernas y tronco formando una V, manteniendo la posición el tiempo indicado.',
     precauciones:'Evitar en hernias lumbares; reducir el ángulo de piernas si hace falta.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Inchworm', grupoMuscular:'Full body (calentamiento)', material:'',
+  { id: uid(), nombre:'Inchworm', grupoMuscular:'Full body (calentamiento)', material:'Peso corporal',
     descripcion:'De pie, flexionar el tronco y caminar con las manos hasta la posición de plancha, y volver caminando hacia los pies.',
     precauciones:'Evitar en molestias de muñeca o isquiotibiales muy acortados.', zonasRiesgo:'muñeca, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo en T con mancuerna', grupoMuscular:'Espalda', material:'Mancuernas, Banco',
@@ -1159,7 +1159,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sentadilla sostenida con pase de bola en pareja', grupoMuscular:'Piernas / Core', material:'Bolas blandas de 1 kg', esPareja:true,
     descripcion:'Ambos mantienen una sentadilla isométrica sostenida mientras se pasan la bola entre sí, sin perder la posición.',
     precauciones:'Adaptar el tiempo de sostenimiento al nivel de ambos.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha en círculo con choque de manos', grupoMuscular:'Core (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Plancha en círculo con choque de manos', grupoMuscular:'Core (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'Todo el grupo en plancha frontal formando un círculo; por turnos, cada uno choca la mano con el compañero de al lado, dando la vuelta completa al círculo.',
     precauciones:'Adaptar el tiempo total al miembro con menos resistencia del grupo; permitir apoyo de rodillas a quien lo necesite.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Pase de Wallball en círculo', grupoMuscular:'Full body (dinámica de grupo)', material:'Wallballs', esDinamicaGrupal:true,
@@ -1171,16 +1171,16 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Relevos de step', grupoMuscular:'Piernas / Cardio (dinámica de grupo)', material:'Step', esDinamicaGrupal:true,
     descripcion:'Por equipos, cada persona sube y baja del step un número de veces antes de dar el relevo al siguiente compañero.',
     precauciones:'Evitar en fascitis plantar o inestabilidad de rodilla.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Circuito de estaciones rotativas', grupoMuscular:'Full body (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Circuito de estaciones rotativas', grupoMuscular:'Full body (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'El grupo se reparte por estaciones distintas (fuerza, core, cardio); todos rotan a la siguiente estación a una señal del entrenador.',
     precauciones:'Adaptar cada estación a las precauciones de quien la ocupe.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadillas musicales (Musical Squats)', grupoMuscular:'Piernas (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Sentadillas musicales (Musical Squats)', grupoMuscular:'Piernas (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'El grupo marcha o camina en el sitio; al parar la música, todos deben hacer una sentadilla lo más rápido posible.',
     precauciones:'Juego de baja exigencia física, ideal para animar el grupo; evitar prisas bruscas en clientes con riesgo de caída.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Tira y afloja por equipos con banda', grupoMuscular:'Espalda / Full body (dinámica de grupo)', material:'Bandas elásticas', esDinamicaGrupal:true,
     descripcion:'Dos equipos tiran de los extremos opuestos de varias bandas elásticas atadas entre sí, compitiendo por ganar terreno.',
     precauciones:'Evitar tirones bruscos; controlar la tensión de forma progresiva.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Escalera de repeticiones en grupo', grupoMuscular:'Full body (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Escalera de repeticiones en grupo', grupoMuscular:'Full body (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'Todo el grupo realiza a la vez 1 repetición de un ejercicio, luego 2, luego 3... subiendo la escalera juntos hasta el número indicado.',
     precauciones:'Elegir un ejercicio de bajo impacto apto para todo el grupo (p.ej. sentadilla o marcha).', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Relevo de transporte de carga', grupoMuscular:'Full body (dinámica de grupo)', material:'Kettlebell, Mancuernas', esDinamicaGrupal:true,
@@ -1192,10 +1192,10 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Circuito de obstáculos con material', grupoMuscular:'Full body (dinámica de grupo)', material:'Step, Cajón de pliometría', esDinamicaGrupal:true,
     descripcion:'Recorrido en circuito usando el step, el cajón y otros elementos como obstáculos a superar por turnos.',
     precauciones:'Adaptar la dificultad de cada obstáculo al nivel del grupo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Reto de plancha grupal cronometrado', grupoMuscular:'Core (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Reto de plancha grupal cronometrado', grupoMuscular:'Core (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'Todo el grupo mantiene la plancha a la vez mientras el entrenador cuenta el tiempo; el grupo se anima entre sí para aguantar juntos.',
     precauciones:'Adaptar el tiempo total al miembro con menos resistencia del grupo.', zonasRiesgo:'muñeca, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Juego del espejo (Mirror Game)', grupoMuscular:'Full body (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Juego del espejo (Mirror Game)', grupoMuscular:'Full body (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'Una persona hace de líder y el resto del grupo imita sus movimientos (sentadillas, marcha, brazos); el liderazgo va rotando entre todos.',
     precauciones:'El líder debe elegir movimientos aptos para todo el grupo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Circuito Hyrox por equipos', grupoMuscular:'Full body (dinámica de grupo)', material:'Wallballs, Diana hyrox, Kettlebell, Step', esDinamicaGrupal:true,
@@ -1207,13 +1207,13 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sentadilla sumo con mancuerna', grupoMuscular:'Piernas / Cadera', material:'Mancuernas',
     descripcion:'Pies separados y puntas hacia fuera, mancuerna sujeta con ambas manos entre las piernas, realizar la sentadilla.',
     precauciones:'', zonasRiesgo:'cadera, rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Zancada cruzada (Curtsy Lunge)', grupoMuscular:'Glúteo / Piernas', material:'',
+  { id: uid(), nombre:'Zancada cruzada (Curtsy Lunge)', grupoMuscular:'Glúteo / Piernas', material:'Peso corporal',
     descripcion:'Paso cruzado hacia atrás por detrás de la pierna de apoyo, flexionando ambas rodillas como en una reverencia.',
     precauciones:'Requiere buen equilibrio y movilidad de cadera.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Hip Thrust a una pierna en banco', grupoMuscular:'Glúteo', material:'Banco',
     descripcion:'Espalda alta apoyada en el banco, elevar la cadera sujetando una pierna extendida en el aire.',
     precauciones:'Progresión avanzada del hip thrust bipodal; requiere buen control de core.', zonasRiesgo:'cadera, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Rotación de tobillo (Ankle Circles)', grupoMuscular:'Movilidad / Tobillo', material:'',
+  { id: uid(), nombre:'Rotación de tobillo (Ankle Circles)', grupoMuscular:'Movilidad / Tobillo', material:'Peso corporal',
     descripcion:'Sentado o de pie con apoyo, rotar el tobillo en ambas direcciones de forma suave.',
     precauciones:'Muy recomendable como prehabilitación o calentamiento de tobillo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estiramiento de gemelo asistido con banda', grupoMuscular:'Movilidad', material:'Bandas elásticas',
@@ -1222,7 +1222,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Estiramiento de isquiotibiales asistido con banda', grupoMuscular:'Movilidad', material:'Bandas elásticas',
     descripcion:'Tumbado boca arriba, banda alrededor del pie, elevar la pierna extendida ayudándose de la banda para profundizar el estiramiento.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'180 Jump Squat', grupoMuscular:'Piernas / Potencia', material:'',
+  { id: uid(), nombre:'180 Jump Squat', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
     descripcion:'Sentadilla con salto girando 180 grados en el aire, aterrizando de cara al lado contrario.',
     precauciones:'Nivel avanzado; no recomendado en osteoporosis, mareos o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Press con landmine a media rodilla', grupoMuscular:'Hombro / Core', material:'Landmine',
@@ -1234,16 +1234,16 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Bird Dog con banda', grupoMuscular:'Core / Equilibrio', material:'Bandas elásticas',
     descripcion:'En cuadrupedia con la banda anclada al pie, extender el brazo y la pierna contraria venciendo la resistencia añadida.',
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Puente de glúteo con elevación de brazos', grupoMuscular:'Glúteo / Core', material:'',
+  { id: uid(), nombre:'Puente de glúteo con elevación de brazos', grupoMuscular:'Glúteo / Core', material:'Peso corporal',
     descripcion:'Puente de glúteo clásico, añadiendo una elevación de ambos brazos hacia el techo en el punto más alto.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla con rotación de tronco (Squat to Woodchop)', grupoMuscular:'Piernas / Core', material:'Mancuernas',
     descripcion:'Sentadilla combinada con una rotación diagonal del tronco sujetando una mancuerna con ambas manos al subir.',
     precauciones:'Evitar en molestias lumbares o de columna.', zonasRiesgo:'rodilla, columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Escalador cruzado (Cross-Body Mountain Climber)', grupoMuscular:'Core / Cardio', material:'',
+  { id: uid(), nombre:'Escalador cruzado (Cross-Body Mountain Climber)', grupoMuscular:'Core / Cardio', material:'Peso corporal',
     descripcion:'Desde plancha alta, llevar la rodilla hacia el codo contrario de forma alterna y rápida.',
     precauciones:'Evitar en molestias de muñeca u hombro; reducir ritmo en niveles bajos.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Combo zancada lateral a zancada frontal', grupoMuscular:'Piernas', material:'',
+  { id: uid(), nombre:'Combo zancada lateral a zancada frontal', grupoMuscular:'Piernas', material:'Peso corporal',
     descripcion:'Realizar una zancada lateral seguida inmediatamente de una zancada frontal con la misma pierna, de forma fluida.',
     precauciones:'Requiere buen equilibrio y movilidad de cadera.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Elevación de talones con banda', grupoMuscular:'Piernas (gemelo)', material:'Bandas elásticas',
@@ -1252,16 +1252,16 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Estiramiento de espalda en banco (Cat Stretch)', grupoMuscular:'Movilidad / Espalda', material:'Banco',
     descripcion:'De rodillas frente al banco, apoyar los antebrazos sobre él y dejar caer el pecho hacia el suelo estirando la espalda.',
     precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento lateral de cuello', grupoMuscular:'Movilidad / Cuello', material:'',
+  { id: uid(), nombre:'Estiramiento lateral de cuello', grupoMuscular:'Movilidad / Cuello', material:'Peso corporal',
     descripcion:'Sentado o de pie, inclinar la cabeza hacia un lado con suavidad, sin ayuda de las manos, manteniendo los hombros relajados.',
     precauciones:'Movimiento muy suave; evitar en hernias cervicales agudas.', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Juego de las estatuas fitness (Freeze Game)', grupoMuscular:'Cardio / Equilibrio (dinámica de grupo)', material:'', esDinamicaGrupal:true,
+  { id: uid(), nombre:'Juego de las estatuas fitness (Freeze Game)', grupoMuscular:'Cardio / Equilibrio (dinámica de grupo)', material:'Peso corporal', esDinamicaGrupal:true,
     descripcion:'El grupo se mueve libremente (marcha, saltos suaves) y al oír la señal deben quedarse congelados en la postura, manteniendo el equilibrio.',
     precauciones:'Juego de baja exigencia física, ideal para animar el grupo y trabajar equilibrio de forma lúdica.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Relevo de aros de pilates', grupoMuscular:'Full body (dinámica de grupo)', material:'Aros de pilates', esDinamicaGrupal:true,
     descripcion:'Por equipos, cada persona realiza un ejercicio con el aro de pilates y lo pasa al siguiente compañero para continuar el relevo.',
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Wall Sit con choque de manos en pareja', grupoMuscular:'Piernas (pareja)', material:'', esPareja:true,
+  { id: uid(), nombre:'Wall Sit con choque de manos en pareja', grupoMuscular:'Piernas (pareja)', material:'Peso corporal', esPareja:true,
     descripcion:'Ambos mantienen el wall sit a la vez, uno frente al otro, chocando una mano cada cierto tiempo para animarse mutuamente.',
     precauciones:'Evitar en molestias de rodilla en cualquiera de los dos.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla frontal en guía Smith', grupoMuscular:'Piernas', material:'Barra con guía Smith',
@@ -1282,25 +1282,25 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Press de hombro a una mano con kettlebell', grupoMuscular:'Hombro', material:'Kettlebell',
     descripcion:'De pie, empuje de la kettlebell desde el hombro hasta la extensión completa del brazo, un lado cada vez.',
     precauciones:'Evitar en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Superman Hold', grupoMuscular:'Espalda baja', material:'',
+  { id: uid(), nombre:'Superman Hold', grupoMuscular:'Espalda baja', material:'Peso corporal',
     descripcion:'Tumbado boca abajo, elevar brazos y piernas ligeramente y mantener la posición durante el tiempo indicado.',
     precauciones:'Evitar en hernias lumbares; rango pequeño y controlado.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Sentadilla isométrica con pulso (Pulse Squat)', grupoMuscular:'Piernas', material:'',
+  { id: uid(), nombre:'Sentadilla isométrica con pulso (Pulse Squat)', grupoMuscular:'Piernas', material:'Peso corporal',
     descripcion:'Mantener la sentadilla a media altura y realizar pequeños pulsos hacia abajo sin llegar a subir del todo.',
     precauciones:'Evitar en molestias de rodilla.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento lateral de tronco de pie', grupoMuscular:'Movilidad / Core', material:'',
+  { id: uid(), nombre:'Estiramiento lateral de tronco de pie', grupoMuscular:'Movilidad / Core', material:'Peso corporal',
     descripcion:'De pie, inclinar el tronco hacia un lado con el brazo contrario elevado, estirando el costado.',
     precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Cobra Stretch', grupoMuscular:'Movilidad / Espalda baja', material:'',
+  { id: uid(), nombre:'Cobra Stretch', grupoMuscular:'Movilidad / Espalda baja', material:'Peso corporal',
     descripcion:'Tumbado boca abajo, elevar el tronco apoyando los antebrazos o las manos, arqueando suavemente la espalda baja.',
     precauciones:'Evitar en hernias lumbares agudas; movimiento suave.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Clock Reach (equilibrio en reloj)', grupoMuscular:'Equilibrio', material:'',
+  { id: uid(), nombre:'Clock Reach (equilibrio en reloj)', grupoMuscular:'Equilibrio', material:'Peso corporal',
     descripcion:'De pie sobre una pierna, tocar el suelo con el pie contrario en distintas direcciones imitando las horas de un reloj.',
     precauciones:'Nivel avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Pase de kettlebell en círculo', grupoMuscular:'Full body (dinámica de grupo)', material:'Kettlebell', esDinamicaGrupal:true,
     descripcion:'El grupo forma un corro y se pasa la kettlebell de mano en mano, alternando el sentido y el ritmo.',
     precauciones:'Usar una kettlebell ligera; adaptar el ritmo al nivel del grupo.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Plancha con toque de pies alternado en pareja', grupoMuscular:'Core (pareja)', material:'', esPareja:true,
+  { id: uid(), nombre:'Plancha con toque de pies alternado en pareja', grupoMuscular:'Core (pareja)', material:'Peso corporal', esPareja:true,
     descripcion:'Ambos en plancha frontal enfrentados, tocando alternativamente el pie del compañero con la mano contraria.',
     precauciones:'Evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Farmer\'s Carry con wallballs', grupoMuscular:'Full body', material:'Wallballs',
@@ -1309,7 +1309,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Elevación de talón asistida en silla', grupoMuscular:'Piernas (gemelo)', material:'Banco',
     descripcion:'De pie sujeto al respaldo o al banco para el equilibrio, subir y bajar los talones de forma controlada.',
     precauciones:'Ideal para clientes con poco equilibrio o nivel muy bajo.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Flexión de brazos en pared (Wall Push-Up)', grupoMuscular:'Pecho / Brazo', material:'',
+  { id: uid(), nombre:'Flexión de brazos en pared (Wall Push-Up)', grupoMuscular:'Pecho / Brazo', material:'Peso corporal',
     descripcion:'De pie frente a la pared con las manos apoyadas a la altura del pecho, flexionar y extender los codos.',
     precauciones:'Progresión más accesible que la flexión de brazos en el suelo; ideal para niveles bajos.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Zancada con landmine y rotación', grupoMuscular:'Piernas / Core', material:'Landmine',
@@ -1324,7 +1324,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sentadilla con banda por encima de la cabeza', grupoMuscular:'Piernas / Hombro', material:'Bandas elásticas',
     descripcion:'Sujetando la banda estirada por encima de la cabeza con ambos brazos, realizar la sentadilla manteniendo la tensión y el equilibrio.',
     precauciones:'Combina movilidad de hombro con fuerza de piernas; usar tensión ligera al principio.', zonasRiesgo:'hombro, rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Estiramiento de cuádriceps tumbado de lado', grupoMuscular:'Movilidad', material:'',
+  { id: uid(), nombre:'Estiramiento de cuádriceps tumbado de lado', grupoMuscular:'Movilidad', material:'Peso corporal',
     descripcion:'Tumbado de lado, sujetar el tobillo de la pierna superior y llevar el talón hacia el glúteo con suavidad.',
     precauciones:'Buena alternativa al estiramiento de cuádriceps de pie para clientes con poco equilibrio.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Relevo de equilibrio por equipos', grupoMuscular:'Equilibrio (dinámica de grupo)', material:'Step', esDinamicaGrupal:true,
@@ -2438,6 +2438,7 @@ function formatFechaLarga(fechaStr){
 // ---------- TEMPORIZADOR (trabajo/descanso) ----------
 let temporizadorInterval = null;
 let temporizadorPreset = { trabajo:40, descanso:20, rondas:8 };
+let sesionTemporizadorActual = []; // [{ex, series, reps, descansoSeg}] generada aleatoriamente para el temporizador, opcional
 function pitido(frecuencia, duracionMs){
   try{
     const ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -2455,16 +2456,56 @@ function pitido(frecuencia, duracionMs){
 function temporizadorView(){
   if(temporizadorInterval){ clearInterval(temporizadorInterval); temporizadorInterval=null; }
   const wrap=document.createElement('div');
-  wrap.style.cssText='max-width:480px;margin:0 auto;text-align:center;';
+  wrap.style.cssText='max-width:820px;margin:0 auto;text-align:center;';
+
+  const generarWrap=document.createElement('div');
+  generarWrap.style.cssText='margin-bottom:18px;padding:14px;border:1px solid var(--line);border-radius:10px;text-align:left;';
+  generarWrap.innerHTML=`
+    <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;font-weight:600;">🎲 Generar sesión aleatoria para el temporizador</div>
+    ${htmlFiltrosGeneracion()}
+    <div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-accent" id="t-generar-btn">Generar sesión</button>
+      <button class="btn btn-sm btn-ghost" id="t-quitar-sesion" style="display:${sesionTemporizadorActual.length?'inline-flex':'none'};">✕ Quitar sesión generada</button>
+      <span id="t-generar-estado" style="font-size:12px;color:var(--ink-soft);">${sesionTemporizadorActual.length?`✓ Sesión activa: ${sesionTemporizadorActual.length} ejercicios`:''}</span>
+    </div>
+  `;
+  wrap.appendChild(generarWrap);
+  const filtrosCtrlTemporizador = conectarFiltrosGeneracion(generarWrap);
+  generarWrap.querySelector('#t-generar-btn').onclick=()=>{
+    const filtros = filtrosCtrlTemporizador.leer();
+    const pool = aplicarFiltrosGeneracion(state.exercises, filtros);
+    const estadoTxt = generarWrap.querySelector('#t-generar-estado');
+    if(pool.length===0){
+      estadoTxt.textContent='Ningún ejercicio cumple esos filtros.';
+      return;
+    }
+    const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s']});
+    sesionTemporizadorActual = elegidos.map(c=>({ ex:c.ex, series:c.series, reps:c.reps, descansoSeg: segundosDeDescanso(c.descanso) }));
+    wrap.querySelector('#t-rondas').value = sesionTemporizadorActual.length;
+    estadoTxt.textContent = `✓ Sesión generada: ${sesionTemporizadorActual.length} ejercicios (rondas ajustadas)`;
+    generarWrap.querySelector('#t-quitar-sesion').style.display='inline-flex';
+    renderListaSesion();
+  };
+  generarWrap.querySelector('#t-quitar-sesion').onclick=()=>{
+    sesionTemporizadorActual = [];
+    generarWrap.querySelector('#t-generar-estado').textContent='';
+    generarWrap.querySelector('#t-quitar-sesion').style.display='none';
+    renderListaSesion();
+  };
 
   const configWrap=document.createElement('div');
   configWrap.style.cssText='display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;';
   configWrap.innerHTML=`
     <div class="field" style="width:100px;"><label>Trabajo (seg)</label><input type="number" id="t-trabajo" value="${temporizadorPreset.trabajo}" min="1"></div>
     <div class="field" style="width:100px;"><label>Descanso (seg)</label><input type="number" id="t-descanso" value="${temporizadorPreset.descanso}" min="0"></div>
-    <div class="field" style="width:90px;"><label>Rondas</label><input type="number" id="t-rondas" value="${temporizadorPreset.rondas}" min="1"></div>
+    <div class="field" style="width:90px;"><label>Rondas</label><input type="number" id="t-rondas" value="${sesionTemporizadorActual.length||temporizadorPreset.rondas}" min="1"></div>
   `;
   wrap.appendChild(configWrap);
+  if(sesionTemporizadorActual.length>0){
+    const nota=document.createElement('p'); nota.style.cssText='font-size:11.5px;color:var(--ink-soft);margin:-10px 0 14px;';
+    nota.textContent='Con una sesión generada, el descanso de cada ronda se ajusta al de cada ejercicio en concreto.';
+    wrap.appendChild(nota);
+  }
 
   const presetsWrap=document.createElement('div');
   presetsWrap.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;';
@@ -2527,6 +2568,43 @@ function temporizadorView(){
   guardarWrap.appendChild(nombrePlantilla); guardarWrap.appendChild(guardarBtn);
   wrap.appendChild(guardarWrap);
 
+  const filaPrincipal=document.createElement('div');
+  filaPrincipal.style.cssText='display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;';
+  wrap.appendChild(filaPrincipal);
+
+  const colTimer=document.createElement('div');
+  colTimer.style.cssText='flex:1 1 380px;max-width:480px;';
+  filaPrincipal.appendChild(colTimer);
+
+  const colLista=document.createElement('div');
+  colLista.id='t-lista-sesion';
+  colLista.style.cssText='flex:1 1 260px;max-width:320px;text-align:left;display:none;max-height:560px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px;';
+  filaPrincipal.appendChild(colLista);
+
+  function renderListaSesion(){
+    if(sesionTemporizadorActual.length===0){ colLista.style.display='none'; colLista.innerHTML=''; return; }
+    colLista.style.display='block';
+    colLista.innerHTML = `<div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">Ejercicios de la sesión</div>`
+      + sesionTemporizadorActual.map((info,i)=>{
+        const esActual = estado && (i===estado.rondaActual-1);
+        return `
+          <div class="t-lista-item" data-i="${i}" style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:4px;${esActual?'background:rgba(157,79,209,.16);border-left:3px solid var(--accent);':'border-left:3px solid transparent;'}">
+            ${info.ex.imagenUrl?`<img src="${escapeHtml(info.ex.imagenUrl)}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;" onerror="this.style.display='none'">`:`<div style="width:40px;height:40px;border-radius:6px;background:var(--surface-2);flex-shrink:0;"></div>`}
+            <div style="min-width:0;">
+              <div style="font-size:12.5px;font-weight:${esActual?'700':'500'};color:${esActual?'var(--ink)':'var(--ink-soft)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i+1}. ${escapeHtml(info.ex.nombre)}</div>
+              <div style="font-size:10.5px;color:var(--ink-soft);">${escapeHtml(info.series)}×${escapeHtml(info.reps)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+  }
+  renderListaSesion();
+
+  const ejercicioBox=document.createElement('div');
+  ejercicioBox.id='t-ejercicio-box';
+  ejercicioBox.style.cssText='display:none;margin-bottom:16px;';
+  colTimer.appendChild(ejercicioBox);
+
   const display=document.createElement('div');
   display.style.cssText='background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:40px 20px;margin-bottom:20px;transition:background .3s;';
   display.innerHTML=`
@@ -2534,15 +2612,17 @@ function temporizadorView(){
     <div id="t-tiempo" style="font-family:'IBM Plex Mono',monospace;font-size:64px;font-weight:700;color:var(--ink);">00:00</div>
     <div id="t-ronda" style="font-size:13px;color:var(--ink-soft);margin-top:10px;"></div>
   `;
-  wrap.appendChild(display);
+  colTimer.appendChild(display);
 
   const controles=document.createElement('div');
-  controles.style.cssText='display:flex;gap:10px;justify-content:center;';
+  controles.style.cssText='display:flex;gap:10px;justify-content:center;flex-wrap:wrap;';
+  const btnAnterior=document.createElement('button'); btnAnterior.className='btn btn-ghost'; btnAnterior.textContent='⏮ Anterior';
   const btnIniciar=document.createElement('button'); btnIniciar.className='btn btn-accent'; btnIniciar.textContent='▶ Iniciar';
+  const btnSiguiente=document.createElement('button'); btnSiguiente.className='btn btn-ghost'; btnSiguiente.textContent='Siguiente ⏭';
   const btnPausar=document.createElement('button'); btnPausar.className='btn'; btnPausar.textContent='⏸ Pausar'; btnPausar.disabled=true;
   const btnReiniciar=document.createElement('button'); btnReiniciar.className='btn btn-ghost'; btnReiniciar.textContent='↺ Reiniciar';
-  controles.appendChild(btnIniciar); controles.appendChild(btnPausar); controles.appendChild(btnReiniciar);
-  wrap.appendChild(controles);
+  controles.appendChild(btnAnterior); controles.appendChild(btnIniciar); controles.appendChild(btnSiguiente); controles.appendChild(btnPausar); controles.appendChild(btnReiniciar);
+  colTimer.appendChild(controles);
 
   const faseEl = ()=>display.querySelector('#t-fase');
   const tiempoEl = ()=>display.querySelector('#t-tiempo');
@@ -2560,6 +2640,27 @@ function temporizadorView(){
     faseEl().textContent = estado.fase==='trabajo' ? '● Trabajo' : '● Descanso';
     display.style.background = estado.fase==='trabajo' ? 'rgba(157,79,209,.14)' : 'rgba(232,178,78,.14)';
     rondaEl().textContent = `Ronda ${estado.rondaActual} de ${estado.totalRondas}`;
+    actualizarEjercicioBox();
+    renderListaSesion();
+  }
+  function actualizarEjercicioBox(){
+    if(!estado || sesionTemporizadorActual.length===0){ ejercicioBox.style.display='none'; return; }
+    const info = sesionTemporizadorActual[estado.rondaActual-1];
+    if(!info){ ejercicioBox.style.display='none'; return; }
+    ejercicioBox.style.display='block';
+    if(estado.fase==='descanso'){
+      const siguiente = sesionTemporizadorActual[estado.rondaActual];
+      ejercicioBox.innerHTML = `
+        <div style="font-size:52px;line-height:1;">😌💧</div>
+        <div style="font-size:13px;color:var(--ink-soft);margin-top:6px;">Descanso${siguiente?` — a continuación: <strong style="color:var(--ink);">${escapeHtml(siguiente.ex.nombre)}</strong>`:' — última ronda'}</div>
+      `;
+    } else {
+      ejercicioBox.innerHTML = `
+        ${info.ex.imagenUrl?`<img src="${escapeHtml(info.ex.imagenUrl)}" style="max-height:150px;border-radius:10px;margin-bottom:8px;object-fit:cover;">`:''}
+        <div style="font-size:19px;font-weight:700;">${escapeHtml(info.ex.nombre)}</div>
+        <div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(info.series)} series × ${escapeHtml(info.reps)}</div>
+      `;
+    }
   }
   function tick(){
     if(!estado || estado.pausado) return;
@@ -2567,9 +2668,12 @@ function temporizadorView(){
     if(estado.segundosRestantes<=3 && estado.segundosRestantes>0){ pitido(660,120); }
     if(estado.segundosRestantes<=0){
       if(estado.fase==='trabajo'){
-        if(estado.descanso>0){
+        const descansoRonda = sesionTemporizadorActual.length>0
+          ? (sesionTemporizadorActual[estado.rondaActual-1]?.descansoSeg ?? estado.descanso)
+          : estado.descanso;
+        if(descansoRonda>0){
           estado.fase='descanso';
-          estado.segundosRestantes=estado.descanso;
+          estado.segundosRestantes=descansoRonda;
           pitido(440,300);
         } else {
           avanzarRonda();
@@ -2600,6 +2704,27 @@ function temporizadorView(){
     pitido(660,300);
     actualizarDisplay();
   }
+  function irARonda(numero){
+    if(!estado) return;
+    const objetivo = Math.max(1, Math.min(estado.totalRondas, numero));
+    estado.rondaActual = objetivo;
+    estado.fase = 'trabajo';
+    estado.segundosRestantes = estado.trabajo;
+    estado.pausado = false;
+    pitido(660,200);
+    actualizarDisplay();
+    btnIniciar.disabled=true; btnPausar.disabled=false; btnIniciar.textContent='▶ Iniciar';
+    if(!temporizadorInterval) temporizadorInterval=setInterval(tick,1000);
+  }
+  btnSiguiente.onclick=()=>{
+    if(!estado) return;
+    if(estado.rondaActual>=estado.totalRondas){ avanzarRonda(); return; }
+    irARonda(estado.rondaActual+1);
+  };
+  btnAnterior.onclick=()=>{
+    if(!estado) return;
+    irARonda(estado.rondaActual-1);
+  };
   btnIniciar.onclick=()=>{
     if(estado && estado.pausado){
       estado.pausado=false;
@@ -2632,6 +2757,7 @@ function temporizadorView(){
     display.style.background='var(--surface)';
     btnIniciar.disabled=false; btnIniciar.textContent='▶ Iniciar';
     btnPausar.disabled=true;
+    ejercicioBox.style.display='none';
   };
 
   return wrap;
@@ -3954,6 +4080,40 @@ function crearAutocompleteTexto(inputEl, listaTextos){
   inputEl.addEventListener('focus', mostrarSugerencias);
   inputEl.addEventListener('blur', ()=>{ setTimeout(()=>{ sugerencias.style.display='none'; }, 150); });
 }
+// Selector de filtro de valor único, buscable: escribes para filtrar la lista, seleccionas una opción, o borras el
+// campo del todo para volver a "todos" (sin filtro). Muestra sugerencias mientras escribes.
+function crearSelectorFiltroBuscable(inputEl, opciones, getValorActual, onSelect){
+  const contenedor=document.createElement('div'); contenedor.style.cssText='position:relative;';
+  inputEl.parentNode.insertBefore(contenedor, inputEl);
+  contenedor.appendChild(inputEl);
+  const sugerencias=document.createElement('div');
+  sugerencias.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:2px;max-height:200px;overflow-y:auto;z-index:60;display:none;box-shadow:0 6px 18px rgba(0,0,0,.35);';
+  contenedor.appendChild(sugerencias);
+  function mostrarSugerencias(){
+    const q=inputEl.value.trim().toLowerCase();
+    const ordenadas = [...opciones].sort((a,b)=>a.localeCompare(b,'es'));
+    const coincidencias = q ? ordenadas.filter(o=>o.toLowerCase().includes(q)) : ordenadas;
+    if(coincidencias.length===0){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
+    sugerencias.innerHTML = coincidencias.slice(0,40).map(o=>`<div class="ac-item" data-v="${escapeHtml(o)}" style="padding:7px 10px;font-size:12.5px;cursor:pointer;color:var(--ink);">${escapeHtml(o)}</div>`).join('');
+    sugerencias.querySelectorAll('.ac-item').forEach(item=>{
+      item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
+      item.onmouseleave=()=>{ item.style.background='transparent'; };
+      item.onmousedown=(e)=>{
+        e.preventDefault();
+        inputEl.value = item.dataset.v;
+        sugerencias.style.display='none';
+        onSelect(item.dataset.v);
+      };
+    });
+    sugerencias.style.display='block';
+  }
+  inputEl.addEventListener('input', ()=>{
+    if(!inputEl.value.trim() && getValorActual()){ onSelect(''); return; } // campo vaciado del todo: quita el filtro
+    mostrarSugerencias();
+  });
+  inputEl.addEventListener('focus', mostrarSugerencias);
+  inputEl.addEventListener('blur', ()=>{ setTimeout(()=>{ sugerencias.style.display='none'; }, 150); });
+}
 // Recopila todos los nombres/textos "conocidos" del sistema: clientes, clases de grupo y textos ya usados en el horario
 function nombresConocidosParaHorario(){
   const nombres = new Set();
@@ -4031,14 +4191,8 @@ function bateriaView(){
 
   toolbar.innerHTML=`
     <input class="search" placeholder="Buscar ejercicio...">
-    <select class="search" id="ex-filtro-grupo" style="min-width:150px;">
-      <option value="">Todos los grupos musculares</option>
-      ${gruposUnicos.map(g=>`<option value="${escapeHtml(g)}" ${exGrupoFilter===g?'selected':''}>${escapeHtml(g)}</option>`).join('')}
-    </select>
-    <select class="search" id="ex-filtro-material" style="min-width:150px;">
-      <option value="">Todo el material</option>
-      ${materialesUnicos.map(m=>`<option value="${escapeHtml(m)}" ${exMaterialFilter===m?'selected':''}>${escapeHtml(m)}</option>`).join('')}
-    </select>
+    <input class="search" id="ex-filtro-grupo" placeholder="Grupo muscular (todos)" style="min-width:170px;" value="${escapeHtml(exGrupoFilter||'')}">
+    <input class="search" id="ex-filtro-material" placeholder="Material (todo)" style="min-width:170px;" value="${escapeHtml(exMaterialFilter||'')}">
     <select class="search" id="ex-filtro-tipo" style="min-width:170px;">
       <option value="">Todos los tipos</option>
       <option value="individual" ${exTipoFilter==='individual'?'selected':''}>Solo individual</option>
@@ -4046,10 +4200,10 @@ function bateriaView(){
       <option value="grupal" ${exTipoFilter==='grupal'?'selected':''}>Solo dinámica de grupo</option>
     </select>
   `;
-  toolbar.querySelector('input').value=exSearch;
-  toolbar.querySelector('input').oninput=(e)=>{exSearch=e.target.value; renderGrid();};
-  toolbar.querySelector('#ex-filtro-grupo').onchange=(e)=>{ exGrupoFilter=e.target.value; renderGrid(); };
-  toolbar.querySelector('#ex-filtro-material').onchange=(e)=>{ exMaterialFilter=e.target.value; renderGrid(); };
+  toolbar.querySelector('input.search').value=exSearch;
+  toolbar.querySelector('input.search').oninput=(e)=>{exSearch=e.target.value; renderGrid();};
+  crearSelectorFiltroBuscable(toolbar.querySelector('#ex-filtro-grupo'), gruposUnicos, ()=>exGrupoFilter, (v)=>{ exGrupoFilter=v; renderGrid(); });
+  crearSelectorFiltroBuscable(toolbar.querySelector('#ex-filtro-material'), materialesUnicos, ()=>exMaterialFilter, (v)=>{ exMaterialFilter=v; renderGrid(); });
   toolbar.querySelector('#ex-filtro-tipo').onchange=(e)=>{ exTipoFilter=e.target.value; renderGrid(); };
   const addBtn=document.createElement('button');
   addBtn.className='btn btn-accent'; addBtn.textContent='+ Nuevo ejercicio';
