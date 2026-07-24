@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#150F1B">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png">
 <meta charset="UTF-8">
 <title>Phyos Gym</title>
 <style>
@@ -104,8 +98,9 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.8);cursor:
 .week-block{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden;}
 .week-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--surface-2);}
 .week-head h3{font-size:15px;color:var(--accent);}
-.ex-row{display:grid;grid-template-columns:1.6fr .6fr .6fr .8fr .6fr 1.2fr auto;gap:8px;align-items:center;padding:9px 16px;border-top:1px solid var(--line);font-size:13px;}
+.ex-row{display:grid;grid-template-columns:1.3fr .5fr .5fr .7fr .5fr .6fr 1fr auto;gap:8px;align-items:center;padding:9px 16px;border-top:1px solid var(--line);font-size:13px;}
 .ex-row.header-row{background:var(--surface-2);font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;}
+.ex-row.header-row>div:not(:first-child),.pair-cols-head>div:not(:first-child){text-align:center;}
 .ex-row input{width:100%;padding:5px 6px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;background:var(--bg);color:var(--ink);}
 .ex-row .exname{font-weight:600;font-family:'Inter';display:flex;align-items:center;gap:8px;color:var(--ink);}
 .ex-row .exname img{width:32px;height:32px;object-fit:cover;border-radius:5px;flex-shrink:0;}
@@ -120,13 +115,13 @@ select.client-select{padding:9px 12px;border:1px solid var(--line);border-radius
 .pair-item-head .exname{font-weight:600;display:flex;align-items:center;gap:8px;color:var(--ink);}
 .pair-item-head .exname img{width:28px;height:28px;object-fit:cover;border-radius:5px;}
 .pair-badge{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;background:rgba(203,158,234,.16);color:var(--accent);}
-.person-row{display:grid;grid-template-columns:110px .6fr .6fr .8fr .6fr 1.2fr auto;gap:8px;align-items:center;padding:4px 0 4px 10px;border-left:3px solid var(--accent);margin-bottom:3px;}
+.person-row{display:grid;grid-template-columns:110px .5fr .5fr .7fr .5fr .6fr 1fr auto;gap:8px;align-items:center;padding:4px 0 4px 10px;border-left:3px solid var(--accent);margin-bottom:3px;box-sizing:border-box;}
 .person-row.person-b{border-left-color:var(--accent-b);}
 .person-row .person-name{font-size:11.5px;font-weight:600;color:var(--accent);}
 .person-row.person-b .person-name{color:var(--accent-b);}
 .person-row input{width:100%;padding:5px 6px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;background:var(--bg);color:var(--ink);}
 .person-row input[data-f="notas"]{font-family:'Inter';}
-.pair-cols-head{display:grid;grid-template-columns:110px .6fr .6fr .8fr .6fr 1.2fr auto;gap:8px;padding:0 0 4px 10px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.pair-cols-head{display:grid;grid-template-columns:110px .5fr .5fr .7fr .5fr .6fr 1fr auto;gap:8px;padding:0 16px 4px 26px;border-left:3px solid transparent;box-sizing:border-box;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
 </style>
 </head>
 <body>
@@ -4724,12 +4719,12 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   matBoxWrap.appendChild(renderMaterialBox(week.items));
   body.appendChild(matBoxWrap);
 
-  const gridCols = isRotativa ? '1fr 1fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto' : '1.3fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto';
+  const gridCols = isRotativa ? '1fr 1fr .5fr .5fr .7fr .5fr .6fr 1fr auto' : '1.3fr .5fr .5fr .7fr .5fr .6fr 1fr auto';
   const headerRow=document.createElement('div'); headerRow.className='ex-row header-row';
   headerRow.style.gridTemplateColumns = gridCols;
   headerRow.innerHTML = isRotativa
-    ? `<div>Ejercicio</div><div>Estación</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`
-    : `<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
+    ? `<div>Ejercicio</div><div>Estación</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Dificultad</div><div>Notas</div><div></div>`
+    : `<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Dificultad</div><div>Notas</div><div></div>`;
   body.appendChild(headerRow);
 
   let diaAnteriorGrupo = null;
@@ -4757,10 +4752,6 @@ function weekBlockGrupo(clase, horario, week, wIdx){
       <div class="ex-campo"><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
       <div class="ex-campo"><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
       <div class="ex-campo"><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
-      <div class="ex-campo" style="display:flex;flex-direction:column;gap:2px;">
-        <input value="${escapeHtml(item.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
-        <input value="${escapeHtml(item.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
-      </div>
       <div class="ex-campo dif-slot"></div>
       <div class="ex-campo"><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
       <div class="ex-campo"></div>
@@ -5135,14 +5126,14 @@ function exportarResumenSesion(week, unitClients, titulo){
 function abrirModalProgreso(program, unitClients){
   const isPair = unitClients.length===2;
   const overlay=document.createElement('div'); overlay.className='overlay';
-  // Recopila qué ejercicios tienen algún dato real (peso/reps) registrado en alguna semana
+  // Recopila qué ejercicios tienen algún dato numérico de carga registrado en alguna semana
   const ejerciciosConDatos = new Map(); // exerciseId -> nombre
   program.weeks.forEach(week=>{
     week.items.forEach(item=>{
-      const tienePeso = isPair
-        ? ((item.a && (item.a.pesoReal||item.a.repsReal)) || (item.b && (item.b.pesoReal||item.b.repsReal)))
-        : (item.pesoReal || item.repsReal);
-      if(tienePeso){
+      const tieneCarga = isPair
+        ? ((item.a && !isNaN(parseFloat(item.a.carga))) || (item.b && !isNaN(parseFloat(item.b.carga))))
+        : !isNaN(parseFloat(item.carga));
+      if(tieneCarga){
         const ex = state.exercises.find(e=>e.id===item.exerciseId);
         ejerciciosConDatos.set(item.exerciseId, ex?ex.nombre:'(ejercicio eliminado)');
       }
@@ -5152,7 +5143,7 @@ function abrirModalProgreso(program, unitClients){
     <div class="modal" style="max-width:560px;">
       <div class="modal-head"><h2>Progreso del cliente</h2><button class="close-x">✕</button></div>
       ${ejerciciosConDatos.size===0
-        ? `<p style="color:var(--ink-soft);font-size:13px;">Todavía no hay datos de "Realizado" (peso/reps) guardados en ningún ejercicio de este plan. Rellénalos semana a semana en la columna "Realizado" para poder ver la evolución aquí.</p>`
+        ? `<p style="color:var(--ink-soft);font-size:13px;">Todavía no hay ninguna carga numérica (p.ej. "12kg") guardada en el campo "Carga" de ningún ejercicio de este plan. Anota el peso que se vaya usando cada semana ahí mismo para poder ver la evolución aquí.</p>`
         : `<div class="field"><label>Elige un ejercicio</label><select id="prog-ex">${[...ejerciciosConDatos.entries()].map(([id,nombre])=>`<option value="${id}">${escapeHtml(nombre)}</option>`).join('')}</select></div>
            <div id="prog-chart-area" style="margin-top:14px;"></div>`
       }
@@ -5169,11 +5160,11 @@ function abrirModalProgreso(program, unitClients){
       const item = week.items.find(it=>it.exerciseId===exerciseId);
       if(!item) return;
       if(isPair){
-        const pesoA = parseFloat(item.a && item.a.pesoReal); const pesoB = parseFloat(item.b && item.b.pesoReal);
+        const pesoA = parseFloat(item.a && item.a.carga); const pesoB = parseFloat(item.b && item.b.carga);
         if(!isNaN(pesoA)) puntos.push({semana:week.numero, peso:pesoA, quien:unitClients[0].nombre});
         if(!isNaN(pesoB)) puntos.push({semana:week.numero, peso:pesoB, quien:unitClients[1].nombre});
       } else {
-        const peso = parseFloat(item.pesoReal);
+        const peso = parseFloat(item.carga);
         if(!isNaN(peso)) puntos.push({semana:week.numero, peso, quien:null});
       }
     });
@@ -5484,7 +5475,7 @@ function renderMaterialBox(items){
 }
 const DIFICULTAD_ICONOS = ['🥳','🙂','🥵'];
 function renderDificultad(valorActual, onChange){
-  const wrap=document.createElement('div'); wrap.style.cssText='display:flex;gap:2px;';
+  const wrap=document.createElement('div'); wrap.style.cssText='display:flex;gap:2px;justify-content:center;';
   DIFICULTAD_ICONOS.forEach((icono,i)=>{
     const nivel=i+1;
     const btn=document.createElement('button'); btn.type='button'; btn.textContent=icono;
@@ -5546,7 +5537,7 @@ function weekBlock(unitClients, program, week, wIdx){
   matBoxWrap.appendChild(renderMaterialBox(week.items));
   body.appendChild(matBoxWrap);
 
-  const gridCols = '1.3fr .5fr .5fr .7fr .5fr .9fr .6fr 1fr auto';
+  const gridCols = '1.3fr .5fr .5fr .7fr .5fr .6fr 1fr auto';
 
   function nombreExClickeable(ex, textoExtra){
     return `<span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${textoExtra||''}`;
@@ -5554,7 +5545,7 @@ function weekBlock(unitClients, program, week, wIdx){
 
   if(!isPair){
     const headerRow=document.createElement('div'); headerRow.className='ex-row header-row'; headerRow.style.gridTemplateColumns=gridCols;
-    headerRow.innerHTML=`<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
+    headerRow.innerHTML=`<div>Ejercicio</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Dificultad</div><div>Notas</div><div></div>`;
     body.appendChild(headerRow);
 
     let diaAnterior = null;
@@ -5581,10 +5572,6 @@ function weekBlock(unitClients, program, week, wIdx){
         <div class="ex-campo"><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
         <div class="ex-campo"><input value="${escapeHtml(item.carga)}" data-f="carga"></div>
         <div class="ex-campo"><input value="${escapeHtml(item.descanso)}" data-f="descanso"></div>
-        <div class="ex-campo" style="display:flex;flex-direction:column;gap:2px;">
-          <input value="${escapeHtml(item.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
-          <input value="${escapeHtml(item.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
-        </div>
         <div class="ex-campo dif-slot"></div>
         <div class="ex-campo"><input value="${escapeHtml(item.notas)}" data-f="notas" style="font-family:'Inter';"></div>
         <div class="ex-campo"></div>
@@ -5603,7 +5590,7 @@ function weekBlock(unitClients, program, week, wIdx){
     });
   } else {
     const colsHead=document.createElement('div'); colsHead.className='pair-cols-head'; colsHead.style.gridTemplateColumns=gridCols.replace('1.3fr','110px');
-    colsHead.innerHTML=`<div>Persona</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Realizado</div><div>Dificultad</div><div>Notas</div><div></div>`;
+    colsHead.innerHTML=`<div>Persona</div><div>Series</div><div>Reps</div><div>Carga</div><div>Descanso</div><div>Dificultad</div><div>Notas</div><div></div>`;
     body.appendChild(colsHead);
 
     let diaAnteriorPar = null;
@@ -5651,10 +5638,6 @@ function weekBlock(unitClients, program, week, wIdx){
             <div><input value="${escapeHtml(data.reps)}" data-f="reps"></div>
             <div><input value="${escapeHtml(data.carga)}" data-f="carga"></div>
             <div><input value="${escapeHtml(data.descanso)}" data-f="descanso"></div>
-            <div style="display:flex;flex-direction:column;gap:2px;">
-              <input value="${escapeHtml(data.pesoReal||'')}" data-f="pesoReal" placeholder="peso" style="font-size:11px;">
-              <input value="${escapeHtml(data.repsReal||'')}" data-f="repsReal" placeholder="reps" style="font-size:11px;">
-            </div>
             <div class="dif-slot"></div>
             <div><input value="${escapeHtml(data.notas)}" data-f="notas"></div>
             <div></div>
