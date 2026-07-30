@@ -248,15 +248,54 @@ function syncHorarioConInactivos(){
     const primero = c.nombre.split(' ')[0].toLowerCase();
     return conteoPrimerNombre[primero]>1 ? c.nombre.toLowerCase() : primero;
   });
-  const reemplazar = (obj)=>{
+  const forzadas = new Set(state.horario.franjasForzadas||[]);
+  const reemplazar = (obj, tipoClave)=>{
     Object.keys(obj).forEach(key=>{
+      const claveForzada = tipoClave==='grid' ? `GRID|${key}` : key;
+      if(forzadas.has(claveForzada)) return; // el entrenador confirmó a propósito que se muestre aquí
       const val = (obj[key]||'').toLowerCase();
       if(!val || val==='oficina') return;
       if(terminos.some(t=>t && val.includes(t))) obj[key]='Oficina';
     });
   };
-  reemplazar(state.horario.grid);
-  reemplazar(state.horario.excepciones);
+  reemplazar(state.horario.grid, 'grid');
+  reemplazar(state.horario.excepciones, 'excepcion');
+}
+// ¿El texto que se va a guardar coincide con un cliente actualmente inactivo (incluye "pendiente de inicio")?
+// Devuelve el cliente si hay coincidencia, o null si no.
+function clienteInactivoQueCoincide(texto){
+  const val = textoLimpio(texto||'').toLowerCase();
+  if(!val) return null;
+  const inactivos = state.clients.filter(c=>c.activo===false);
+  const conteoPrimerNombre = {};
+  state.clients.forEach(c=>{
+    const primero = c.nombre.split(' ')[0].toLowerCase();
+    conteoPrimerNombre[primero] = (conteoPrimerNombre[primero]||0)+1;
+  });
+  for(const c of inactivos){
+    const primero = c.nombre.split(' ')[0].toLowerCase();
+    const termino = conteoPrimerNombre[primero]>1 ? c.nombre.toLowerCase() : primero;
+    if(val.includes(termino)) return c;
+  }
+  return null;
+}
+function motivoInactividad(c){
+  if(c.pendienteInicio && c.fechaInicio) return `todavía no ha llegado a su fecha de alta (${c.fechaInicio})`;
+  if(c.pausaInicio && !c.pausaFin) return 'está de baja permanente';
+  if(c.pausaFin) return `está en pausa hasta el ${c.pausaFin}`;
+  return 'está marcado como inactivo';
+}
+// Si el texto coincide con un cliente inactivo/pendiente, avisa y, si se confirma, marca la franja como
+// "forzada" para que la sincronización automática de inactivos no la vuelva a borrar.
+function avisarSiClienteInactivoYContinuar(fechaObjetivo, horaFinal, valorFinal, esPermanente, diaSemana, callback){
+  const cliente = clienteInactivoQueCoincide(valorFinal);
+  if(!cliente){ callback(); return; }
+  showConfirm(`${cliente.nombre} ${motivoInactividad(cliente)}. Si confirmas, se mostrará igualmente en este hueco (no se borrará solo). ¿Continuar?`, ()=>{
+    if(!state.horario.franjasForzadas) state.horario.franjasForzadas=[];
+    const clave = esPermanente ? `GRID|${diaSemana}|${horaFinal}` : `${fechaObjetivo}|${horaFinal}`;
+    if(!state.horario.franjasForzadas.includes(clave)) state.horario.franjasForzadas.push(clave);
+    callback();
+  });
 }
 function clientsWithUpcomingAviso(){
   const porInicio = state.clients.filter(c=>{
@@ -451,7 +490,8 @@ const DEFAULT_HORARIO = {
   franjasReservadas: [], // 'YYYY-MM-DD|HH:MM' que deben mostrarse esa semana aunque estén vacías (p.ej. la mitad libre de una hora partida por una entrevista)
   notasPorFranja: {}, // 'YYYY-MM-DD|HH:MM' -> texto de nota específica de esa franja concreta
   duracionPorFranja: {}, // 'YYYY-MM-DD|HH:MM' -> duración en minutos, cuando difiere del valor por defecto del tipo (60 min, o 30 para entrevistas)
-  plantillasFuturas: [] // [{desde:'YYYY-MM-DD', grid:{...}}] patrones semanales que entran en vigor a partir de una fecha, sin tocar el patrón actual
+  plantillasFuturas: [], // [{desde:'YYYY-MM-DD', grid:{...}}] patrones semanales que entran en vigor a partir de una fecha, sin tocar el patrón actual
+  franjasForzadas: [] // ['fecha|hora',...] excepciones que el entrenador confirmó a propósito, aunque coincidan con un cliente inactivo/pendiente
 };
 
 // Categorías de clase: Funcional, Pilates, y las dos de Pilates VIP ya existentes.
@@ -2175,6 +2215,7 @@ async function loadState(){
       if(!state.horario.notasPorFranja) state.horario.notasPorFranja = {};
       if(!state.horario.duracionPorFranja) state.horario.duracionPorFranja = {};
       if(!state.horario.plantillasFuturas) state.horario.plantillasFuturas = [];
+      if(!state.horario.franjasForzadas) state.horario.franjasForzadas = [];
       if(!state.horario.plantillasFuturas.some(p=>p.desde==='2026-09-01')){
         state.horario.plantillasFuturas.push({
           desde: '2026-09-01',
@@ -3068,11 +3109,15 @@ function horariosView(){
         if(valorFinal.trim()) aplicarDuracionFranja(fechaObjetivo, horaFinal, duracionMin);
         render();
       };
-      if(valorFinal.trim()){
-        verificarSolapeAntesDeGuardar(fechaObjetivo, horaFinal, duracionMin, horaFinal, escribirDeVerdad);
-      } else {
-        escribirDeVerdad();
-      }
+      const continuarConSolape = ()=>{
+        if(valorFinal.trim()){
+          verificarSolapeAntesDeGuardar(fechaObjetivo, horaFinal, duracionMin, horaFinal, escribirDeVerdad);
+        } else {
+          escribirDeVerdad();
+        }
+      };
+      const esPermanente = notaModo.value==='permanente';
+      avisarSiClienteInactivoYContinuar(fechaObjetivo, horaFinal, valorFinal, esPermanente, nombreDiaEs(fechaObjetivo), continuarConSolape);
     }
 
     function valorActualEnDestino(fechaObjetivo, horaFinal){
@@ -3356,13 +3401,34 @@ function agruparEventosSolapados(eventos){
   if(actual.length) clusters.push(actual);
   return clusters;
 }
-function columnaDiaTimeline(fecha, inicioMin, finMin){
+function moverFranjaPorArrastre(fechaOrigen, horaOrigen, fechaDestino, horaDestino, valor){
+  if(fechaOrigen===fechaDestino && horaOrigen===horaDestino) return;
+  const dur = duracionDeFranja(fechaOrigen, horaOrigen);
+  const notaFranja = state.horario.notasPorFranja[fechaOrigen+'|'+horaOrigen];
+  const escribir = ()=>{
+    if(!state.horario.horas.includes(horaDestino)){ state.horario.horas.push(horaDestino); state.horario.horas.sort(); }
+    horarioSet(fechaDestino, horaDestino, valor);
+    horarioSet(fechaOrigen, horaOrigen, '');
+    delete state.horario.duracionPorFranja[fechaOrigen+'|'+horaOrigen];
+    delete state.horario.notasPorFranja[fechaOrigen+'|'+horaOrigen];
+    aplicarDuracionFranja(fechaDestino, horaDestino, dur);
+    if(notaFranja) state.horario.notasPorFranja[fechaDestino+'|'+horaDestino] = notaFranja;
+    render();
+  };
+  const continuarConSolape = ()=>{
+    verificarSolapeAntesDeGuardar(fechaDestino, horaDestino, dur, horaOrigen, escribir);
+  };
+  avisarSiClienteInactivoYContinuar(fechaDestino, horaDestino, valor, false, nombreDiaEs(fechaDestino), continuarConSolape);
+}
+function columnaDiaTimeline(fecha, inicioMin, finMin, registroColumnas){
   const alturaTotal = (finMin-inicioMin)*PX_POR_MIN_TIMELINE;
   const col=document.createElement('div');
-  col.style.cssText=`position:relative;height:${alturaTotal}px;flex:1;min-width:0;border-left:1px solid var(--line);background:var(--surface);border-radius:0 0 8px 8px;`;
+  col.dataset.fecha = fecha;
+  col.style.cssText=`position:relative;height:${alturaTotal}px;flex:1;min-width:0;border-left:1px solid var(--line);background:var(--surface);border-radius:0 0 8px 8px;touch-action:pan-y;`;
+  if(registroColumnas) registroColumnas.push(col);
   for(let m=inicioMin; m<=finMin; m+=60){
     const linea=document.createElement('div');
-    linea.style.cssText=`position:absolute;top:${(m-inicioMin)*PX_POR_MIN_TIMELINE}px;left:0;right:0;border-top:1px solid var(--line);`;
+    linea.style.cssText=`position:absolute;top:${(m-inicioMin)*PX_POR_MIN_TIMELINE}px;left:0;right:0;border-top:1px solid var(--line);pointer-events:none;`;
     col.appendChild(linea);
   }
   // Zona clicable de fondo: pulsar en un hueco vacío abre el creador ya con la fecha/hora aproximada
@@ -3391,12 +3457,61 @@ function columnaDiaTimeline(fecha, inicioMin, finMin){
       const bloque=document.createElement('div');
       const izq = `calc(${anchoPct*i}% + ${i===0?3:1.5}px)`;
       const anchoCss = `calc(${anchoPct}% - ${cluster.length>1?3:6}px)`;
-      bloque.style.cssText=`position:absolute;top:${top}px;left:${izq};width:${anchoCss};height:${alto}px;background:${fondoCelda(tipo)==='transparent'?'var(--surface-2)':fondoCelda(tipo)};border-left:3px solid ${colorPorTipo(tipo)==='transparent'?'var(--line)':colorPorTipo(tipo)};${enConflicto?'outline:2px dashed var(--danger);outline-offset:-2px;':''}border-radius:5px;padding:3px 6px;overflow:hidden;cursor:pointer;transition:filter .1s;box-sizing:border-box;`;
+      bloque.style.cssText=`position:absolute;top:${top}px;left:${izq};width:${anchoCss};height:${alto}px;background:${fondoCelda(tipo)==='transparent'?'var(--surface-2)':fondoCelda(tipo)};border-left:3px solid ${colorPorTipo(tipo)==='transparent'?'var(--line)':colorPorTipo(tipo)};${enConflicto?'outline:2px dashed var(--danger);outline-offset:-2px;':''}border-radius:5px;padding:3px 6px;overflow:hidden;cursor:grab;transition:filter .1s;box-sizing:border-box;touch-action:none;user-select:none;`;
       bloque.title = enConflicto ? 'Esta franja se solapa con otra a la vez' : '';
       bloque.innerHTML=`<div style="font-size:11.5px;font-weight:600;color:${textoColorParaTipo(tipo)};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${enConflicto?'⚠ ':''}${escapeHtml(textoLimpio(ev.valor))}</div>${alto>32?`<div style="font-size:10px;color:var(--ink-soft);">${ev.hora}–${sumarMinutos(ev.hora,ev.duracion)}</div>`:''}`;
       bloque.onmouseenter=()=>{ bloque.style.filter='brightness(1.15)'; bloque.style.zIndex='5'; };
       bloque.onmouseleave=()=>{ bloque.style.filter='none'; bloque.style.zIndex='auto'; };
-      bloque.onclick=(e)=>{ e.stopPropagation(); openMoverFranjaModal(fecha, ev.hora, ev.valor); };
+
+      // Arrastre real (ratón y dedo, vía Pointer Events)
+      let arrastrando=false, moved=false, startX=0, startY=0, origColumnaRect=null;
+      bloque.addEventListener('pointerdown',(e)=>{
+        if(e.button!==undefined && e.button!==0) return;
+        arrastrando=true; moved=false;
+        startX=e.clientX; startY=e.clientY;
+        bloque.setPointerCapture(e.pointerId);
+        bloque.style.cursor='grabbing';
+      });
+      bloque.addEventListener('pointermove',(e)=>{
+        if(!arrastrando) return;
+        const dx=e.clientX-startX, dy=e.clientY-startY;
+        if(Math.abs(dx)>5 || Math.abs(dy)>5) moved=true;
+        if(moved){
+          bloque.style.zIndex='20';
+          bloque.style.boxShadow='0 8px 20px rgba(0,0,0,.4)';
+          bloque.style.transform=`translate(${dx}px,${dy}px)`;
+          bloque.style.opacity='0.9';
+        }
+      });
+      bloque.addEventListener('pointerup',(e)=>{
+        if(!arrastrando) return;
+        arrastrando=false;
+        bloque.style.cursor='grab';
+        bloque.style.transform='';
+        bloque.style.boxShadow='';
+        bloque.style.opacity='';
+        bloque.style.zIndex='auto';
+        if(!moved) return; // fue un clic normal, no un arrastre: el evento click ya se encarga
+        // Determina la columna (día) bajo el punto final
+        const cols = registroColumnas || [col];
+        let colDestino = col;
+        for(const c of cols){
+          const r = c.getBoundingClientRect();
+          if(e.clientX>=r.left && e.clientX<=r.right){ colDestino=c; break; }
+        }
+        const rectDestino = colDestino.getBoundingClientRect();
+        const yRel = e.clientY - rectDestino.top;
+        const minDestino = inicioMin + Math.round(yRel/PX_POR_MIN_TIMELINE/15)*15;
+        const minAcotado = Math.max(inicioMin, Math.min(finMin-15, minDestino));
+        const horaDestino = String(Math.floor(minAcotado/60)).padStart(2,'0')+':'+String(minAcotado%60).padStart(2,'0');
+        const fechaDestino = colDestino.dataset.fecha;
+        moverFranjaPorArrastre(fecha, ev.hora, fechaDestino, horaDestino, ev.valor);
+      });
+      bloque.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        if(moved) return; // el arrastre ya se ha encargado, no abrir también el modal
+        openMoverFranjaModal(fecha, ev.hora, ev.valor);
+      });
       col.appendChild(bloque);
     });
   });
@@ -3408,13 +3523,14 @@ function horarioDiaViewEscala(){
   titulo.textContent = formatFechaLarga(horarioFecha);
   wrap.appendChild(titulo);
   const hint=document.createElement('p'); hint.style.cssText='font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;';
-  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Haz clic en un bloque para moverlo o editarlo.';
+  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Arrástralo para moverlo, o toca para editarlo.';
   wrap.appendChild(hint);
 
   const {inicioMin, finMin} = rangoTimelineParaFechas([horarioFecha]);
+  const registroColumnas=[];
   const fila=document.createElement('div'); fila.style.cssText='display:flex;max-width:520px;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
   fila.appendChild(gutterHorasTimeline(inicioMin, finMin));
-  fila.appendChild(columnaDiaTimeline(horarioFecha, inicioMin, finMin));
+  fila.appendChild(columnaDiaTimeline(horarioFecha, inicioMin, finMin, registroColumnas));
   wrap.appendChild(fila);
   return wrap;
 }
@@ -3430,7 +3546,7 @@ function horarioSemanaViewEscala(){
     : `${dIni.getDate()} de ${mesIni} – ${dFin.getDate()} de ${mesFin} de ${dFin.getFullYear()}`;
   wrap.appendChild(titulo);
   const hint=document.createElement('p'); hint.style.cssText='font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;';
-  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Haz clic en un bloque para moverlo o editarlo.';
+  hint.textContent='Cada bloque ocupa su tamaño real según la duración. Arrástralo para moverlo (incluso a otro día), o toca para editarlo.';
   wrap.appendChild(hint);
 
   const cabecera=document.createElement('div'); cabecera.style.cssText='display:flex;';
@@ -3444,10 +3560,11 @@ function horarioSemanaViewEscala(){
   });
   wrap.appendChild(cabecera);
 
+  const registroColumnas=[];
   const fila=document.createElement('div'); fila.style.cssText='display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
   fila.appendChild(gutterHorasTimeline(inicioMin, finMin));
   dias.forEach(fecha=>{
-    fila.appendChild(columnaDiaTimeline(fecha, inicioMin, finMin));
+    fila.appendChild(columnaDiaTimeline(fecha, inicioMin, finMin, registroColumnas));
   });
   wrap.appendChild(fila);
   return wrap;
@@ -3640,12 +3757,17 @@ function openMoverFranjaModal(fecha, hora, valor){
         else delete state.horario.notasPorFranja[nuevaFechaFinal+'|'+nuevaHora];
         overlay.remove(); render();
       };
-      if(valorConTipo.trim()){
-        const fechaParaComprobar = modo==='semana' ? (overlay.querySelector('#mv-fecha').value||fecha) : fecha;
-        verificarSolapeAntesDeGuardar(fechaParaComprobar, nuevaHora, duracionMin, hora, escribirDeVerdad);
-      } else {
-        escribirDeVerdad();
-      }
+      const continuarConSolape = ()=>{
+        if(valorConTipo.trim()){
+          const fechaParaComprobar = modo==='semana' ? (overlay.querySelector('#mv-fecha').value||fecha) : fecha;
+          verificarSolapeAntesDeGuardar(fechaParaComprobar, nuevaHora, duracionMin, hora, escribirDeVerdad);
+        } else {
+          escribirDeVerdad();
+        }
+      };
+      const esPermanenteMover = modo!=='semana';
+      const diaParaAviso = esPermanenteMover ? overlay.querySelector('#mv-dia').value : nombreDiaEs(overlay.querySelector('#mv-fecha').value||fecha);
+      avisarSiClienteInactivoYContinuar((overlay.querySelector('#mv-fecha')?overlay.querySelector('#mv-fecha').value:fecha)||fecha, nuevaHora, valorConTipo, esPermanenteMover, diaParaAviso, continuarConSolape);
     };
 
     let destinoOcupado;
@@ -5690,10 +5812,19 @@ function abrirModalSuperseries(week){
     lista.appendChild(row);
   });
   overlay.querySelector('#ss-agrupar').onclick=()=>{
-    const idxs = [...overlay.querySelectorAll('input[type=checkbox]:checked')].map(c=>parseInt(c.dataset.idx));
+    const idxs = [...overlay.querySelectorAll('input[type=checkbox]:checked')].map(c=>parseInt(c.dataset.idx)).sort((a,b)=>a-b);
     if(idxs.length<2){ showAlert('Selecciona al menos 2 ejercicios para formar una superserie.'); return; }
     const nuevoId = uid();
-    idxs.forEach(i=>{ week.items[i].supersetId = nuevoId; });
+    idxs.forEach((i,pos)=>{
+      const item = week.items[i];
+      item.supersetId = nuevoId;
+      const esUltimo = pos===idxs.length-1;
+      const descansoIntermedio = esUltimo ? undefined : '0s'; // sin descanso entre ejercicios de la misma superserie, salvo el último
+      if(descansoIntermedio!==undefined){
+        if(item.a && item.b){ item.a.descanso = descansoIntermedio; item.b.descanso = descansoIntermedio; }
+        else { item.descanso = descansoIntermedio; }
+      }
+    });
     scheduleSave(); overlay.remove(); render();
   };
   overlay.querySelector('#ss-disolver').onclick=()=>{
