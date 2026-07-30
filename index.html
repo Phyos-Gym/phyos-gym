@@ -4,26 +4,26 @@
 <meta charset="UTF-8">
 <title>Phyos Gym</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 :root{
-  --bg:#150F1B;
-  --surface:#201829;
-  --surface-2:#2B2135;
-  --ink:#F6EFFA;
-  --ink-soft:#B7A3C6;
-  --accent:#CB9EEA;
-  --accent-dark:#A374CC;
-  --accent-2:#E8B24E;
-  --accent-b:#7FB3D9;
-  --accent-b-dark:#4E8AB3;
-  --line:#3B2E48;
-  --danger:#F08069;
+  --bg:#181420;
+  --surface:#211A2E;
+  --surface-2:#2B2240;
+  --ink:#F5F2F8;
+  --ink-soft:#A79FB8;
+  --accent:#FF6B35;
+  --accent-dark:#E85A28;
+  --accent-2:#FFB347;
+  --accent-b:#9B6DFF;
+  --accent-b-dark:#7B4FDB;
+  --line:#382C4A;
+  --danger:#F0555A;
   --radius:10px;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;color-scheme:dark;}
-h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;margin:0;color:var(--ink);}
+h1,h2,h3,h4{font-family:'Manrope',sans-serif;font-weight:800;letter-spacing:-.01em;margin:0;color:var(--ink);}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;}
 button{font-family:'Inter',sans-serif;cursor:pointer;}
 input,textarea,select{font-family:'Inter',sans-serif;}
@@ -42,7 +42,8 @@ input,textarea,select{font-family:'Inter',sans-serif;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
 
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;position:relative;transition:box-shadow .15s,border-color .15s;}
+.card{background:rgba(255,255,255,.05);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px;position:relative;transition:box-shadow .15s,border-color .15s,transform .15s;}
+.card:hover{transform:translateY(-2px);}
 .card:hover{box-shadow:0 4px 18px rgba(203,158,234,.12);border-color:var(--accent-dark);}
 .card .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:rgba(203,158,234,.14);padding:2px 7px;border-radius:4px;margin-bottom:8px;}
 .card h3{font-size:17px;margin-bottom:4px;color:var(--ink);}
@@ -414,7 +415,7 @@ const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
 }));
 
 const SALA = {
-  materialDisponible: "Rack de dos poleas, Barra de dominadas, mancuernas, bandas elásticas, miniband, bandas circulares, kettlebell, bici ciclo indoor, aros de pilates, bolas blandas de 1 kg, rulo de yoga, plataformas inestables, step, cajón de pliometría, barra olímpica con discos, banco, landmine, diana hyrox (en pared, para wallballs), wallballs, barra con guía Smith, peso corporal (sin material).",
+  materialDisponible: "Rack de dos poleas, Barra de dominadas, mancuernas, bandas elásticas, miniband, bandas circulares, kettlebell, bici ciclo indoor, aros de pilates, bolas blandas de 1 kg (toning ball), rulo de yoga, plataformas inestables, step, cajón de pliometría, barra olímpica con discos, banco, landmine, diana hyrox (en pared, para wallballs), wallballs, barra con guía Smith, peso corporal (sin material), colchoneta (pilates suelo, sin material), ladrillos (pilates), softball (pelota grande y muy blanda, casi sin peso, diámetro 20-25 cm).",
   reglas: [
     "Prohibido el ejercicio de peso muerto.",
     "Sesiones de 60 minutos.",
@@ -652,7 +653,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Rotación de columna sentado con aro', grupoMuscular:'Core / Movilidad', material:'Aros de pilates',
     descripcion:'Sentado con el aro sujeto entre las manos al frente, rotar el tronco de un lado a otro con control.',
     precauciones:'Movimiento suave, apto para trabajar movilidad torácica.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Swimming (extensión alterna en suelo)', grupoMuscular:'Espalda baja', material:'Peso corporal',
+  { id: uid(), nombre:'Swimming (extensión alterna en suelo)', grupoMuscular:'Espalda baja', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado boca abajo, elevar de forma alterna brazo y pierna contraria imitando el movimiento de nadar.',
     precauciones:'Evitar en hernias lumbares activas; movimiento suave sin rebote.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Kettlebell halo', grupoMuscular:'Hombro / Core', material:'Kettlebell',
@@ -730,19 +731,19 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Step Down excéntrico', grupoMuscular:'Piernas', material:'Step',
     descripcion:'De pie sobre el step, bajar una pierna hacia el suelo de forma lenta y controlada sin apoyar el peso, y volver a subir.',
     precauciones:'Muy usado en rehabilitación de rodilla; controlar el descenso.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Pilates Roll-Up', grupoMuscular:'Core', material:'Peso corporal',
+  { id: uid(), nombre:'Pilates Roll-Up', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado boca arriba, elevar el tronco vértebra a vértebra hasta sentarse, y bajar con el mismo control.',
     precauciones:'Evitar en hernias lumbares o discales; reducir el rango si cuesta controlar la bajada.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Spine Stretch Forward', grupoMuscular:'Movilidad / Columna', material:'Peso corporal',
+  { id: uid(), nombre:'Spine Stretch Forward', grupoMuscular:'Movilidad / Columna', material:'Colchoneta (Pilates)',
     descripcion:'Sentado con piernas extendidas, flexionar el tronco hacia adelante vértebra a vértebra, con brazos extendidos.',
     precauciones:'Movimiento suave, apto para la mayoría de niveles.', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Saw (Pilates)', grupoMuscular:'Core / Movilidad', material:'Peso corporal',
+  { id: uid(), nombre:'Saw (Pilates)', grupoMuscular:'Core / Movilidad', material:'Colchoneta (Pilates)',
     descripcion:'Sentado con piernas abiertas, rotar el tronco hacia un lado y flexionar hacia el pie contrario, como serrando.',
     precauciones:'Evitar en molestias lumbares agudas.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Side Kick Series (Pilates)', grupoMuscular:'Glúteo / Cadera', material:'Peso corporal',
+  { id: uid(), nombre:'Side Kick Series (Pilates)', grupoMuscular:'Glúteo / Cadera', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado de lado con el cuerpo alineado, realizar patadas controladas hacia adelante y atrás con la pierna superior.',
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Pilates Scissors', grupoMuscular:'Core inferior', material:'Peso corporal',
+  { id: uid(), nombre:'Pilates Scissors', grupoMuscular:'Core inferior', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado boca arriba con piernas elevadas, alternar el movimiento de tijera manteniendo la zona lumbar pegada al suelo.',
     precauciones:'Evitar en hernias lumbares; reducir el rango si la espalda baja se despega del suelo.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Kettlebell Row', grupoMuscular:'Espalda', material:'Kettlebell',
@@ -1054,13 +1055,13 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Plank to Downward Dog', grupoMuscular:'Core / Movilidad', material:'Peso corporal',
     descripcion:'Desde plancha alta, elevar la cadera hacia arriba llevando el cuerpo a la posición de "perro boca abajo" y volver.',
     precauciones:'Buen ejercicio de transición entre fuerza y movilidad.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Single Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Peso corporal',
+  { id: uid(), nombre:'Single Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado boca arriba, alternar la flexión de rodillas hacia el pecho mientras la otra pierna se extiende, manteniendo el tronco elevado.',
     precauciones:'Evitar en molestias lumbares o cervicales.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Double Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Peso corporal',
+  { id: uid(), nombre:'Double Leg Stretch (Pilates)', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado con rodillas al pecho y tronco elevado, extender brazos y piernas a la vez y volver a recoger.',
     precauciones:'Nivel intermedio; evitar en hernias lumbares.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Criss-Cross (Pilates)', grupoMuscular:'Core (oblicuos)', material:'Peso corporal',
+  { id: uid(), nombre:'Criss-Cross (Pilates)', grupoMuscular:'Core (oblicuos)', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado con manos tras la cabeza, rotar el tronco llevando el codo hacia la rodilla contraria de forma alterna.',
     precauciones:'Evitar en molestias cervicales o lumbares.', zonasRiesgo:'cervical, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Landmine Overhead Press a una mano', grupoMuscular:'Hombro', material:'Landmine',
@@ -1940,7 +1941,209 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Marcha lateral con banda circular en muñecas (plancha)', grupoMuscular:'Hombro / Core', material:'Bandas circulares',
     descripcion:'En posición de plancha con la banda circular en las muñecas, desplazar una mano lateralmente venciendo la resistencia.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' }
+    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'El Cien (The Hundred)', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba, elevar cabeza y hombros con las piernas en mesa o extendidas a 45°, bombeando los brazos junto al cuerpo al ritmo de la respiración (5 tiempos inhalando, 5 exhalando).',
+    precauciones:'Evitar en hernias cervicales o lumbares agudas.', zonasRiesgo:'cervical, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Roll Over', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba, elevar las piernas juntas hasta pasar por encima de la cabeza y bajar la columna vértebra a vértebra de vuelta.',
+    precauciones:'Nivel avanzado; evitar en hernias cervicales, osteoporosis o molestias lumbares.', zonasRiesgo:'cervical, columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Círculo con una pierna (One Leg Circle)', grupoMuscular:'Cadera / Core', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con una pierna elevada, describir círculos amplios y controlados manteniendo la pelvis estable.',
+    precauciones:'', zonasRiesgo:'cadera, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Rodando como una bola (Rolling Like a Ball)', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado abrazando las piernas flexionadas, balancearse hacia atrás sobre la columna y volver a sentarse con control, sin apoyar la cabeza ni el cuello.',
+    precauciones:'Evitar en hernias cervicales, osteoporosis o mareos.', zonasRiesgo:'cervical, columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Estiramiento de columna hacia adelante (Spine Stretch Forward)', grupoMuscular:'Columna / Isquiotibiales', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con piernas extendidas al ancho de la colchoneta, flexionar la columna hacia adelante vértebra a vértebra y volver a enrollar hacia arriba.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Mecedora con piernas abiertas (Open Leg Rocker)', grupoMuscular:'Core / Equilibrio', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con las piernas elevadas y abiertas sujetas por los tobillos, balancearse hacia atrás sobre la columna y volver al equilibrio inicial.',
+    precauciones:'Nivel avanzado; evitar en hernias cervicales u osteoporosis.', zonasRiesgo:'cervical, columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sacacorchos (Corkscrew)', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con las piernas elevadas juntas, describir un círculo amplio con ambas piernas manteniendo el tronco estable.',
+    precauciones:'Nivel avanzado; evitar en molestias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'La Sierra (Saw)', grupoMuscular:'Columna (rotación) / Isquiotibiales', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con piernas abiertas, rotar el tronco hacia un lado y flexionar hacia el pie contrario como si se serrase, y repetir al otro lado.',
+    precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zambullida del Cisne (Swan Dive)', grupoMuscular:'Espalda / Extensores de columna', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca abajo, elevar el pecho y balancearse hacia adelante y atrás sobre el abdomen con los brazos extendidos.',
+    precauciones:'Nivel avanzado; evitar en hernias lumbares agudas.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Patada a una pierna (One Leg Kick)', grupoMuscular:'Isquiotibiales / Espalda', material:'Colchoneta (Pilates)',
+    descripcion:'Apoyado sobre los antebrazos boca abajo, flexionar una rodilla dando dos pequeñas patadas hacia el glúteo y alternar de pierna.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Patada a dos piernas (Double Leg Kick)', grupoMuscular:'Espalda / Isquiotibiales', material:'Colchoneta (Pilates)',
+    descripcion:'Boca abajo con las manos entrelazadas en la espalda, flexionar ambas rodillas llevando los talones al glúteo y luego extender brazos y piernas elevando el pecho.',
+    precauciones:'Evitar en hernias lumbares o cervicales.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Estiramiento de cuello (Neck Pull)', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con las manos tras la nuca, incorporarse hasta sentado y flexionar el tronco hacia adelante sobre las piernas, volviendo con control vértebra a vértebra.',
+    precauciones:'Nivel avanzado; evitar en hernias lumbares o cervicales.', zonasRiesgo:'lumbar, cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Bicicleta en suelo (Pilates Bicycle)', grupoMuscular:'Core / Cadera', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con las piernas elevadas, describir un movimiento de pedaleo amplio y controlado, alternando la extensión de cada pierna.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Puente de hombros (Shoulder Bridge)', grupoMuscular:'Glúteo / Isquiotibiales', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con rodillas flexionadas, elevar la cadera y, manteniendo la posición, extender una pierna hacia el techo alternando.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Giro de columna (Spine Twist)', grupoMuscular:'Columna (rotación)', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con piernas extendidas y brazos en cruz, rotar el tronco de un lado a otro con pequeños pulsos manteniendo la pelvis fija.',
+    precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Navaja (Jack Knife)', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba, elevar las piernas juntas hacia el techo y luego hacia atrás por encima de la cabeza, y subir de nuevo formando una "V" antes de bajar con control.',
+    precauciones:'Nivel avanzado; evitar en hernias cervicales, osteoporosis o molestias lumbares.', zonasRiesgo:'cervical, columna, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Patada lateral tumbado (Side Kick)', grupoMuscular:'Cadera / Piernas', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado de lado apoyado en el antebrazo, dar pataditas controladas hacia adelante y atrás con la pierna superior extendida.',
+    precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Teaser', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba, elevar simultáneamente el tronco y las piernas extendidas hasta formar una "V", manteniendo el equilibrio, y bajar con control.',
+    precauciones:'Nivel avanzado; evitar en molestias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Giro de cadera con brazos extendidos (Hip Twist)', grupoMuscular:'Core / Cadera', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con las manos apoyadas detrás y las piernas extendidas elevadas, describir círculos amplios con ambas piernas juntas.',
+    precauciones:'Nivel avanzado; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Nado (Swimming)', grupoMuscular:'Espalda / Glúteo', material:'Colchoneta (Pilates)',
+    descripcion:'Boca abajo con brazos y piernas extendidos, alternar la elevación de brazo y pierna contraria simulando el movimiento de nadar.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Tracción de pierna – frontal (Leg Pull Front)', grupoMuscular:'Core / Hombro', material:'Colchoneta (Pilates)',
+    descripcion:'En posición de plancha con brazos extendidos, elevar una pierna manteniendo el cuerpo alineado y alternar.',
+    precauciones:'Evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Tracción de pierna – dorsal (Leg Pull Back)', grupoMuscular:'Core / Hombro', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con las manos apoyadas detrás y el cuerpo en línea recta elevado, elevar una pierna manteniendo la cadera estable y alternar.',
+    precauciones:'Evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Patada lateral de rodillas (Side Kick Kneeling)', grupoMuscular:'Cadera / Core', material:'Colchoneta (Pilates)',
+    descripcion:'De rodillas con una mano apoyada en el suelo, extender la pierna contraria lateralmente dando pequeñas pataditas controladas.',
+    precauciones:'', zonasRiesgo:'cadera, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión lateral de tronco (Side Bend)', grupoMuscular:'Core (oblicuos)', material:'Colchoneta (Pilates)',
+    descripcion:'Apoyado de lado sobre una mano con las piernas apiladas, elevar la cadera del suelo y volver a bajar con control, y repetir al otro lado.',
+    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Boomerang', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado con piernas cruzadas y extendidas, rodar hacia atrás sobre la columna, cambiar el cruce de piernas en el aire y volver a sentarse con control.',
+    precauciones:'Nivel muy avanzado; evitar en hernias cervicales, osteoporosis o molestias lumbares.', zonasRiesgo:'cervical, columna, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Foca (Seal)', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado abrazando las piernas por dentro de los brazos, balancearse hacia atrás sobre la columna dando pequeñas palmadas con los pies al volver.',
+    precauciones:'Evitar en hernias cervicales u osteoporosis.', zonasRiesgo:'cervical, columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Cangrejo (Crab)', grupoMuscular:'Core / Columna', material:'Colchoneta (Pilates)',
+    descripcion:'Sentado sujetando los pies, rodar hacia atrás sobre la columna y volver a la posición inicial cambiando el agarre de los pies con control.',
+    precauciones:'Nivel avanzado; evitar en hernias cervicales u osteoporosis.', zonasRiesgo:'cervical, columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Mecedora (Rocking)', grupoMuscular:'Espalda / Glúteo', material:'Colchoneta (Pilates)',
+    descripcion:'Boca abajo sujetando los tobillos con las manos, balancearse suavemente hacia adelante y atrás formando un arco con el cuerpo.',
+    precauciones:'Nivel avanzado; evitar en hernias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Equilibrio de control (Control Balance)', grupoMuscular:'Core / Equilibrio', material:'Colchoneta (Pilates)',
+    descripcion:'Tumbado boca arriba con las piernas por encima de la cabeza, sujetar un tobillo y elevar la pierna contraria alternando con control.',
+    precauciones:'Nivel muy avanzado; evitar en hernias cervicales, osteoporosis o molestias lumbares.', zonasRiesgo:'cervical, columna, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión de brazos estilo Pilates (Push Up)', grupoMuscular:'Pecho / Core', material:'Colchoneta (Pilates)',
+    descripcion:'De pie, flexionar el tronco hacia adelante hasta apoyar las manos, caminar con ellas hasta la plancha, hacer una flexión y volver a caminar hasta ponerse de pie.',
+    precauciones:'Evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Roll-Up con ladrillo entre las manos', grupoMuscular:'Core / Columna', material:'Ladrillos (Pilates)',
+    descripcion:'Roll-Up clásico sujetando un ladrillo con ambas manos por delante, lo que ayuda a controlar el movimiento y evita el impulso.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Estiramiento de columna sentado sobre ladrillo', grupoMuscular:'Columna / Isquiotibiales', material:'Ladrillos (Pilates)',
+    descripcion:'Sentado sobre uno o dos ladrillos para elevar la cadera, realizar el Spine Stretch Forward manteniendo las piernas extendidas sin forzar la zona lumbar.',
+    precauciones:'Muy útil para clientes con isquiotibiales cortos o dificultad para mantener la espalda recta sentados.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Puente de hombros con ladrillo entre las rodillas', grupoMuscular:'Glúteo / Aductores', material:'Ladrillos (Pilates)',
+    descripcion:'Puente de glúteo clásico presionando un ladrillo entre las rodillas durante todo el movimiento, para activar también el aductor.',
+    precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'El Cien con ladrillo bajo la cabeza', grupoMuscular:'Core', material:'Ladrillos (Pilates)',
+    descripcion:'El Cien apoyando la cabeza sobre un ladrillo inclinado para reducir la exigencia cervical, manteniendo el bombeo de brazos.',
+    precauciones:'Pensado como apoyo puntual, no como sustituto permanente del trabajo de cuello.', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Plancha con manos sobre ladrillos', grupoMuscular:'Core / Hombro', material:'Ladrillos (Pilates)',
+    descripcion:'Plancha frontal apoyando cada mano sobre un ladrillo, añadiendo un reto extra de estabilidad en muñeca y hombro.',
+    precauciones:'Nivel intermedio-avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Teaser con ladrillo entre los tobillos', grupoMuscular:'Core', material:'Ladrillos (Pilates)',
+    descripcion:'Teaser clásico sujetando un ladrillo entre los tobillos durante todo el recorrido, para mantener las piernas juntas y alineadas.',
+    precauciones:'Nivel avanzado.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Círculo de pierna con ladrillo entre las rodillas', grupoMuscular:'Cadera / Aductores', material:'Ladrillos (Pilates)',
+    descripcion:'Tumbado boca arriba con un ladrillo sujeto entre las rodillas flexionadas, realizar pequeños círculos de cadera manteniendo la presión sobre el ladrillo.',
+    precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla Pilates con ladrillo entre los muslos', grupoMuscular:'Piernas / Aductores', material:'Ladrillos (Pilates)',
+    descripcion:'Sentadilla controlada y lenta sujetando un ladrillo entre los muslos para mantener el foco en la alineación de rodillas.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Elevación de pelvis con ladrillo de soporte lumbar', grupoMuscular:'Core / Movilidad lumbar', material:'Ladrillos (Pilates)',
+    descripcion:'Tumbado boca arriba con un ladrillo bajo el sacro a baja altura, realizar pequeñas báisculas pélvicas con el apoyo añadido.',
+    precauciones:'Movimiento muy suave, ideal para el inicio de sesión.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Rotación de tronco sentado sujetando un ladrillo', grupoMuscular:'Core (rotación)', material:'Ladrillos (Pilates)',
+    descripcion:'Sentado con las piernas flexionadas, sujetar el ladrillo con ambas manos y rotar el tronco de un lado a otro tocando el suelo a cada lado.',
+    precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión lateral de tronco con ladrillo de apoyo', grupoMuscular:'Core (oblicuos)', material:'Ladrillos (Pilates)',
+    descripcion:'Side Bend apoyando la mano de base sobre un ladrillo en vez del suelo, para ganar rango de movimiento con menos exigencia de muñeca.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada Pilates con ladrillos en las manos', grupoMuscular:'Piernas / Equilibrio', material:'Ladrillos (Pilates)',
+    descripcion:'Zancada lenta y controlada sujetando un ladrillo en cada mano a los lados, priorizando el equilibrio y la alineación sobre la carga.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Press de pecho tumbado con bola blanda', grupoMuscular:'Pecho / Brazo', material:'Bolas blandas de 1 kg',
+    descripcion:'Tumbado boca arriba, empujar una bola blanda en cada mano hacia el techo y bajar con control hasta el pecho.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Elevación lateral de brazo con bola blanda', grupoMuscular:'Hombro', material:'Bolas blandas de 1 kg',
+    descripcion:'De pie o sentado, elevar los brazos lateralmente hasta la altura del hombro sujetando una bola blanda en cada mano.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla Pilates con bola blanda al pecho', grupoMuscular:'Piernas', material:'Bolas blandas de 1 kg',
+    descripcion:'Sentadilla lenta y controlada sujetando una bola blanda con ambas manos contra el pecho.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada con bola blanda en ambas manos', grupoMuscular:'Piernas', material:'Bolas blandas de 1 kg',
+    descripcion:'Zancada frontal sujetando una bola blanda en cada mano a los lados del cuerpo, manteniendo el torso erguido.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo sentado con bola blanda', grupoMuscular:'Espalda', material:'Bolas blandas de 1 kg',
+    descripcion:'Sentado con el tronco ligeramente inclinado hacia adelante, remo llevando la bola blanda hacia el abdomen con cada mano.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Extensión de tríceps tumbado con bola blanda', grupoMuscular:'Brazo', material:'Bolas blandas de 1 kg',
+    descripcion:'Tumbado boca arriba, extender los brazos con la bola blanda por encima de la cabeza hacia el techo, flexionando y extendiendo los codos.',
+    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Abdominal (Crunch) con bola blanda sobre el pecho', grupoMuscular:'Core (abdomen)', material:'Bolas blandas de 1 kg',
+    descripcion:'Crunch clásico sujetando la bola blanda sobre el pecho con ambas manos, añadiendo una ligera resistencia.',
+    precauciones:'', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Pase de bola blanda de mano a mano tumbado', grupoMuscular:'Hombro / Core', material:'Bolas blandas de 1 kg',
+    descripcion:'Tumbado boca arriba con los brazos extendidos hacia el techo, pasar la bola blanda de una mano a otra de forma controlada.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Marcha con elevación de rodilla y bola blanda', grupoMuscular:'Core / Cardio suave', material:'Bolas blandas de 1 kg',
+    descripcion:'Marcha en el sitio elevando bien las rodillas mientras se sujeta la bola blanda con ambas manos al frente del pecho.',
+    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Puente de glúteo con softball bajo los pies', grupoMuscular:'Glúteo / Equilibrio', material:'Softball',
+    descripcion:'Puente de glúteo apoyando ambos pies sobre la softball, añadiendo un componente de inestabilidad por su tamaño y blandura.',
+    precauciones:'Nivel intermedio.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla con softball entre los muslos', grupoMuscular:'Piernas / Aductores', material:'Softball',
+    descripcion:'Sentadilla controlada sujetando la softball entre los muslos por su gran tamaño, enfocando la activación del aductor.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Extensión de espalda sobre softball', grupoMuscular:'Espalda baja / Extensores de columna', material:'Softball',
+    descripcion:'Tumbado boca abajo con la softball bajo el abdomen y la cadera, elevar el pecho suavemente apoyándose en la pelota.',
+    precauciones:'Movimiento muy suave; evitar en hernias lumbares agudas.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Estiramiento de espalda sobre softball', grupoMuscular:'Movilidad / Columna', material:'Softball',
+    descripcion:'Tumbado boca arriba con la softball bajo la zona media de la espalda, dejar caer los brazos abriendo el pecho con suavidad.',
+    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Plancha con manos sobre softball', grupoMuscular:'Core / Hombro', material:'Softball',
+    descripcion:'Plancha frontal apoyando ambas manos sobre la softball, aumentando de forma notable el reto de estabilidad por su tamaño.',
+    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Círculo de cadera sentado sobre softball', grupoMuscular:'Core / Equilibrio', material:'Softball',
+    descripcion:'Sentado sobre la softball con los pies apoyados en el suelo, describir pequeños círculos con la cadera manteniendo el equilibrio.',
+    precauciones:'Tener apoyo cerca si el equilibrio es bajo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Rebote suave sentado sobre softball', grupoMuscular:'Cardio suave / Movilidad', material:'Softball',
+    descripcion:'Sentado sobre la softball, realizar pequeños rebotes suaves y continuos apoyando bien los pies en el suelo.',
+    precauciones:'Buena opción de activación cardiovascular ligera para niveles bajos.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Elevación de piernas con softball entre los tobillos', grupoMuscular:'Core inferior', material:'Softball',
+    descripcion:'Tumbado boca arriba con la softball sujeta entre los tobillos, elevar y bajar las piernas manteniendo la zona lumbar en el suelo.',
+    precauciones:'Evitar en hernias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla contra la pared con softball de apoyo lumbar', grupoMuscular:'Piernas', material:'Softball',
+    descripcion:'Sentadilla isométrica con la espalda apoyada en la softball contra la pared, deslizándose hacia abajo y hacia arriba con el apoyo de la pelota.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Estiramiento de pecho recostado sobre softball', grupoMuscular:'Movilidad / Pecho', material:'Softball',
+    descripcion:'Tumbado con la parte alta de la espalda apoyada sobre la softball, dejar caer los brazos a los lados para abrir el pecho.',
+    precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Rotación de tronco con softball entre las rodillas', grupoMuscular:'Core (oblicuos)', material:'Softball',
+    descripcion:'Sentado con las rodillas flexionadas y la softball sujeta entre ellas, rotar el tronco suavemente de un lado a otro.',
+    precauciones:'', zonasRiesgo:'columna', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Puente de hombros con softball bajo la zona lumbar', grupoMuscular:'Core / Movilidad lumbar', material:'Softball',
+    descripcion:'Tumbado boca arriba con la softball bajo la zona lumbar baja, realizar pequeñas báisculas pélvicas con el apoyo añadido.',
+    precauciones:'Movimiento muy suave.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Abdominal con softball elevada entre las rodillas', grupoMuscular:'Core (abdomen)', material:'Softball',
+    descripcion:'Tumbado boca arriba con las rodillas flexionadas y elevadas sujetando la softball entre ellas, realizar pequeños crunches.',
+    precauciones:'', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Equilibrio de rodillas sobre softball', grupoMuscular:'Core avanzado / Equilibrio', material:'Softball',
+    descripcion:'De rodillas sobre la softball con ayuda de apoyo, mantener el equilibrio activando el core el mayor tiempo posible.',
+    precauciones:'Nivel muy avanzado; requiere apoyo o pared cerca.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada con softball sujeta al pecho', grupoMuscular:'Piernas', material:'Softball',
+    descripcion:'Zancada frontal controlada sujetando la softball con ambas manos contra el pecho, priorizando equilibrio y alineación.',
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
 ];
 
 let state = null;
@@ -2797,9 +3000,9 @@ function horariosView(){
     const leyenda=document.createElement('div');
     leyenda.style.cssText='display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--ink-soft);margin-bottom:10px;';
     leyenda.innerHTML=`
-      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#9D4FD1;display:inline-block;"></span>Entrenamiento personal / pareja</span>
-      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#2E90D9;display:inline-block;"></span>Grupo</span>
-      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#E0902E;display:inline-block;"></span>Entrevista</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#FF6B35;display:inline-block;"></span>Entrenamiento personal / pareja</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#9B6DFF;display:inline-block;"></span>Grupo</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#FFB347;display:inline-block;"></span>Entrevista</span>
       <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#3FAF7F;display:inline-block;"></span>Otro</span>
       <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#E8402C;display:inline-block;"></span>Comida</span>
       <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:transparent;border:1px solid var(--line);display:inline-block;"></span>Oficina</span>
@@ -2974,10 +3177,10 @@ function tipoCelda(valor){
 }
 function colorPorTipo(tipo){
   switch(tipo){
-    case 'grupo': return '#2E90D9';
-    case 'entrevista': return '#E0902E';
+    case 'grupo': return '#9B6DFF';
+    case 'entrevista': return '#FFB347';
     case 'otro': return '#3FAF7F';
-    case 'personal': return '#9D4FD1';
+    case 'personal': return '#FF6B35';
     case 'comida': return '#E8402C';
     default: return 'transparent';
   }
@@ -3624,17 +3827,18 @@ function homeView(){
   conectarBuscadorGlobal(wrap.querySelector('#global-search-home'), wrap.querySelector('#global-search-home-results'));
   const grid=document.createElement('div');
   grid.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:18px;';
-  const optPersonal=document.createElement('div'); optPersonal.className='card'; optPersonal.style.cssText='padding:32px 24px;cursor:pointer;text-align:left;';
-  optPersonal.innerHTML=`<div style="position:absolute;bottom:16px;right:16px;transform:scale(0.6);transform-origin:bottom right;">${personalSplitIconSVG()}</div><h3 style="font-size:22px;margin:0 0 8px;max-width:80%;">Entrenamientos personales</h3><p style="max-width:80%;margin:0;">Individuales: ${individualesActivos} activos · ${individualesInactivos} inactivos</p><p style="max-width:80%;margin:2px 0 0;">Parejas: ${parejasActivas} activas · ${parejasInactivas} inactivas</p>`;
+  const iconBadge = (color, svgInner)=>`<div style="width:46px;height:46px;border-radius:14px;background:${color==='orange'?'rgba(255,107,53,.16)':'rgba(155,109,255,.16)'};display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color==='orange'?'#FF6B35':'#9B6DFF'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg></div>`;
+  const optPersonal=document.createElement('div'); optPersonal.className='card'; optPersonal.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optPersonal.innerHTML=`${iconBadge('orange','<path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/>')}<h3 style="font-size:20px;margin:0 0 8px;max-width:90%;">Entrenamientos personales</h3><p style="max-width:90%;margin:0;">Individuales: ${individualesActivos} activos · ${individualesInactivos} inactivos</p><p style="max-width:90%;margin:2px 0 0;">Parejas: ${parejasActivas} activas · ${parejasInactivas} inactivas</p>`;
   optPersonal.onclick=()=>{ appScreen='personal'; state.activeTab='clientes'; render(); };
-  const optGrupos=document.createElement('div'); optGrupos.className='card'; optGrupos.style.cssText='padding:32px 24px;cursor:pointer;text-align:left;';
-  optGrupos.innerHTML=`<div style="position:absolute;bottom:16px;right:16px;transform:scale(0.6);transform-origin:bottom right;">${bowlingSilhouettesSVG('var(--accent-b)')}</div><span class="tag" style="background:rgba(127,179,217,.16);color:var(--accent-b);">Clases dirigidas</span><h3 style="font-size:22px;margin:10px 0 8px;max-width:75%;">Grupos</h3><p style="max-width:75%;">${state.grupos.length} categorías · ${state.grupos.reduce((n,c)=>n+c.horarios.length,0)} horarios.</p>`;
+  const optGrupos=document.createElement('div'); optGrupos.className='card'; optGrupos.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optGrupos.innerHTML=`${iconBadge('purple','<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15 14.3c2.3.3 3.9 2 3.9 4.2"/>')}<span class="tag" style="background:rgba(155,109,255,.16);color:var(--accent-b);">Clases dirigidas</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Grupos</h3><p style="max-width:90%;">${state.grupos.length} categorías · ${state.grupos.reduce((n,c)=>n+c.horarios.length,0)} horarios.</p>`;
   optGrupos.onclick=()=>{ appScreen='grupos'; state.activeTab='clientes'; render(); };
-  const optHorarios=document.createElement('div'); optHorarios.className='card'; optHorarios.style.cssText='padding:32px 24px;cursor:pointer;text-align:left;';
-  optHorarios.innerHTML=`<div style="position:absolute;bottom:16px;right:16px;transform:scale(0.6);transform-origin:bottom right;">${clockIconSVG('var(--accent-2)')}</div><span class="tag" style="background:rgba(232,178,78,.16);color:var(--accent-2);">Tu agenda</span><h3 style="font-size:22px;margin:10px 0 8px;max-width:80%;">Horarios</h3><p style="max-width:80%;">${state.horario.horas.length} franjas configuradas — vista mes, semana y día.</p>`;
+  const optHorarios=document.createElement('div'); optHorarios.className='card'; optHorarios.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optHorarios.innerHTML=`${iconBadge('purple','<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>')}<span class="tag" style="background:rgba(155,109,255,.16);color:var(--accent-b);">Tu agenda</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Horarios</h3><p style="max-width:90%;">${state.horario.horas.length} franjas configuradas — vista mes, semana y día.</p>`;
   optHorarios.onclick=()=>{ appScreen='horarios'; render(); };
-  const optTemporizador=document.createElement('div'); optTemporizador.className='card'; optTemporizador.style.cssText='padding:32px 24px;cursor:pointer;text-align:left;';
-  optTemporizador.innerHTML=`<div style="position:absolute;bottom:16px;right:16px;transform:scale(0.6);transform-origin:bottom right;">⏱️</div><span class="tag" style="background:rgba(63,175,127,.16);color:#3FAF7F;">Cronómetro</span><h3 style="font-size:22px;margin:10px 0 8px;max-width:85%;">Temporizador</h3><p style="max-width:85%;">Trabajo / descanso configurable a tu gusto.</p>`;
+  const optTemporizador=document.createElement('div'); optTemporizador.className='card'; optTemporizador.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optTemporizador.innerHTML=`${iconBadge('orange','<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l3 2M10 2h4"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Cronómetro</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Temporizador</h3><p style="max-width:90%;">Trabajo / descanso configurable, o genera una sesión al momento.</p>`;
   optTemporizador.onclick=()=>{ appScreen='temporizador'; render(); };
   grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador);
   wrap.appendChild(grid);
