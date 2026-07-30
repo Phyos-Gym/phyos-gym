@@ -2682,7 +2682,7 @@ function temporizadorView(){
       estadoTxt.textContent='Ningún ejercicio cumple esos filtros.';
       return;
     }
-    const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s']});
+    const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s'], equilibrarGrupos: filtros.grupos.length===0});
     sesionTemporizadorActual = elegidos.map(c=>({ ex:c.ex, series:c.series, reps:c.reps, descansoSeg: segundosDeDescanso(c.descanso) }));
     wrap.querySelector('#t-rondas').value = sesionTemporizadorActual.length;
     estadoTxt.textContent = `✓ Sesión generada: ${sesionTemporizadorActual.length} ejercicios (rondas ajustadas)`;
@@ -3931,7 +3931,7 @@ function conectarBuscadorGlobal(gsInput, gsResults){
     gsResults.querySelectorAll('.gs-item').forEach(item=>{
       item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
       item.onmouseleave=()=>{ item.style.background='transparent'; };
-      item.onmousedown=(e)=>{
+      item.onclick=(e)=>{
         e.preventDefault();
         if(item.dataset.tipo==='cliente'){
           const cliente = state.clients.find(c=>c.id===item.dataset.id);
@@ -4237,7 +4237,7 @@ function crearAutocompleteCliente(inputEl, listaClientes, onSelect){
       sugerencias.querySelectorAll('.ac-item').forEach(item=>{
         item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
         item.onmouseleave=()=>{ item.style.background='transparent'; };
-        item.onmousedown=(e)=>{
+        item.onclick=(e)=>{
           e.preventDefault();
           const cliente = listaClientes().find(c=>c.id===item.dataset.id);
           if(cliente) onSelect(cliente);
@@ -4271,7 +4271,7 @@ function crearAutocompleteTexto(inputEl, listaTextos){
     sugerencias.querySelectorAll('.ac-item').forEach(item=>{
       item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
       item.onmouseleave=()=>{ item.style.background='transparent'; };
-      item.onmousedown=(e)=>{
+      item.onclick=(e)=>{
         e.preventDefault();
         inputEl.value = item.textContent;
         sugerencias.style.display='none';
@@ -4302,7 +4302,7 @@ function crearSelectorFiltroBuscable(inputEl, opciones, getValorActual, onSelect
     sugerencias.querySelectorAll('.ac-item').forEach(item=>{
       item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
       item.onmouseleave=()=>{ item.style.background='transparent'; };
-      item.onmousedown=(e)=>{
+      item.onclick=(e)=>{
         e.preventDefault();
         inputEl.value = item.dataset.v;
         sugerencias.style.display='none';
@@ -5271,7 +5271,7 @@ function generateRandomGroupWeek(clase, horario, week){
     for(let dia=1; dia<=numDias; dia++){
       let disponibles = freshPool.filter(ex=>!usadosEnEstaSemana.has(ex.id));
       if(disponibles.length < porDia) disponibles = freshPool;
-      const chosen = construirSesionPorPresupuesto(disponibles, {repsOptions, restOptions});
+      const chosen = construirSesionPorPresupuesto(disponibles, {repsOptions, restOptions, equilibrarGrupos: filtros.grupos.length===0});
       chosen.forEach(c=>usadosEnEstaSemana.add(c.ex.id));
       chosen.forEach(({ex, series, reps, descanso}, i)=>{
         newItems.push({
@@ -6190,11 +6190,40 @@ const RESERVA_CALENTAMIENTO_ENFRIAMIENTO_SEG = 13*60;
 function construirSesionPorPresupuesto(disponibles, opciones){
   const repsOptions = opciones.repsOptions;
   const restOptions = opciones.restOptions;
+  const equilibrarGrupos = opciones.equilibrarGrupos !== false;
   const presupuesto = PRESUPUESTO_SESION_SEG - RESERVA_CALENTAMIENTO_ENFRIAMIENTO_SEG;
-  const shuffled = [...disponibles].sort(()=>Math.random()-0.5);
+
+  let ordenEjercicios;
+  if(equilibrarGrupos){
+    // Sin un grupo muscular concreto elegido: reparte por todo el cuerpo. Agrupa por zona,
+    // baraja el orden de las zonas y el interior de cada una, y va turnando entre zonas
+    // para no caer por azar en ejercicios de una sola parte del cuerpo.
+    const buckets = {};
+    disponibles.forEach(ex=>{
+      const clave = (ex.grupoMuscular||'General').split('/')[0].trim();
+      if(!buckets[clave]) buckets[clave]=[];
+      buckets[clave].push(ex);
+    });
+    const claves = Object.keys(buckets).sort(()=>Math.random()-0.5);
+    claves.forEach(k=>{ buckets[k].sort(()=>Math.random()-0.5); });
+    ordenEjercicios = [];
+    let quedan = true;
+    while(quedan){
+      quedan = false;
+      for(const k of claves){
+        if(buckets[k].length>0){
+          ordenEjercicios.push(buckets[k].shift());
+          quedan = true;
+        }
+      }
+    }
+  } else {
+    ordenEjercicios = [...disponibles].sort(()=>Math.random()-0.5);
+  }
+
   const chosen = [];
   let tiempoAcumulado = 0;
-  for(const ex of shuffled){
+  for(const ex of ordenEjercicios){
     if(chosen.length>=10) break;
     const cardio = esEjercicioCardioContinuo(ex);
     const series = cardio ? '1' : '3';
@@ -6251,7 +6280,7 @@ function crearMultiSelectBuscable(inputEl, chipsContainer, opciones){
     dropdown.querySelectorAll('.ac-item').forEach(item=>{
       item.onmouseenter=()=>{ item.style.background='var(--surface-2)'; };
       item.onmouseleave=()=>{ item.style.background='transparent'; };
-      item.onmousedown=(e)=>{
+      item.onclick=(e)=>{
         e.preventDefault();
         seleccionados.push(item.dataset.v);
         inputEl.value='';
@@ -6343,7 +6372,7 @@ function generateRandomWeek(program, week, unitClients){
     for(let dia=1; dia<=numDias; dia++){
       let disponibles = freshPool.filter(ex=>!usadosEnEstaSemana.has(ex.id));
       if(disponibles.length < 6) disponibles = freshPool; // si se agota la variedad, se permite repetir entre días de la misma semana
-      const chosen = construirSesionPorPresupuesto(disponibles, {repsOptions, restOptions});
+      const chosen = construirSesionPorPresupuesto(disponibles, {repsOptions, restOptions, equilibrarGrupos: filtros.grupos.length===0});
       chosen.forEach(c=>usadosEnEstaSemana.add(c.ex.id));
 
       chosen.forEach(({ex, series, reps, descanso})=>{
