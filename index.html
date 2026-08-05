@@ -4061,10 +4061,10 @@ function headerEl(){
 }
 function conectarBuscadorGlobal(gsInput, gsResults){
   gsInput.oninput=()=>{
-    const q = gsInput.value.trim().toLowerCase();
+    const q = normalizarBusqueda(gsInput.value.trim());
     if(!q){ gsResults.style.display='none'; gsResults.innerHTML=''; return; }
-    const clientesMatch = state.clients.filter(c=>c.nombre.toLowerCase().includes(q)).slice(0,6);
-    const ejerciciosMatch = state.exercises.filter(e=>e.nombre.toLowerCase().includes(q)).slice(0,6);
+    const clientesMatch = state.clients.filter(c=>normalizarBusqueda(c.nombre).includes(q)).slice(0,6);
+    const ejerciciosMatch = state.exercises.filter(e=>normalizarBusqueda(e.nombre).includes(q)).slice(0,6);
     let html='';
     if(clientesMatch.length){
       html += `<div style="padding:6px 10px;font-size:10.5px;text-transform:uppercase;color:var(--ink-soft);letter-spacing:.06em;">Clientes</div>`;
@@ -4227,7 +4227,7 @@ function clientesView(){
 
   function renderGrid(){
     gridHolder.innerHTML='';
-    let list = screenClients().filter(c=>c.nombre.toLowerCase().includes(clientSearch.toLowerCase()));
+    let list = screenClients().filter(c=>normalizarBusqueda(c.nombre).includes(normalizarBusqueda(clientSearch)));
     if(clientFilter==='activos') list = list.filter(c=>c.activo!==false);
     if(clientFilter==='inactivos') list = list.filter(c=>c.activo===false);
     if(list.length===0){
@@ -4369,6 +4369,8 @@ function openClientModal(clientId){
 }
 
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Normaliza texto para búsquedas sin distinguir tildes/acentos (así "biceps" encuentra "Bíceps", "corazon" encuentra "corazón", etc.)
+function normalizarBusqueda(str){ return (str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
 
 // Autocompletado de clientes: crea una lista de sugerencias visible debajo del input a medida que se escribe.
 function crearAutocompleteCliente(inputEl, listaClientes, onSelect){
@@ -4382,9 +4384,9 @@ function crearAutocompleteCliente(inputEl, listaClientes, onSelect){
   function ordenados(){ return [...listaClientes()].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')); }
 
   function mostrarSugerencias(){
-    const q=inputEl.value.trim().toLowerCase();
+    const q=normalizarBusqueda(inputEl.value.trim());
     if(!q){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
-    const coincidencias = ordenados().filter(c=>c.nombre.toLowerCase().includes(q)).slice(0,8);
+    const coincidencias = ordenados().filter(c=>normalizarBusqueda(c.nombre).includes(q)).slice(0,8);
     if(coincidencias.length===0){
       sugerencias.innerHTML = `<div style="padding:8px 10px;font-size:12.5px;color:var(--ink-soft);">Sin coincidencias</div>`;
     } else {
@@ -4417,10 +4419,10 @@ function crearAutocompleteTexto(inputEl, listaTextos){
   sugerencias.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:2px;max-height:180px;overflow-y:auto;z-index:60;display:none;box-shadow:0 6px 18px rgba(0,0,0,.35);';
   contenedor.appendChild(sugerencias);
   function mostrarSugerencias(){
-    const q=inputEl.value.trim().toLowerCase();
+    const q=normalizarBusqueda(inputEl.value.trim());
     if(!q){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
     const unicos = [...new Set(listaTextos())].sort((a,b)=>a.localeCompare(b,'es'));
-    const coincidencias = unicos.filter(t=>t.toLowerCase().includes(q) && t.toLowerCase()!==q).slice(0,8);
+    const coincidencias = unicos.filter(t=>normalizarBusqueda(t).includes(q) && normalizarBusqueda(t)!==q).slice(0,8);
     if(coincidencias.length===0){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
     sugerencias.innerHTML = coincidencias.map(t=>`<div class="ac-item" style="padding:8px 10px;font-size:13px;cursor:pointer;color:var(--ink);">${escapeHtml(t)}</div>`).join('');
     sugerencias.querySelectorAll('.ac-item').forEach(item=>{
@@ -4449,9 +4451,9 @@ function crearSelectorFiltroBuscable(inputEl, opciones, getValorActual, onSelect
   sugerencias.style.cssText='position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:2px;max-height:200px;overflow-y:auto;z-index:60;display:none;box-shadow:0 6px 18px rgba(0,0,0,.35);';
   contenedor.appendChild(sugerencias);
   function mostrarSugerencias(){
-    const q=inputEl.value.trim().toLowerCase();
+    const q=normalizarBusqueda(inputEl.value.trim());
     const ordenadas = [...opciones].sort((a,b)=>a.localeCompare(b,'es'));
-    const coincidencias = q ? ordenadas.filter(o=>o.toLowerCase().includes(q)) : ordenadas;
+    const coincidencias = q ? ordenadas.filter(o=>normalizarBusqueda(o).includes(q)) : ordenadas;
     if(coincidencias.length===0){ sugerencias.style.display='none'; sugerencias.innerHTML=''; return; }
     sugerencias.innerHTML = coincidencias.slice(0,40).map(o=>`<div class="ac-item" data-v="${escapeHtml(o)}" style="padding:7px 10px;font-size:12.5px;cursor:pointer;color:var(--ink);">${escapeHtml(o)}</div>`).join('');
     sugerencias.querySelectorAll('.ac-item').forEach(item=>{
@@ -4576,7 +4578,7 @@ function bateriaView(){
   function renderGrid(){
     gridHolder.innerHTML='';
     const list=state.exercises.filter(e=>{
-      const coincideNombre = e.nombre.toLowerCase().includes(exSearch.toLowerCase());
+      const coincideNombre = normalizarBusqueda(e.nombre).includes(normalizarBusqueda(exSearch));
       const coincideGrupo = !exGrupoFilter || grupoMuscularCoincideConFiltro(e.grupoMuscular, exGrupoFilter);
       const coincideMaterial = !exMaterialFilter || (e.material||'').split(',').map(m=>m.trim()).includes(exMaterialFilter);
       let coincideTipo = true;
@@ -5952,11 +5954,11 @@ function conectarBuscadorEjercicio(overlay){
   const select = overlay.querySelector('#pick-ex');
   const contador = overlay.querySelector('#pick-contador');
   function actualizar(){
-    const q = buscar.value.trim().toLowerCase();
+    const q = normalizarBusqueda(buscar.value.trim());
     const grupo = filtroGrupo.value;
     const material = filtroMaterial.value;
     const filtrados = state.exercises.filter(e=>{
-      const coincideNombre = !q || e.nombre.toLowerCase().includes(q);
+      const coincideNombre = !q || normalizarBusqueda(e.nombre).includes(q);
       const coincideGrupo = !grupo || grupoMuscularCoincideConFiltro(e.grupoMuscular, grupo);
       const coincideMaterial = !material || (e.material||'').split(',').map(m=>m.trim()).includes(material);
       return coincideNombre && coincideGrupo && coincideMaterial;
@@ -6464,9 +6466,9 @@ function crearMultiSelectBuscable(inputEl, chipsContainer, opciones){
     });
   }
   function mostrarSugerencias(){
-    const q = inputEl.value.trim().toLowerCase();
+    const q = normalizarBusqueda(inputEl.value.trim());
     const disponibles = opciones.filter(o=>!seleccionados.includes(o));
-    const filtradas = q ? disponibles.filter(o=>o.toLowerCase().includes(q)) : disponibles;
+    const filtradas = q ? disponibles.filter(o=>normalizarBusqueda(o).includes(q)) : disponibles;
     if(filtradas.length===0){ dropdown.style.display='none'; dropdown.innerHTML=''; return; }
     dropdown.innerHTML = filtradas.slice(0,40).map(o=>`<div class="ac-item" data-v="${escapeHtml(o)}" style="padding:7px 10px;font-size:12.5px;cursor:pointer;color:var(--ink);">${escapeHtml(o)}</div>`).join('');
     dropdown.querySelectorAll('.ac-item').forEach(item=>{
