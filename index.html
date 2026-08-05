@@ -68,8 +68,8 @@ input,textarea,select{font-family:'Inter',sans-serif;}
 .search{padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;min-width:220px;background:var(--surface);color:var(--ink);}
 .search::placeholder{color:var(--ink-soft);}
 
-.overlay{position:fixed;inset:0;background:rgba(8,5,12,.7);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50;}
-.modal{background:var(--surface);border-radius:12px;max-width:720px;width:100%;padding:26px 28px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45);}
+.overlay{position:fixed;inset:0;background:rgba(8,5,12,.7);display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto;z-index:50;}
+.modal{background:var(--surface);border-radius:12px;max-width:720px;width:100%;max-height:calc(100vh - 48px);overflow-y:auto;padding:26px 28px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45);}
 .modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
 .close-x{border:none;background:none;font-size:20px;color:var(--ink-soft);cursor:pointer;line-height:1;}
 .close-x:hover{color:var(--accent);}
@@ -434,7 +434,22 @@ const RAW_CLIENTS = [
  diagnostico:"No", medicacion:"Sí — hipertensión, colesterol, tiroides", lesionOperacion:"Sí — prótesis cadera derecha, prótesis rodilla derecha, hernia discal L4-L5, desgaste vertebral, hernia inguinal, matriz y ovario extirpados", evitar:"No", sintomas:"Dolor articular", revision:"Febrero — todo bien",
  altura:"165 cm", pesoActual:"70 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — entrenamiento personal", nivelForma:"Medio", estres:"Alto", sueno:"Malo (4 h)", alimentacion:"Equilibrada — menciona chocolate", fumaAlcohol:"No — 1 copa de vino diaria",
  principal:"Pérdida de peso, ganancia muscular", zona:"Tren inferior", dias:"1", preferencia:"Combinado",
- notas:"Doble prótesis (cadera y rodilla derechas): evitar impacto alto y cargas axiales bruscas en esa pierna. Hernia discal L4-L5 y desgaste vertebral: evitar flexión lumbar cargada. Cliente distinta de Pilar Cloux.", activo:true, fechaInicio:"2026-07-01"}
+ notas:"Doble prótesis (cadera y rodilla derechas): evitar impacto alto y cargas axiales bruscas en esa pierna. Hernia discal L4-L5 y desgaste vertebral: evitar flexión lumbar cargada. Cliente distinta de Pilar Cloux.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Ascensión Garcés", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — isquio (agujero), cervicales", evitar:"No", sintomas:"Ninguno marcado", revision:"Pendiente de hacerse",
+ altura:"160 cm", pesoActual:"68 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — pilates 2 veces/semana, andar 10 km diarios, fuerza en casa casi todos los días", nivelForma:"Bueno", estres:"Alto", sueno:"Malo (6–7 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, tonificación, salud general", zona:"Core", dias:"5 o más", preferencia:"Combinado",
+ notas:"Cuidado con la zona de isquio (agujero) y cervicales.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Amanda Monleón", pareja:null,
+ diagnostico:"Sí — ansiedad, intestino irritable", medicacion:"No", lesionOperacion:"Sí — rodillas", evitar:"No", sintomas:"Mareos, falta de aire", revision:"Hace 1 año — todo ok",
+ altura:"165 cm", pesoActual:"49 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio por su cuenta", nivelForma:"Muy bajo", estres:"Alto", sueno:"Malo (6 h)", alimentacion:"Irregular", fumaAlcohol:"Sí — alcohol ocasionalmente",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"Rodillas, espalda, tren inferior, cervicales y brazos", dias:"1", preferencia:"Combinado",
+ notas:"Cuidado con rodillas y cervicales. Vigilar mareos/falta de aire durante el esfuerzo; progresar despacio dado el nivel de forma muy bajo.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"María Prades", pareja:null,
+ diagnostico:"Sí — hernia inguinal, discapacidad física e intelectual, meningitis de nacimiento", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 3 meses — todo bien",
+ altura:"158 cm", pesoActual:"54 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — bici estática y andar", nivelForma:"Bajo", estres:"Medio", sueno:"Regular (7 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular", zona:"Mejorar lado izquierdo", dias:"1 cada 15 días", preferencia:"Gimnasio",
+ notas:"Discapacidad física e intelectual (meningitis de nacimiento): instrucciones simples y claras, apoyo verbal constante. Hernia inguinal: evitar presión intraabdominal alta. Prioridad en trabajo de lado izquierdo.", activo:true, fechaInicio:"2026-07-01"}
 ];
 
 const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
@@ -2286,6 +2301,16 @@ async function loadState(){
         if(state.horario.grid[k]==='Funcional' || state.horario.grid[k]==='Pilates') state.horario.grid[k]=REVERTIR_HORARIO[k];
       });
       if(!state.temporizadorPlantillas) state.temporizadorPlantillas = [];
+      if(!state.clients || state.clients.length===0){
+        state.clients = DEFAULT_CLIENTS;
+      } else {
+        const nombresClientesExistentes = new Set(state.clients.map(c=>c.nombre.trim().toLowerCase()));
+        DEFAULT_CLIENTS.forEach(nuevo=>{
+          if(!nombresClientesExistentes.has(nuevo.nombre.trim().toLowerCase())){
+            state.clients.push(JSON.parse(JSON.stringify(nuevo)));
+          }
+        });
+      }
       if(!state.exercises || state.exercises.length===0){
         state.exercises = JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
       } else {
@@ -2828,19 +2853,25 @@ function temporizadorView(){
   function renderListaSesion(){
     if(sesionTemporizadorActual.length===0){ colLista.style.display='none'; colLista.innerHTML=''; return; }
     colLista.style.display='block';
-    colLista.innerHTML = `<div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">Ejercicios de la sesión</div>`
+    colLista.innerHTML = `<div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">Ejercicios de la sesión (toca uno para ver su técnica)</div>`
       + sesionTemporizadorActual.map((info,i)=>{
         const esActual = estado && (i===estado.rondaActual-1);
         return `
-          <div class="t-lista-item" data-i="${i}" style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:4px;${esActual?'background:rgba(157,79,209,.16);border-left:3px solid var(--accent);':'border-left:3px solid transparent;'}">
+          <div class="t-lista-item" data-i="${i}" style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:4px;cursor:pointer;${esActual?'background:rgba(157,79,209,.16);border-left:3px solid var(--accent);':'border-left:3px solid transparent;'}">
             ${info.ex.imagenUrl?`<img src="${escapeHtml(info.ex.imagenUrl)}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;" onerror="this.style.display='none'">`:`<div style="width:40px;height:40px;border-radius:6px;background:var(--surface-2);flex-shrink:0;"></div>`}
             <div style="min-width:0;">
-              <div style="font-size:12.5px;font-weight:${esActual?'700':'500'};color:${esActual?'var(--ink)':'var(--ink-soft)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i+1}. ${escapeHtml(info.ex.nombre)}</div>
+              <div style="font-size:12.5px;font-weight:${esActual?'700':'500'};color:${esActual?'var(--ink)':'var(--ink-soft)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline dotted;text-underline-offset:2px;">${i+1}. ${escapeHtml(info.ex.nombre)}</div>
               <div style="font-size:10.5px;color:var(--ink-soft);">${escapeHtml(info.series)}×${escapeHtml(info.reps)}</div>
             </div>
           </div>
         `;
       }).join('');
+    colLista.querySelectorAll('.t-lista-item').forEach(el=>{
+      el.onclick=()=>{
+        const info = sesionTemporizadorActual[parseInt(el.dataset.i)];
+        if(info) abrirInfoEjercicio(info.ex);
+      };
+    });
   }
   renderListaSesion();
 
@@ -2901,9 +2932,11 @@ function temporizadorView(){
     } else {
       ejercicioBox.innerHTML = `
         ${info.ex.imagenUrl?`<img src="${escapeHtml(info.ex.imagenUrl)}" style="max-height:150px;border-radius:10px;margin-bottom:8px;object-fit:cover;">`:''}
-        <div style="font-size:19px;font-weight:700;">${escapeHtml(info.ex.nombre)}</div>
+        <div class="t-ejercicio-actual-nombre" style="font-size:19px;font-weight:700;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${escapeHtml(info.ex.nombre)}</div>
         <div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(info.series)} series × ${escapeHtml(info.reps)}</div>
       `;
+      const nombreEl = ejercicioBox.querySelector('.t-ejercicio-actual-nombre');
+      if(nombreEl) nombreEl.onclick=()=>abrirInfoEjercicio(info.ex);
     }
   }
   function tick(){
@@ -4512,7 +4545,7 @@ function bateriaView(){
   toolbar.className='toolbar';
   toolbar.style.flexWrap='wrap';
 
-  const gruposUnicos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const gruposUnicos = ['Tren superior','Tren inferior', ...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].filter((v,i,a)=>a.indexOf(v)===i);
   const materialesUnicos = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
 
   toolbar.innerHTML=`
@@ -4544,7 +4577,7 @@ function bateriaView(){
     gridHolder.innerHTML='';
     const list=state.exercises.filter(e=>{
       const coincideNombre = e.nombre.toLowerCase().includes(exSearch.toLowerCase());
-      const coincideGrupo = !exGrupoFilter || e.grupoMuscular===exGrupoFilter;
+      const coincideGrupo = !exGrupoFilter || grupoMuscularCoincideConFiltro(e.grupoMuscular, exGrupoFilter);
       const coincideMaterial = !exMaterialFilter || (e.material||'').split(',').map(m=>m.trim()).includes(exMaterialFilter);
       let coincideTipo = true;
       if(exTipoFilter==='individual') coincideTipo = !e.esPareja && !e.esDinamicaGrupal;
@@ -5221,11 +5254,15 @@ function weekBlockGrupo(clase, horario, week, wIdx){
     const itemColapsado = itemsColapsados.has(item.id);
     const row=document.createElement('div'); row.className='ex-row';
     row.style.gridTemplateColumns = gridCols;
-    if(item.supersetId) row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
+    if(item.supersetId){
+      row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
+      row.style.background=fondoSuperset(item.supersetId, week);
+      if(esContinuacionDeSuperset(week.items, iIdx)) row.style.borderTop='none';
+    }
     const exNameHtml = `<div class="exname">
       <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
       ${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}
-      <span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''}
+      <span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?badgeSuperset(item.supersetId,week):''}
     </div>`;
     row.innerHTML = (isRotativa ? exNameHtml+`<div class="ex-campo"><input value="${escapeHtml(item.estacion||'')}" data-f="estacion" placeholder="Estación 1"></div>` : exNameHtml) + `
       <div class="ex-campo"><input value="${escapeHtml(item.series)}" data-f="series"></div>
@@ -5557,6 +5594,21 @@ function letraSuperset(supersetId, week){
   const idx = ids.indexOf(supersetId);
   return String.fromCharCode(65+idx); // A, B, C...
 }
+function fondoSuperset(supersetId, week){
+  const hex = colorSuperset(supersetId, week);
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},0.14)`;
+}
+function badgeSuperset(supersetId, week){
+  const color = colorSuperset(supersetId, week);
+  return `<span style="background:${color};color:#fff;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.02em;margin-left:8px;white-space:nowrap;">🔗 SUPERSERIE ${letraSuperset(supersetId,week)}</span>`;
+}
+// ¿El elemento anterior de la lista pertenece a la misma superserie? (para fusionar visualmente las filas, sin separación entre ellas)
+function esContinuacionDeSuperset(items, idx){
+  if(idx<=0) return false;
+  const actual = items[idx], anterior = items[idx-1];
+  return !!(actual.supersetId && anterior.supersetId===actual.supersetId);
+}
 function exportarResumenSesion(week, unitClients, titulo){
   const isPair = unitClients && unitClients.length===2;
   let filasHtml = '';
@@ -5876,7 +5928,7 @@ function flechaColapso(colapsado){
 
 // Buscador/filtro de ejercicios reutilizable, para los cuadros de "Añadir ejercicio" (personal y grupos)
 function htmlBuscadorEjercicio(){
-  const gruposUnicos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const gruposUnicos = ['Tren superior','Tren inferior', ...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].filter((v,i,a)=>a.indexOf(v)===i);
   const materialesUnicos = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
   return `
     <div class="field"><label>Buscar ejercicio por nombre</label><input id="pick-buscar" placeholder="Escribe para filtrar..."></div>
@@ -5905,7 +5957,7 @@ function conectarBuscadorEjercicio(overlay){
     const material = filtroMaterial.value;
     const filtrados = state.exercises.filter(e=>{
       const coincideNombre = !q || e.nombre.toLowerCase().includes(q);
-      const coincideGrupo = !grupo || e.grupoMuscular===grupo;
+      const coincideGrupo = !grupo || grupoMuscularCoincideConFiltro(e.grupoMuscular, grupo);
       const coincideMaterial = !material || (e.material||'').split(',').map(m=>m.trim()).includes(material);
       return coincideNombre && coincideGrupo && coincideMaterial;
     });
@@ -6054,12 +6106,16 @@ function weekBlock(unitClients, program, week, wIdx){
       const ex = state.exercises.find(e=>e.id===item.exerciseId);
       const itemColapsado = itemsColapsados.has(item.id);
       const row=document.createElement('div'); row.className='ex-row'; row.style.gridTemplateColumns=gridCols;
-      if(item.supersetId) row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
+      if(item.supersetId){
+        row.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
+        row.style.background=fondoSuperset(item.supersetId, week);
+        if(esContinuacionDeSuperset(week.items, iIdx)) row.style.borderTop='none';
+      }
       row.innerHTML=`
         <div class="exname">
           <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
           ${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}
-          ${nombreExClickeable(ex, (item.supersetId?`<span style="font-size:10px;color:${colorSuperset(item.supersetId,week)};font-weight:700;margin-left:4px;">SS-${letraSuperset(item.supersetId,week)}</span>`:''))}
+          ${nombreExClickeable(ex, (item.supersetId?badgeSuperset(item.supersetId,week):''))}
         </div>
         <div class="ex-campo"><input value="${escapeHtml(item.series)}" data-f="series"></div>
         <div class="ex-campo"><input value="${escapeHtml(item.reps)}" data-f="reps"></div>
@@ -6099,13 +6155,18 @@ function weekBlock(unitClients, program, week, wIdx){
       const ex = state.exercises.find(e=>e.id===item.exerciseId);
       const itemColapsado = itemsColapsados.has(item.id);
       const wrap=document.createElement('div'); wrap.className='pair-item';
+      if(item.supersetId){
+        wrap.style.borderLeft=`4px solid ${colorSuperset(item.supersetId, week)}`;
+        wrap.style.background=fondoSuperset(item.supersetId, week);
+        if(esContinuacionDeSuperset(week.items, iIdx)) wrap.style.borderTop='none';
+      }
       const headEl=document.createElement('div'); headEl.className='pair-item-head';
       const soloNombre = item.soloPara==='a' ? unitClients[0].nombre : item.soloPara==='b' ? unitClients[1].nombre : null;
       const otroNombre = item.soloPara==='a' ? unitClients[1].nombre : item.soloPara==='b' ? unitClients[0].nombre : null;
       headEl.innerHTML=`
         <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
         <span class="exname">${ex&&ex.imagenUrl?`<img src="${escapeHtml(ex.imagenUrl)}" onerror="this.style.display='none'">`:''}${nombreExClickeable(ex)}</span>
-        ${item.esPareja?'<span class="pair-badge">Ejercicio en pareja</span>':''}${soloNombre?`<span class="pair-badge" style="background:var(--surface-2);color:var(--ink-soft);">Solo ${escapeHtml(soloNombre)}</span>`:''}
+        ${item.supersetId?badgeSuperset(item.supersetId,week):''}${item.esPareja?'<span class="pair-badge">Ejercicio en pareja</span>':''}${soloNombre?`<span class="pair-badge" style="background:var(--surface-2);color:var(--ink-soft);">Solo ${escapeHtml(soloNombre)}</span>`:''}
       `;
       if(soloNombre){
         const syncBtn=document.createElement('button'); syncBtn.className='btn btn-sm btn-ghost'; syncBtn.textContent=`🔗 También para ${otroNombre}`;
@@ -6428,15 +6489,24 @@ function crearMultiSelectBuscable(inputEl, chipsContainer, opciones){
   return { getSeleccionados: ()=>seleccionados };
 }
 function conectarFiltrosGeneracion(overlay){
-  const grupos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const gruposEspecificos = [...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  const gruposOrdenados = ['Tren superior','Tren inferior', ...gruposEspecificos];
   const materiales = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
-  const ctrlGrupos = crearMultiSelectBuscable(overlay.querySelector('#rw-grupos-buscar'), overlay.querySelector('#rw-grupos-chips'), grupos);
+  const ctrlGrupos = crearMultiSelectBuscable(overlay.querySelector('#rw-grupos-buscar'), overlay.querySelector('#rw-grupos-chips'), gruposOrdenados);
   const ctrlMateriales = crearMultiSelectBuscable(overlay.querySelector('#rw-materiales-buscar'), overlay.querySelector('#rw-materiales-chips'), materiales);
   return { leer: ()=>({ grupos: ctrlGrupos.getSeleccionados(), materiales: ctrlMateriales.getSeleccionados() }) };
 }
+const PALABRAS_TREN_INFERIOR = ['pierna','glúteo','gluteo','cuádriceps','cuadriceps','isquiotibial','gemelo','cadera','aductor','sóleo','soleo','tobillo','rodilla'];
+const PALABRAS_TREN_SUPERIOR = ['pecho','espalda','hombro','brazo','bíceps','biceps','tríceps','triceps','dorsal','trapecio','antebrazo','muñeca'];
+function grupoMuscularCoincideConFiltro(grupoMuscular, filtro){
+  const texto = (grupoMuscular||'').toLowerCase();
+  if(filtro==='Tren superior') return PALABRAS_TREN_SUPERIOR.some(p=>texto.includes(p));
+  if(filtro==='Tren inferior') return PALABRAS_TREN_INFERIOR.some(p=>texto.includes(p));
+  return grupoMuscular===filtro;
+}
 function aplicarFiltrosGeneracion(pool, filtros){
   let resultado = pool;
-  if(filtros.grupos.length>0) resultado = resultado.filter(ex=>filtros.grupos.includes(ex.grupoMuscular));
+  if(filtros.grupos.length>0) resultado = resultado.filter(ex=>filtros.grupos.some(g=>grupoMuscularCoincideConFiltro(ex.grupoMuscular, g)));
   if(filtros.materiales.length>0) resultado = resultado.filter(ex=>{
     const materialesEx = (ex.material||'').split(',').map(m=>m.trim());
     return filtros.materiales.some(m=>materialesEx.includes(m));
