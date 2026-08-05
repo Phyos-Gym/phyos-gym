@@ -6435,6 +6435,14 @@ function construirSesionPorPresupuesto(disponibles, opciones){
 function htmlFiltrosGeneracion(){
   return `
     <div class="field">
+      <label>Nivel de la sesión</label>
+      <div id="rw-nivel" style="display:flex;gap:6px;">
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="suave" style="flex:1;">🥳 Suave</button>
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="normal" style="flex:1;">🙂 Normal</button>
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="duro" style="flex:1;">🥵 Duro</button>
+      </div>
+    </div>
+    <div class="field">
       <label>Grupo(s) muscular(es) — opcional</label>
       <div id="rw-grupos-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;"></div>
       <input id="rw-grupos-buscar" placeholder="Escribe para buscar y añadir...">
@@ -6496,7 +6504,14 @@ function conectarFiltrosGeneracion(overlay){
   const materiales = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
   const ctrlGrupos = crearMultiSelectBuscable(overlay.querySelector('#rw-grupos-buscar'), overlay.querySelector('#rw-grupos-chips'), gruposOrdenados);
   const ctrlMateriales = crearMultiSelectBuscable(overlay.querySelector('#rw-materiales-buscar'), overlay.querySelector('#rw-materiales-chips'), materiales);
-  return { leer: ()=>({ grupos: ctrlGrupos.getSeleccionados(), materiales: ctrlMateriales.getSeleccionados() }) };
+  let nivelElegido = 'normal';
+  const botonesNivel = overlay.querySelectorAll('.rw-nivel-btn');
+  function pintarNivel(){
+    botonesNivel.forEach(b=>{ b.classList.toggle('btn-accent', b.dataset.val===nivelElegido); });
+  }
+  botonesNivel.forEach(b=>{ b.onclick=()=>{ nivelElegido=b.dataset.val; pintarNivel(); }; });
+  pintarNivel();
+  return { leer: ()=>({ grupos: ctrlGrupos.getSeleccionados(), materiales: ctrlMateriales.getSeleccionados(), nivel: nivelElegido }) };
 }
 const PALABRAS_TREN_INFERIOR = ['pierna','glúteo','gluteo','cuádriceps','cuadriceps','isquiotibial','gemelo','cadera','aductor','sóleo','soleo','tobillo','rodilla'];
 const PALABRAS_TREN_SUPERIOR = ['pecho','espalda','hombro','brazo','bíceps','biceps','tríceps','triceps','dorsal','trapecio','antebrazo','muñeca'];
@@ -6506,6 +6521,20 @@ function grupoMuscularCoincideConFiltro(grupoMuscular, filtro){
   if(filtro==='Tren inferior') return PALABRAS_TREN_INFERIOR.some(p=>texto.includes(p));
   return grupoMuscular===filtro;
 }
+// Clasifica la intensidad de un ejercicio a partir de su nombre/descripción/precauciones,
+// ya que no guardamos un nivel de dificultad propio en cada ejercicio.
+const PALABRAS_NIVEL_DURO = ['salto','saltar','explosiv','burpee','sprint','máxima','maxima','pliométric','pliometric','plyo','muy avanzado','nivel avanzado','swing','arranque','sled','carga pesada','box jump','squat jump','jump','potencia','impacto alto','hyrox','wallball slam','sacacorchos','boomerang','control balance','navaja','jack knife','equilibrio de control'];
+const PALABRAS_NIVEL_SUAVE = ['estiramiento','movilidad','respirac','activaci','rodamiento','liberación miofascial','liberacion miofascial','báscula','bascula','marcha en el sitio','marcha suave','muy suave','calentamiento','equilibrio bipodal','pausa','suave','descanso activo','apertura','iniciación','iniciacion','nivel bajo','muy accesible'];
+function nivelDificultadEjercicio(ex){
+  const texto = ((ex.nombre||'')+' '+(ex.descripcion||'')+' '+(ex.precauciones||'')).toLowerCase();
+  let puntuacion = 0;
+  PALABRAS_NIVEL_DURO.forEach(p=>{ if(texto.includes(p)) puntuacion+=1; });
+  PALABRAS_NIVEL_SUAVE.forEach(p=>{ if(texto.includes(p)) puntuacion-=1; });
+  if(esEjercicioCardioContinuo(ex)) puntuacion+=0; // el cardio se regula solo por duración, no cuenta como "duro" per se
+  if(puntuacion>=1) return 'duro';
+  if(puntuacion<=-1) return 'suave';
+  return 'normal';
+}
 function aplicarFiltrosGeneracion(pool, filtros){
   let resultado = pool;
   if(filtros.grupos.length>0) resultado = resultado.filter(ex=>filtros.grupos.some(g=>grupoMuscularCoincideConFiltro(ex.grupoMuscular, g)));
@@ -6513,6 +6542,16 @@ function aplicarFiltrosGeneracion(pool, filtros){
     const materialesEx = (ex.material||'').split(',').map(m=>m.trim());
     return filtros.materiales.some(m=>materialesEx.includes(m));
   });
+  if(filtros.nivel && filtros.nivel!=='normal'){
+    const filtradoPorNivel = resultado.filter(ex=>nivelDificultadEjercicio(ex)===filtros.nivel);
+    // Si el filtro de nivel deja muy pocos ejercicios, mezclamos con "normal" para no quedarnos sin variedad
+    if(filtradoPorNivel.length>=6) resultado = filtradoPorNivel;
+    else resultado = [...filtradoPorNivel, ...resultado.filter(ex=>nivelDificultadEjercicio(ex)==='normal')];
+  } else if(filtros.nivel==='normal'){
+    // "Normal" prioriza ejercicios normales, pero no descarta el resto si hacen falta para completar la sesión
+    const normales = resultado.filter(ex=>nivelDificultadEjercicio(ex)==='normal');
+    if(normales.length>=6) resultado = normales;
+  }
   return resultado;
 }
 
