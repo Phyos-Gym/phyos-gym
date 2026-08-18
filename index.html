@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#181420">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png">
 <meta charset="UTF-8">
 <title>Phyos Gym</title>
 <style>
@@ -105,6 +99,7 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.8);cursor:
 .t-lista-thumb{width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--surface-2);}
 .t-actual-img{max-height:150px;border-radius:10px;margin-bottom:8px;object-fit:cover;background:var(--surface-2);}
 .sd-img{max-height:180px;border-radius:10px;margin:8px 0;background:var(--surface-2);}
+.mp-thumb{width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--surface-2);}
 .ex-img-placeholder span{font-size:10.5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
 .ex-card .precaucion{background:rgba(240,128,105,.14);border:1px solid rgba(240,128,105,.4);color:var(--danger);font-size:11.5px;padding:6px 8px;border-radius:6px;margin-top:8px;}
 
@@ -2200,7 +2195,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
 ];
 
-const APP_VERSION = '2026-08-07-2';
+const APP_VERSION = '2026-08-07-1';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -2321,6 +2316,8 @@ async function loadState(){
         if(state.horario.grid[k]==='Funcional' || state.horario.grid[k]==='Pilates') state.horario.grid[k]=REVERTIR_HORARIO[k];
       });
       if(!state.temporizadorPlantillas) state.temporizadorPlantillas = [];
+      if(state.miPerfil===undefined) state.miPerfil = null;
+      if(state.miSesion===undefined) state.miSesion = null;
       if(!state.clients || state.clients.length===0){
         state.clients = DEFAULT_CLIENTS;
       } else {
@@ -2393,7 +2390,7 @@ async function loadState(){
       return;
     }
   }
-  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
+  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, miSesion: null, activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
   await saveState();
 }
 function guardarCopiaLocalDeSeguridad(payloadStr){
@@ -2599,6 +2596,13 @@ function render(){
     root.appendChild(panel);
     return;
   }
+  if(appScreen==='miPerfil'){
+    root.appendChild(headerEl());
+    const panel=document.createElement('div'); panel.className='tab-panel';
+    panel.appendChild(miPerfilView());
+    root.appendChild(panel);
+    return;
+  }
   root.appendChild(headerEl());
   root.appendChild(tabsEl());
   const panel = document.createElement('div');
@@ -2728,6 +2732,20 @@ function formatFechaLarga(fechaStr){
 let temporizadorInterval = null;
 let temporizadorPreset = { trabajo:40, descanso:20, rondas:8 };
 let sesionTemporizadorActual = []; // [{ex, series, reps, descansoSeg}] generada aleatoriamente para el temporizador, opcional
+// Carga los ejercicios de una semana ya planificada (personal, pareja o grupo) directamente en el temporizador,
+// respetando el series/reps/descanso que ya tenga escritos, y cambia a esa pantalla.
+function cargarSesionEnTemporizador(week, isPair){
+  const items = week.items.map(item=>{
+    const ex = state.exercises.find(e=>e.id===item.exerciseId);
+    if(!ex) return null;
+    const datos = isPair ? item.a : item;
+    return { ex, series: datos.series||'3', reps: datos.reps||'12', descansoSeg: segundosDeDescanso(datos.descanso||'45s') };
+  }).filter(Boolean);
+  if(items.length===0){ showAlert('Esta semana todavía no tiene ejercicios que llevar al temporizador.'); return; }
+  sesionTemporizadorActual = items;
+  appScreen = 'temporizador';
+  render();
+}
 function pitido(frecuencia, duracionMs){
   try{
     const ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -2742,10 +2760,239 @@ function pitido(frecuencia, duracionMs){
   }catch(e){ /* audio no disponible, seguimos sin sonido */ }
   if(navigator.vibrate) navigator.vibrate(duracionMs>250?200:80);
 }
+// ---------- Mi perfil (autoservicio para quien instale la app) ----------
+function perfilVacio(){
+  return {
+    nombre:'',
+    salud:{ diagnostico:'', medicacion:'', lesionOperacion:'', evitar:'', sintomas:'', revision:'' },
+    cuerpo:{ altura:'', pesoActual:'', pesoDeseado:'', ejercicioRegular:'', nivelForma:'Medio', estres:'', sueno:'', alimentacion:'', fumaAlcohol:'' },
+    objetivos:{ principal:'', zona:'', dias:'', preferencia:'' },
+    notas:''
+  };
+}
+function htmlFormularioMiPerfil(perfil){
+  const p = perfil || perfilVacio();
+  return `
+    <div class="field"><label>Tu nombre</label><input id="mp-nombre" value="${escapeHtml(p.nombre||'')}" placeholder="Cómo te llamas"></div>
+
+    <div class="field-group-title">Estado de salud y antecedentes médicos</div>
+    <div class="field"><label>¿Problema médico diagnosticado?</label><input id="mp-diagnostico" value="${escapeHtml(p.salud.diagnostico||'')}" placeholder="No / Sí — describe"></div>
+    <div class="field"><label>¿Toma medicación habitual?</label><input id="mp-medicacion" value="${escapeHtml(p.salud.medicacion||'')}" placeholder="No / Sí — cuál"></div>
+    <div class="field"><label>¿Lesión, operación o fractura reciente/importante?</label><input id="mp-lesion" value="${escapeHtml(p.salud.lesionOperacion||'')}" placeholder="No / Sí — describe"></div>
+    <div class="field"><label>¿El médico recomienda evitar algún ejercicio?</label><input id="mp-evitar" value="${escapeHtml(p.salud.evitar||'')}" placeholder="No / Sí — cuál"></div>
+    <div class="field"><label>Síntomas (dolor pecho, mareos, falta de aire, dolor articular, osteopenia/osteoporosis, tensión arterial)</label><input id="mp-sintomas" value="${escapeHtml(p.salud.sintomas||'')}" placeholder="Ninguno / describe"></div>
+    <div class="field"><label>Última revisión médica completa</label><input id="mp-revision" value="${escapeHtml(p.salud.revision||'')}" placeholder="Cuándo"></div>
+
+    <div class="field-group-title">Composición corporal y hábitos</div>
+    <div class="field-row">
+      <div class="field"><label>Altura</label><input id="mp-altura" value="${escapeHtml(p.cuerpo.altura||'')}" placeholder="p.ej. 170 cm"></div>
+      <div class="field"><label>Peso actual</label><input id="mp-peso-actual" value="${escapeHtml(p.cuerpo.pesoActual||'')}" placeholder="p.ej. 70 kg"></div>
+    </div>
+    <div class="field"><label>Peso deseado</label><input id="mp-peso-deseado" value="${escapeHtml(p.cuerpo.pesoDeseado||'')}" placeholder="No especificado si no aplica"></div>
+    <div class="field"><label>¿Ejercicio regular en los últimos 6 meses?</label><input id="mp-ejercicio-regular" value="${escapeHtml(p.cuerpo.ejercicioRegular||'')}" placeholder="No / Sí — cuál"></div>
+    <div class="field-row">
+      <div class="field"><label>Nivel actual de forma física</label>
+        <select id="mp-nivel-forma">
+          ${['Muy bajo','Bajo','Medio','Bueno'].map(n=>`<option value="${n}" ${p.cuerpo.nivelForma===n?'selected':''}>${n}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Nivel de estrés</label><input id="mp-estres" value="${escapeHtml(p.cuerpo.estres||'')}" placeholder="Bajo / Medio / Alto"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Sueño</label><input id="mp-sueno" value="${escapeHtml(p.cuerpo.sueno||'')}" placeholder="p.ej. Bueno (7 h)"></div>
+      <div class="field"><label>¿Fuma o consume alcohol con frecuencia?</label><input id="mp-fuma-alcohol" value="${escapeHtml(p.cuerpo.fumaAlcohol||'')}" placeholder="No / Sí"></div>
+    </div>
+    <div class="field"><label>Alimentación</label><input id="mp-alimentacion" value="${escapeHtml(p.cuerpo.alimentacion||'')}" placeholder="p.ej. Equilibrada"></div>
+
+    <div class="field-group-title">Objetivos personales</div>
+    <div class="field"><label>Objetivo principal</label><input id="mp-objetivo" value="${escapeHtml(p.objetivos.principal||'')}" placeholder="Pérdida de peso, tonificación..."></div>
+    <div class="field"><label>Zona o aspecto a mejorar</label><input id="mp-zona" value="${escapeHtml(p.objetivos.zona||'')}" placeholder="p.ej. Core, tren inferior..."></div>
+    <div class="field-row">
+      <div class="field"><label>Días por semana disponibles</label><input id="mp-dias" value="${escapeHtml(p.objetivos.dias||'')}" placeholder="p.ej. 1, 2, 3..."></div>
+      <div class="field"><label>Preferencia de entrenamiento</label><input id="mp-preferencia" value="${escapeHtml(p.objetivos.preferencia||'')}" placeholder="Gimnasio / casa / combinado"></div>
+    </div>
+
+    <div class="field"><label>Notas adicionales</label><input id="mp-notas" value="${escapeHtml(p.notas||'')}" placeholder="Cualquier otra cosa a tener en cuenta"></div>
+  `;
+}
+function leerFormularioMiPerfil(overlay){
+  return {
+    nombre: overlay.querySelector('#mp-nombre').value.trim(),
+    salud: {
+      diagnostico: overlay.querySelector('#mp-diagnostico').value.trim(),
+      medicacion: overlay.querySelector('#mp-medicacion').value.trim(),
+      lesionOperacion: overlay.querySelector('#mp-lesion').value.trim(),
+      evitar: overlay.querySelector('#mp-evitar').value.trim(),
+      sintomas: overlay.querySelector('#mp-sintomas').value.trim(),
+      revision: overlay.querySelector('#mp-revision').value.trim(),
+    },
+    cuerpo: {
+      altura: overlay.querySelector('#mp-altura').value.trim(),
+      pesoActual: overlay.querySelector('#mp-peso-actual').value.trim(),
+      pesoDeseado: overlay.querySelector('#mp-peso-deseado').value.trim(),
+      ejercicioRegular: overlay.querySelector('#mp-ejercicio-regular').value.trim(),
+      nivelForma: overlay.querySelector('#mp-nivel-forma').value,
+      estres: overlay.querySelector('#mp-estres').value.trim(),
+      sueno: overlay.querySelector('#mp-sueno').value.trim(),
+      alimentacion: overlay.querySelector('#mp-alimentacion').value.trim(),
+      fumaAlcohol: overlay.querySelector('#mp-fuma-alcohol').value.trim(),
+    },
+    objetivos: {
+      principal: overlay.querySelector('#mp-objetivo').value.trim(),
+      zona: overlay.querySelector('#mp-zona').value.trim(),
+      dias: overlay.querySelector('#mp-dias').value.trim(),
+      preferencia: overlay.querySelector('#mp-preferencia').value.trim(),
+    },
+    notas: overlay.querySelector('#mp-notas').value.trim(),
+  };
+}
+function abrirModalMiPerfil(){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal">
+      <div class="modal-head"><h2>${state.miPerfil?'Editar mi perfil':'Crear mi perfil'}</h2><button class="close-x">✕</button></div>
+      ${htmlFormularioMiPerfil(state.miPerfil)}
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="mp-guardar">Guardar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#mp-guardar').onclick=()=>{
+    const nombre = overlay.querySelector('#mp-nombre').value.trim();
+    if(!nombre){ showAlert('Escribe tu nombre para poder guardar el perfil.'); return; }
+    state.miPerfil = leerFormularioMiPerfil(overlay);
+    scheduleSave();
+    overlay.remove();
+    render();
+  };
+}
+function miPerfilView(){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='max-width:640px;margin:0 auto;';
+  const titulo=document.createElement('h2'); titulo.textContent='Mi perfil'; titulo.style.marginBottom='6px';
+  wrap.appendChild(titulo);
+
+  if(!state.miPerfil){
+    const intro=document.createElement('p'); intro.style.cssText='color:var(--ink-soft);font-size:13.5px;margin-bottom:18px;';
+    intro.textContent='Crea tu perfil con el mismo cuestionario de salud y forma física que se usa con el resto de clientes, para poder generarte sesiones de entrenamiento seguras y a tu medida, con las mismas herramientas que usa tu entrenador/a.';
+    wrap.appendChild(intro);
+    const crearBtn=document.createElement('button'); crearBtn.className='btn btn-accent'; crearBtn.textContent='+ Crear mi perfil';
+    crearBtn.onclick=()=>abrirModalMiPerfil();
+    wrap.appendChild(crearBtn);
+    return wrap;
+  }
+
+  const p = state.miPerfil;
+  const resumen=document.createElement('div'); resumen.className='card'; resumen.style.cssText='padding:20px;margin-bottom:20px;';
+  resumen.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <h3 style="margin:0 0 4px;">${escapeHtml(p.nombre)}</h3>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin:0;">Nivel: ${escapeHtml(p.cuerpo.nivelForma)}${p.objetivos.principal?` · Objetivo: ${escapeHtml(p.objetivos.principal)}`:''}</p>
+      </div>
+      <button class="btn btn-sm" id="mp-editar">✎ Editar</button>
+    </div>
+    ${(p.salud.diagnostico||p.salud.lesionOperacion||p.salud.evitar||p.salud.sintomas)?`
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);">
+        ${p.salud.diagnostico?`<div><strong style="color:var(--ink);">Diagnóstico:</strong> ${escapeHtml(p.salud.diagnostico)}</div>`:''}
+        ${p.salud.lesionOperacion?`<div><strong style="color:var(--ink);">Lesión/operación:</strong> ${escapeHtml(p.salud.lesionOperacion)}</div>`:''}
+        ${p.salud.evitar?`<div><strong style="color:var(--ink);">Evitar:</strong> ${escapeHtml(p.salud.evitar)}</div>`:''}
+        ${p.salud.sintomas?`<div><strong style="color:var(--ink);">Síntomas:</strong> ${escapeHtml(p.salud.sintomas)}</div>`:''}
+      </div>`:''}
+  `;
+  wrap.appendChild(resumen);
+  resumen.querySelector('#mp-editar').onclick=()=>abrirModalMiPerfil();
+
+  const generarWrap=document.createElement('div');
+  generarWrap.style.cssText='padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:20px;';
+  generarWrap.innerHTML=`
+    <div style="font-size:13.5px;font-weight:600;margin-bottom:10px;">🎲 Generar mi sesión</div>
+    ${htmlFiltrosGeneracion()}
+    <button class="btn btn-accent" id="mp-generar" style="margin-top:6px;">Generar mi sesión</button>
+  `;
+  wrap.appendChild(generarWrap);
+  const filtrosCtrl = conectarFiltrosGeneracion(generarWrap);
+  generarWrap.querySelector('#mp-generar').onclick=()=>{
+    const filtros = filtrosCtrl.leer();
+    let pool = state.exercises.filter(ex=>isExerciseSafeForClient(ex, state.miPerfil, filtros.nivel));
+    pool = pool.filter(ex=>!ex.esDinamicaGrupal && !ex.esPareja); // pensado para entrenar en solitario
+    pool = aplicarFiltrosGeneracion(pool, filtros);
+    if(pool.length===0){
+      showAlert('Ningún ejercicio cumple esos filtros y a la vez es seguro según tu perfil. Prueba a quitar algún filtro.');
+      return;
+    }
+    const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s'], equilibrarGrupos: filtros.grupos.length===0});
+    state.miSesion = elegidos.map(c=>({ exerciseId:c.ex.id, series:c.series, reps:c.reps, descanso:c.descanso }));
+    scheduleSave();
+    render();
+  };
+
+  if(state.miSesion && state.miSesion.length>0){
+    const sesionTitulo=document.createElement('div'); sesionTitulo.style.cssText='font-size:13.5px;font-weight:600;margin-bottom:10px;';
+    sesionTitulo.textContent='Tu sesión generada';
+    wrap.appendChild(sesionTitulo);
+    const lista=document.createElement('div');
+    state.miSesion.forEach(item=>{
+      const ex = state.exercises.find(e=>e.id===item.exerciseId);
+      if(!ex) return;
+      const fila=document.createElement('div');
+      fila.style.cssText='display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);';
+      fila.innerHTML=`
+        ${htmlImagenEjercicio(ex,'mp-thumb')}
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:13.5px;">${escapeHtml(ex.nombre)}</div>
+          <div style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(item.series)} series × ${escapeHtml(item.reps)} · Descanso ${escapeHtml(item.descanso)}</div>
+        </div>
+      `;
+      lista.appendChild(fila);
+    });
+    wrap.appendChild(lista);
+    const timerBtn=document.createElement('button'); timerBtn.className='btn btn-accent'; timerBtn.style.marginTop='16px'; timerBtn.textContent='⏱ Hacerla con el temporizador';
+    timerBtn.onclick=()=>{
+      sesionTemporizadorActual = state.miSesion.map(item=>{
+        const ex = state.exercises.find(e=>e.id===item.exerciseId);
+        return { ex, series:item.series, reps:item.reps, descansoSeg: segundosDeDescanso(item.descanso) };
+      }).filter(i=>i.ex);
+      appScreen='temporizador';
+      render();
+    };
+    wrap.appendChild(timerBtn);
+  }
+
+  return wrap;
+}
 function temporizadorView(){
   if(temporizadorInterval){ clearInterval(temporizadorInterval); temporizadorInterval=null; }
   const wrap=document.createElement('div');
   wrap.style.cssText='max-width:820px;margin:0 auto;text-align:center;';
+
+  const perfilWrap=document.createElement('div');
+  perfilWrap.style.cssText='margin-bottom:18px;padding:14px;border:1px solid var(--line);border-radius:10px;text-align:left;';
+  if(state.miPerfil){
+    perfilWrap.innerHTML=`
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;font-weight:600;">👤 Según mi perfil (${escapeHtml(state.miPerfil.nombre)})</div>
+      <button class="btn btn-sm btn-accent" id="t-generar-perfil">Generar sesión según mi perfil</button>
+    `;
+    wrap.appendChild(perfilWrap);
+    perfilWrap.querySelector('#t-generar-perfil').onclick=()=>{
+      let pool = state.exercises.filter(ex=>isExerciseSafeForClient(ex, state.miPerfil, 'normal'));
+      pool = pool.filter(ex=>!ex.esDinamicaGrupal && !ex.esPareja);
+      if(pool.length===0){ showAlert('No hay ejercicios seguros disponibles según tu perfil.'); return; }
+      const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s']});
+      sesionTemporizadorActual = elegidos.map(c=>({ ex:c.ex, series:c.series, reps:c.reps, descansoSeg: segundosDeDescanso(c.descanso) }));
+      const rondasInput = wrap.querySelector('#t-rondas');
+      if(rondasInput) rondasInput.value = sesionTemporizadorActual.length;
+      render();
+    };
+  } else {
+    perfilWrap.innerHTML=`
+      <div style="font-size:12.5px;color:var(--ink-soft);">👤 <a href="#" id="t-crear-perfil" style="color:var(--accent);">Crea tu perfil</a> para generar sesiones seguras según tus propias características.</div>
+    `;
+    wrap.appendChild(perfilWrap);
+    perfilWrap.querySelector('#t-crear-perfil').onclick=(e)=>{ e.preventDefault(); appScreen='miPerfil'; render(); };
+  }
 
   const generarWrap=document.createElement('div');
   generarWrap.style.cssText='margin-bottom:18px;padding:14px;border:1px solid var(--line);border-radius:10px;text-align:left;';
@@ -2873,24 +3120,58 @@ function temporizadorView(){
   function renderListaSesion(){
     if(sesionTemporizadorActual.length===0){ colLista.style.display='none'; colLista.innerHTML=''; return; }
     colLista.style.display='block';
-    colLista.innerHTML = `<div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">Ejercicios de la sesión (toca uno para ver su técnica)</div>`
+    colLista.innerHTML = `
+      <div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">Ejercicios de la sesión (toca uno para ver su técnica)</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="btn btn-sm" id="t-add-random" style="flex:1;">🎲 Añadir uno aleatorio</button>
+        <button class="btn btn-sm" id="t-add-buscado" style="flex:1;">🔎 Buscar y añadir</button>
+      </div>
+    `
       + sesionTemporizadorActual.map((info,i)=>{
         const esActual = estado && (i===estado.rondaActual-1);
         return `
           <div class="t-lista-item" data-i="${i}" style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;margin-bottom:4px;cursor:pointer;${esActual?'background:rgba(157,79,209,.16);border-left:3px solid var(--accent);':'border-left:3px solid transparent;'}">
             ${htmlImagenEjercicio(info.ex, 't-lista-thumb')}
-            <div style="min-width:0;">
+            <div style="min-width:0;flex:1;">
               <div style="font-size:12.5px;font-weight:${esActual?'700':'500'};color:${esActual?'var(--ink)':'var(--ink-soft)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline dotted;text-underline-offset:2px;">${i+1}. ${escapeHtml(info.ex.nombre)}</div>
               <div style="font-size:10.5px;color:var(--ink-soft);">${escapeHtml(info.series)}×${escapeHtml(info.reps)}</div>
             </div>
+            <button type="button" class="t-lista-quitar" data-i="${i}" title="Quitar de la sesión" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:15px;padding:2px 4px;flex-shrink:0;">✕</button>
           </div>
         `;
       }).join('');
     colLista.querySelectorAll('.t-lista-item').forEach(el=>{
-      el.onclick=()=>{
+      el.onclick=(e)=>{
+        if(e.target.classList.contains('t-lista-quitar')) return;
         const info = sesionTemporizadorActual[parseInt(el.dataset.i)];
         if(info) abrirInfoEjercicio(info.ex);
       };
+    });
+    colLista.querySelectorAll('.t-lista-quitar').forEach(btn=>{
+      btn.onclick=(e)=>{
+        e.stopPropagation();
+        sesionTemporizadorActual.splice(parseInt(btn.dataset.i), 1);
+        const rondasInput = wrap.querySelector('#t-rondas');
+        if(rondasInput) rondasInput.value = sesionTemporizadorActual.length;
+        renderListaSesion();
+      };
+    });
+    colLista.querySelector('#t-add-random').onclick=()=>{
+      const filtros = filtrosCtrlTemporizador.leer();
+      let pool = aplicarFiltrosGeneracion(state.exercises, filtros);
+      pool = pool.filter(ex=>!ex.esDinamicaGrupal && !ex.esPareja);
+      const elegido = elegirEjercicioAleatorioParaTemporizador(pool);
+      if(!elegido){ showAlert('No queda ningún ejercicio distinto de los ya presentes que cumpla esos filtros.'); return; }
+      const cardio = esEjercicioCardioContinuo(elegido);
+      sesionTemporizadorActual.push({ ex:elegido, series: cardio?'1':'3', reps: cardio?'15-20 min':'12', descansoSeg: cardio?0:45 });
+      const rondasInput = wrap.querySelector('#t-rondas');
+      if(rondasInput) rondasInput.value = sesionTemporizadorActual.length;
+      renderListaSesion();
+    };
+    colLista.querySelector('#t-add-buscado').onclick=()=>abrirBuscadorParaTemporizador(()=>{
+      const rondasInput = wrap.querySelector('#t-rondas');
+      if(rondasInput) rondasInput.value = sesionTemporizadorActual.length;
+      renderListaSesion();
     });
   }
   renderListaSesion();
@@ -4001,7 +4282,7 @@ function homeView(){
   if(undoBtnHome) undoBtnHome.onclick=()=>deshacerCambio();
   conectarBuscadorGlobal(wrap.querySelector('#global-search-home'), wrap.querySelector('#global-search-home-results'));
   const grid=document.createElement('div');
-  grid.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:18px;';
+  grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;';
   const iconBadge = (color, svgInner)=>`<div style="width:46px;height:46px;border-radius:14px;background:${color==='orange'?'rgba(255,107,53,.16)':'rgba(155,109,255,.16)'};display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color==='orange'?'#FF6B35':'#9B6DFF'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg></div>`;
   const optPersonal=document.createElement('div'); optPersonal.className='card'; optPersonal.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
   optPersonal.innerHTML=`${iconBadge('orange','<path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/>')}<h3 style="font-size:20px;margin:0 0 8px;max-width:90%;">Entrenamientos personales</h3><p style="max-width:90%;margin:0;">Individuales: ${individualesActivos} activos · ${individualesInactivos} inactivos</p><p style="max-width:90%;margin:2px 0 0;">Parejas: ${parejasActivas} activas · ${parejasInactivas} inactivas</p>`;
@@ -4015,7 +4296,10 @@ function homeView(){
   const optTemporizador=document.createElement('div'); optTemporizador.className='card'; optTemporizador.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
   optTemporizador.innerHTML=`${iconBadge('orange','<circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l3 2M10 2h4"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Cronómetro</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Temporizador</h3><p style="max-width:90%;">Trabajo / descanso configurable, o genera una sesión al momento.</p>`;
   optTemporizador.onclick=()=>{ appScreen='temporizador'; render(); };
-  grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador);
+  const optPerfil=document.createElement('div'); optPerfil.className='card'; optPerfil.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optPerfil.innerHTML=`${iconBadge('orange','<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Para ti</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Mi perfil</h3><p style="max-width:90%;">${state.miPerfil?'Genera tu propia sesión de entrenamiento.':'Crea tu perfil para entrenar por tu cuenta.'}</p>`;
+  optPerfil.onclick=()=>{ appScreen='miPerfil'; render(); };
+  grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador); grid.appendChild(optPerfil);
   wrap.appendChild(grid);
 
   const backupFooter=document.createElement('div');
@@ -4039,10 +4323,12 @@ function homeView(){
 function headerEl(){
   const h=document.createElement('div');
   h.className='header';
-  const modoLabel = appScreen==='grupos' ? 'Grupos' : appScreen==='horarios' ? 'Horarios' : 'Entrenamientos personales';
+  const modoLabel = appScreen==='grupos' ? 'Grupos' : appScreen==='horarios' ? 'Horarios' : appScreen==='miPerfil' ? 'Mi perfil' : 'Entrenamientos personales';
   let statsLine;
   if(appScreen==='grupos'){
     statsLine = `${state.grupos.length} categorías · ${state.grupos.reduce((n,c)=>n+c.horarios.length,0)} horarios`;
+  } else if(appScreen==='miPerfil'){
+    statsLine = state.miPerfil ? `Perfil de ${state.miPerfil.nombre}` : 'Todavía no has creado tu perfil';
   } else {
     const scoped = screenClients();
     const activos = scoped.filter(c=>c.activo!==false).length;
@@ -5367,6 +5653,9 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   const liveBtn=document.createElement('button'); liveBtn.className='btn btn-sm btn-accent'; liveBtn.textContent='▶ Sesión en directo';
   liveBtn.onclick=()=>abrirSesionEnDirecto(week, null);
   foot.appendChild(liveBtn);
+  const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm'; timerBtn.textContent='⏱ Hacerla con temporizador';
+  timerBtn.onclick=()=>cargarSesionEnTemporizador(week, false);
+  foot.appendChild(timerBtn);
   const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost'; exportBtn.textContent='📄 Exportar sesión';
   exportBtn.onclick=()=>exportarResumenSesion(week, null, `${clase.nombre} — Semana ${week.numero}`);
   foot.appendChild(exportBtn);
@@ -6333,6 +6622,9 @@ function weekBlock(unitClients, program, week, wIdx){
   const liveBtn=document.createElement('button'); liveBtn.className='btn btn-sm btn-accent'; liveBtn.textContent='▶ Sesión en directo';
   liveBtn.onclick=()=>abrirSesionEnDirecto(week, unitClients);
   foot.appendChild(liveBtn);
+  const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm'; timerBtn.textContent='⏱ Hacerla con temporizador';
+  timerBtn.onclick=()=>cargarSesionEnTemporizador(week, isPair);
+  foot.appendChild(timerBtn);
   const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost'; exportBtn.textContent='📄 Exportar sesión';
   exportBtn.onclick=()=>exportarResumenSesion(week, unitClients, `Semana ${week.numero} — ${unitClients.map(c=>c.nombre).join(' & ')}`);
   foot.appendChild(exportBtn);
@@ -6509,6 +6801,54 @@ function elegirEjercicioAleatorioParaAñadir(week, poolBase){
   const conteoMinimo = Math.min(...candidatos.map(conteoDe));
   const mejores = candidatos.filter(ex=>conteoDe(ex)===conteoMinimo);
   return mejores[Math.floor(Math.random()*mejores.length)];
+}
+// Misma idea que elegirEjercicioAleatorioParaAñadir, pero para la sesión suelta del temporizador
+// (que guarda directamente el ejercicio en vez de un exerciseId).
+function elegirEjercicioAleatorioParaTemporizador(poolBase){
+  const yaUsados = new Set(sesionTemporizadorActual.map(i=>i.ex.id));
+  const candidatos = poolBase.filter(ex=>!yaUsados.has(ex.id));
+  if(candidatos.length===0) return null;
+  const conteoGrupos = {};
+  sesionTemporizadorActual.forEach(i=>{
+    const clave = (i.ex.grupoMuscular||'General').split('/')[0].trim();
+    conteoGrupos[clave] = (conteoGrupos[clave]||0) + 1;
+  });
+  const conteoDe = (ex)=> conteoGrupos[(ex.grupoMuscular||'General').split('/')[0].trim()] || 0;
+  const conteoMinimo = Math.min(...candidatos.map(conteoDe));
+  const mejores = candidatos.filter(ex=>conteoDe(ex)===conteoMinimo);
+  return mejores[Math.floor(Math.random()*mejores.length)];
+}
+// Cuadro de búsqueda para añadir un ejercicio concreto (con series/reps/descanso) directamente a la sesión del temporizador.
+function abrirBuscadorParaTemporizador(alTerminar){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal">
+      <div class="modal-head"><h2>Buscar y añadir ejercicio</h2><button class="close-x">✕</button></div>
+      ${htmlBuscadorEjercicio()}
+      <div class="field-row">
+        <div class="field"><label>Series</label><input id="pick-series" value="3"></div>
+        <div class="field"><label>Reps</label><input id="pick-reps" value="12"></div>
+      </div>
+      <div class="field"><label>Descanso</label><input id="pick-descanso" value="45s"></div>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="confirm-add">Añadir a la sesión</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  conectarBuscadorEjercicio(overlay);
+  overlay.querySelector('#confirm-add').onclick=()=>{
+    const exId = overlay.querySelector('#pick-ex').value;
+    const ex = state.exercises.find(e=>e.id===exId);
+    if(!ex){ showAlert('Elige un ejercicio de la lista.'); return; }
+    const series = overlay.querySelector('#pick-series').value.trim()||'3';
+    const reps = overlay.querySelector('#pick-reps').value.trim()||'12';
+    const descanso = overlay.querySelector('#pick-descanso').value.trim()||'45s';
+    sesionTemporizadorActual.push({ ex, series, reps, descansoSeg: segundosDeDescanso(descanso) });
+    overlay.remove();
+    alTerminar();
+  };
 }
 function añadirEjercicioAleatorioAWeek(week, poolBase, construirItem, tituloUnidad){
   const elegido = elegirEjercicioAleatorioParaAñadir(week, poolBase);
