@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#181420">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta charset="UTF-8">
 <title>Phyos Gym</title>
 <style>
@@ -1026,7 +1032,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Estiramiento de flexores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'Peso corporal',
     descripcion:'Brazo extendido con la palma hacia arriba, tirar suavemente de los dedos hacia atrás con la otra mano.',
     precauciones:'', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'90-90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
+  { id: uid(), nombre:'90/90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
     descripcion:'Sentado en el suelo con ambas piernas flexionadas a 90° en direcciones opuestas, mantener la posición con la espalda recta.',
     precauciones:'Requiere buena movilidad de cadera; ir con cuidado si hay molestias.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'World\'s Greatest Stretch', grupoMuscular:'Movilidad global', material:'Peso corporal',
@@ -2317,7 +2323,11 @@ async function loadState(){
       });
       if(!state.temporizadorPlantillas) state.temporizadorPlantillas = [];
       if(state.miPerfil===undefined) state.miPerfil = null;
-      if(state.miSesion===undefined) state.miSesion = null;
+      if(!state.misSesiones) state.misSesiones = [];
+      if(state.miSesion){ // migración: si había una sesión suelta de antes, se convierte en la primera del historial
+        state.misSesiones.push({ id: uid(), fecha: new Date().toISOString(), items: state.miSesion });
+        delete state.miSesion;
+      }
       if(!state.clients || state.clients.length===0){
         state.clients = DEFAULT_CLIENTS;
       } else {
@@ -2390,7 +2400,7 @@ async function loadState(){
       return;
     }
   }
-  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, miSesion: null, activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
+  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, misSesiones: [], activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
   await saveState();
 }
 function guardarCopiaLocalDeSeguridad(payloadStr){
@@ -2908,9 +2918,9 @@ function miPerfilView(){
   const generarWrap=document.createElement('div');
   generarWrap.style.cssText='padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:20px;';
   generarWrap.innerHTML=`
-    <div style="font-size:13.5px;font-weight:600;margin-bottom:10px;">🎲 Generar mi sesión</div>
+    <div style="font-size:13.5px;font-weight:600;margin-bottom:10px;">🎲 Generar una nueva sesión</div>
     ${htmlFiltrosGeneracion()}
-    <button class="btn btn-accent" id="mp-generar" style="margin-top:6px;">Generar mi sesión</button>
+    <button class="btn btn-accent" id="mp-generar" style="margin-top:6px;">Generar sesión</button>
   `;
   wrap.appendChild(generarWrap);
   const filtrosCtrl = conectarFiltrosGeneracion(generarWrap);
@@ -2924,41 +2934,72 @@ function miPerfilView(){
       return;
     }
     const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s'], equilibrarGrupos: filtros.grupos.length===0});
-    state.miSesion = elegidos.map(c=>({ exerciseId:c.ex.id, series:c.series, reps:c.reps, descanso:c.descanso }));
+    if(!state.misSesiones) state.misSesiones = [];
+    state.misSesiones.unshift({ id: uid(), fecha: new Date().toISOString(), items: elegidos.map(c=>({ exerciseId:c.ex.id, series:c.series, reps:c.reps, descanso:c.descanso })) });
     scheduleSave();
     render();
   };
 
-  if(state.miSesion && state.miSesion.length>0){
-    const sesionTitulo=document.createElement('div'); sesionTitulo.style.cssText='font-size:13.5px;font-weight:600;margin-bottom:10px;';
-    sesionTitulo.textContent='Tu sesión generada';
-    wrap.appendChild(sesionTitulo);
-    const lista=document.createElement('div');
-    state.miSesion.forEach(item=>{
-      const ex = state.exercises.find(e=>e.id===item.exerciseId);
-      if(!ex) return;
-      const fila=document.createElement('div');
-      fila.style.cssText='display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);';
-      fila.innerHTML=`
-        ${htmlImagenEjercicio(ex,'mp-thumb')}
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:600;font-size:13.5px;">${escapeHtml(ex.nombre)}</div>
-          <div style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(item.series)} series × ${escapeHtml(item.reps)} · Descanso ${escapeHtml(item.descanso)}</div>
-        </div>
+  if(state.misSesiones && state.misSesiones.length>0){
+    const historialTitulo=document.createElement('div'); historialTitulo.style.cssText='font-size:13.5px;font-weight:600;margin-bottom:10px;';
+    historialTitulo.textContent = `Tus sesiones generadas (${state.misSesiones.length})`;
+    wrap.appendChild(historialTitulo);
+
+    state.misSesiones.forEach((sesion, idxSesion)=>{
+      const bloque=document.createElement('div'); bloque.className='card'; bloque.style.cssText='padding:16px;margin-bottom:12px;';
+      const fechaTexto = new Date(sesion.fecha).toLocaleString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const abierta = idxSesion===0; // la más reciente empieza expandida
+      const cabecera=document.createElement('div');
+      cabecera.style.cssText='display:flex;justify-content:space-between;align-items:center;cursor:pointer;';
+      cabecera.innerHTML=`
+        <div><strong style="font-size:13.5px;">${fechaTexto}</strong> <span style="font-size:11.5px;color:var(--ink-soft);">· ${sesion.items.length} ejercicios</span></div>
+        <span class="mp-flecha" style="color:var(--ink-soft);">${abierta?'▲':'▼'}</span>
       `;
-      lista.appendChild(fila);
-    });
-    wrap.appendChild(lista);
-    const timerBtn=document.createElement('button'); timerBtn.className='btn btn-accent'; timerBtn.style.marginTop='16px'; timerBtn.textContent='⏱ Hacerla con el temporizador';
-    timerBtn.onclick=()=>{
-      sesionTemporizadorActual = state.miSesion.map(item=>{
+      bloque.appendChild(cabecera);
+
+      const cuerpo=document.createElement('div');
+      cuerpo.style.cssText=`margin-top:12px;${abierta?'':'display:none;'}`;
+      sesion.items.forEach(item=>{
         const ex = state.exercises.find(e=>e.id===item.exerciseId);
-        return { ex, series:item.series, reps:item.reps, descansoSeg: segundosDeDescanso(item.descanso) };
-      }).filter(i=>i.ex);
-      appScreen='temporizador';
-      render();
-    };
-    wrap.appendChild(timerBtn);
+        if(!ex) return;
+        const fila=document.createElement('div');
+        fila.style.cssText='display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);';
+        fila.innerHTML=`
+          ${htmlImagenEjercicio(ex,'mp-thumb')}
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:13.5px;">${escapeHtml(ex.nombre)}</div>
+            <div style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(item.series)} series × ${escapeHtml(item.reps)} · Descanso ${escapeHtml(item.descanso)}</div>
+          </div>
+        `;
+        cuerpo.appendChild(fila);
+      });
+      const accionesFila=document.createElement('div'); accionesFila.style.cssText='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;';
+      const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm btn-accent'; timerBtn.textContent='⏱ Hacerla con el temporizador';
+      timerBtn.onclick=()=>{
+        sesionTemporizadorActual = sesion.items.map(item=>{
+          const ex = state.exercises.find(e=>e.id===item.exerciseId);
+          return { ex, series:item.series, reps:item.reps, descansoSeg: segundosDeDescanso(item.descanso) };
+        }).filter(i=>i.ex);
+        appScreen='temporizador';
+        render();
+      };
+      const borrarBtn=document.createElement('button'); borrarBtn.className='btn btn-sm btn-ghost'; borrarBtn.textContent='🗑 Borrar';
+      borrarBtn.onclick=()=>{
+        state.misSesiones.splice(idxSesion,1);
+        scheduleSave();
+        render();
+      };
+      accionesFila.appendChild(timerBtn); accionesFila.appendChild(borrarBtn);
+      cuerpo.appendChild(accionesFila);
+      bloque.appendChild(cuerpo);
+
+      cabecera.onclick=()=>{
+        const oculto = cuerpo.style.display==='none';
+        cuerpo.style.display = oculto ? 'block' : 'none';
+        cabecera.querySelector('.mp-flecha').textContent = oculto ? '▲' : '▼';
+      };
+      wrap.appendChild(bloque);
+    });
   }
 
   return wrap;
