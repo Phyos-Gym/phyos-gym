@@ -98,9 +98,11 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.8);cursor:
 
 /* Exercise cards */
 .ex-img-wrap{position:relative;width:100%;height:130px;margin-bottom:10px;}
-.ex-img-wrap .ex-img-placeholder{position:absolute;inset:0;margin-bottom:0;}
-.ex-card img{width:100%;height:130px;object-fit:cover;border-radius:6px;background:var(--surface-2);position:absolute;top:0;left:0;z-index:2;}
 .ex-img-placeholder{width:100%;height:130px;border-radius:6px;margin-bottom:10px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:26px;color:var(--ink-soft);opacity:.55;}
+.img-placeholder-generico{display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--ink-soft);opacity:.55;flex-shrink:0;}
+.ex-card-img{width:100%;height:130px;object-fit:cover;border-radius:6px;margin-bottom:10px;background:var(--surface-2);}
+.ex-inline-thumb{width:32px;height:32px;object-fit:cover;border-radius:5px;flex-shrink:0;background:var(--surface-2);font-size:15px;}
+.ex-inline-thumb-sm{width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;background:var(--surface-2);font-size:13px;}
 .info-ejercicio-img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px;background:var(--surface-2);}
 .t-lista-thumb{width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--surface-2);}
 .t-actual-img{max-height:150px;border-radius:10px;margin-bottom:8px;object-fit:cover;background:var(--surface-2);}
@@ -119,7 +121,6 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.8);cursor:
 .ex-row.header-row>div:not(:first-child),.pair-cols-head>div:not(:first-child){text-align:center;}
 .ex-row input{width:100%;padding:5px 6px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;background:var(--bg);color:var(--ink);}
 .ex-row .exname{font-weight:600;font-family:'Inter';display:flex;align-items:center;gap:8px;color:var(--ink);}
-.ex-row .exname img{width:32px;height:32px;object-fit:cover;border-radius:5px;flex-shrink:0;}
 .week-foot{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);flex-wrap:wrap;gap:8px;}
 .warn-banner{background:rgba(232,178,78,.12);border:1px solid rgba(232,178,78,.4);color:var(--accent-2);padding:8px 12px;border-radius:8px;font-size:12.5px;margin-bottom:14px;}
 select.client-select{padding:9px 12px;border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:'Fraunces',serif;font-weight:600;background:var(--surface);color:var(--ink);}
@@ -129,7 +130,6 @@ select.client-select{padding:9px 12px;border:1px solid var(--line);border-radius
 .pair-item{border-top:1px solid var(--line);padding:9px 16px 12px;}
 .pair-item-head{display:flex;align-items:center;gap:8px;padding:2px 0 7px;}
 .pair-item-head .exname{font-weight:600;display:flex;align-items:center;gap:8px;color:var(--ink);}
-.pair-item-head .exname img{width:28px;height:28px;object-fit:cover;border-radius:5px;}
 .pair-badge{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;background:rgba(203,158,234,.16);color:var(--accent);}
 .person-row{display:grid;grid-template-columns:110px .5fr .5fr .7fr .5fr .6fr 1fr auto;gap:8px;align-items:center;padding:4px 0 4px 10px;border-left:3px solid var(--accent);margin-bottom:3px;box-sizing:border-box;}
 .person-row.person-b{border-left-color:var(--accent-b);}
@@ -334,6 +334,7 @@ const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
   id: uid(),
   nombre: r.nombre,
   pareja: r.pareja || null,
+  edad: r.edad || '',
   salud:{ diagnostico:r.diagnostico, medicacion:r.medicacion, lesionOperacion:r.lesionOperacion, evitar:r.evitar, sintomas:r.sintomas, revision:r.revision },
   cuerpo:{ altura:r.altura, pesoActual:r.pesoActual, pesoDeseado:r.pesoDeseado, ejercicioRegular:r.ejercicioRegular, nivelForma:r.nivelForma, estres:r.estres, sueno:r.sueno, alimentacion:r.alimentacion, fumaAlcohol:r.fumaAlcohol },
   objetivos:{ principal:r.principal, zona:r.zona, dias:r.dias, preferencia:r.preferencia },
@@ -429,7 +430,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Cuidado con molestias de hombro en el brazo que empuja.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'ejercicios/Press%20landmine%20a%20una%20mano.jpg' },
   { id: uid(), nombre:'Wallball a diana hyrox', grupoMuscular:'Full body', material:'Wallballs, Diana hyrox',
     descripcion:'Sentadilla seguida de lanzamiento del wallball hacia la diana en la pared, recibiendo la bola con las rodillas semiflexionadas.',
-    precauciones:'Ejercicio de impacto/potencia — no recomendado en osteoporosis, hernias abdominales o problemas de estabilidad.', zonasRiesgo:'hombro, rodilla, abdomen', videoUrl:'', imagenUrl:'ejercicios/Wallball%20a%20diana%20hyrox.jpg' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto/potencia — no recomendado en osteoporosis, hernias abdominales o problemas de estabilidad.', zonasRiesgo:'hombro, rodilla, abdomen', videoUrl:'', imagenUrl:'ejercicios/Wallball%20a%20diana%20hyrox.jpg' },
   { id: uid(), nombre:'Sentadilla en guía Smith', grupoMuscular:'Piernas', material:'Barra con guía Smith',
     descripcion:'Sentadilla guiada por el carril de la máquina Smith, permite trabajar con más seguridad y menos exigencia de estabilización.',
     precauciones:'Buena alternativa para clientes con poco equilibrio o principiantes.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'ejercicios/Sentadilla%20en%20gu%C3%ADa%20Smith.jpg' },
@@ -579,7 +580,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Ejercicio de impacto alto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'ejercicios/Box%20Jump.jpg' },
   { id: uid(), nombre:'Burpee (adaptado, bajo impacto)', grupoMuscular:'Full body / Cardio', material:'Peso corporal',
     descripcion:'Desde de pie, apoyo de manos en el suelo, extensión de piernas hacia atrás y vuelta a de pie, sin salto final.',
-    precauciones:'Evitar en molestias de muñeca, rodilla u osteoporosis; versión sin impacto para la mayoría de clientes.', zonasRiesgo:'muñeca, rodilla', videoUrl:'', imagenUrl:'ejercicios/Burpee%20%28adaptado%2C%20bajo%20impacto%29.jpg' },
+    precauciones:'Nivel muy avanzado; Evitar en molestias de muñeca, rodilla u osteoporosis; versión sin impacto para la mayoría de clientes.', zonasRiesgo:'muñeca, rodilla', videoUrl:'', imagenUrl:'ejercicios/Burpee%20%28adaptado%2C%20bajo%20impacto%29.jpg' },
   { id: uid(), nombre:'Renegade Row con mancuernas', grupoMuscular:'Espalda / Core', material:'Mancuernas',
     descripcion:'Posición de plancha alta con una mancuerna en cada mano, remo alterno manteniendo la cadera estable.',
     precauciones:'Requiere buena estabilidad de core y muñeca; nivel intermedio-avanzado.', zonasRiesgo:'muñeca, abdomen, hombro', videoUrl:'', imagenUrl:'ejercicios/Renegade%20Row%20con%20mancuernas.jpg' },
@@ -738,7 +739,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Jump Squat', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
     descripcion:'Sentadilla seguida de un salto vertical, aterrizando de nuevo en posición de sentadilla de forma controlada.',
-    precauciones:'Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Jump Lunge', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
     descripcion:'Zancada alternando las piernas mediante un pequeño salto en el aire entre repetición y repetición.',
     precauciones:'Ejercicio de impacto alto; evitar en osteoporosis o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
@@ -775,7 +776,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Press con resistencia de banda controlada por el compañero', grupoMuscular:'Hombro / Pecho', material:'Bandas elásticas', esPareja:true,
     descripcion:'Uno sujeta la banda ofreciendo resistencia controlada mientras el otro realiza el press, alternando roles.',
     precauciones:'El compañero debe dosificar bien la resistencia para no forzar la técnica.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Remo de toalla/banda enfrentados con giro', grupoMuscular:'Espalda / Core', material:'Bandas elásticas', esPareja:true,
+  { id: uid(), nombre:'Remo de toalla-banda enfrentados con giro', grupoMuscular:'Espalda / Core', material:'Bandas elásticas', esPareja:true,
     descripcion:'Sentados uno frente al otro con la banda compartida, combinar el tirón de remo con una ligera rotación de tronco alterna.',
     precauciones:'Evitar en molestias lumbares o de columna.', zonasRiesgo:'columna, lumbar, hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wall Sit en pareja espalda con espalda', grupoMuscular:'Piernas', material:'Peso corporal', esPareja:true,
@@ -801,10 +802,10 @@ const DEFAULT_EXERCISES = [
     precauciones:'Movimiento suave, ideal para el final de la sesión.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Dominada estricta (Pull-Up)', grupoMuscular:'Espalda', material:'Barra de dominadas',
     descripcion:'Colgado de la barra con agarre prono, tirar del cuerpo hacia arriba hasta que la barbilla supere la barra.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro sin supervisión.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro sin supervisión.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Chin-Up (agarre supino)', grupoMuscular:'Espalda / Brazo', material:'Barra de dominadas',
     descripcion:'Igual que la dominada pero con las palmas mirando hacia el propio cuerpo, mayor implicación del bíceps.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro o codo.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro o codo.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Thruster con mancuernas', grupoMuscular:'Full body', material:'Mancuernas',
     descripcion:'Sentadilla seguida inmediatamente de un press de hombro usando el impulso de las piernas, en un solo movimiento fluido.',
     precauciones:'Nivel intermedio; evitar en molestias de hombro, rodilla o espalda.', zonasRiesgo:'hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
@@ -828,7 +829,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Evitar cargas altas en molestias lumbares o de muñeca.', zonasRiesgo:'lumbar, muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Jumping Jacks', grupoMuscular:'Cardio', material:'Peso corporal',
     descripcion:'Saltos abriendo y cerrando piernas y brazos de forma simultánea, a ritmo constante.',
-    precauciones:'Ejercicio de impacto — evitar en osteoporosis, fascitis plantar o molestias de rodilla/tobillo; sustituir por marcha con elevación de rodillas si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto — evitar en osteoporosis, fascitis plantar o molestias de rodilla/tobillo; sustituir por marcha con elevación de rodillas si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rodillo abdominal con aro de pilates', grupoMuscular:'Core', material:'Aros de pilates',
     descripcion:'De rodillas, sujetar el aro con ambas manos y presionarlo mientras se inclina el tronco hacia adelante y se vuelve a la posición inicial.',
     precauciones:'Evitar en hernias lumbares o discales; nivel intermedio.', zonasRiesgo:'lumbar, abdomen', videoUrl:'', imagenUrl:'' },
@@ -865,7 +866,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Estiramiento de flexores de muñeca', grupoMuscular:'Movilidad / Antebrazo', material:'Peso corporal',
     descripcion:'Brazo extendido con la palma hacia arriba, tirar suavemente de los dedos hacia atrás con la otra mano.',
     precauciones:'', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'90/90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
+  { id: uid(), nombre:'90-90 Hip Stretch', grupoMuscular:'Movilidad / Cadera', material:'Peso corporal',
     descripcion:'Sentado en el suelo con ambas piernas flexionadas a 90° en direcciones opuestas, mantener la posición con la espalda recta.',
     precauciones:'Requiere buena movilidad de cadera; ir con cuidado si hay molestias.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'World\'s Greatest Stretch', grupoMuscular:'Movilidad global', material:'Peso corporal',
@@ -885,7 +886,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Cargas muy ligeras.', zonasRiesgo:'muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla a una pierna en plataforma inestable', grupoMuscular:'Equilibrio / Piernas', material:'Plataformas inestables',
     descripcion:'Sobre la plataforma inestable con una sola pierna, realizar una sentadilla parcial controlando el equilibrio.',
-    precauciones:'Nivel avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, rodilla', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Russian Twist sin material', grupoMuscular:'Core (oblicuos)', material:'Peso corporal',
     descripcion:'Sentado con el tronco ligeramente reclinado y las manos entrelazadas, rotar de lado a lado.',
     precauciones:'Evitar en molestias lumbares o de columna.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
@@ -921,7 +922,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla con salto en pareja', grupoMuscular:'Piernas / Potencia', material:'Peso corporal', esPareja:true,
     descripcion:'Uno frente al otro, realizar sentadillas con salto sincronizadas, marcando el ritmo entre ambos.',
-    precauciones:'Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo en cualquiera de los dos.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo en cualquiera de los dos.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Círculos de brazos (Arm Circles)', grupoMuscular:'Hombro (calentamiento)', material:'Peso corporal',
     descripcion:'Brazos extendidos lateralmente, realizar círculos pequeños y progresivamente más amplios.',
     precauciones:'Ideal para el calentamiento de hombro.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
@@ -966,7 +967,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel intermedio-avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Single-Leg Reach en plataforma inestable', grupoMuscular:'Equilibrio', material:'Plataformas inestables',
     descripcion:'De pie sobre la plataforma con una pierna, inclinar el tronco hacia adelante para tocar el suelo con la mano contraria.',
-    precauciones:'Nivel avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Waiter\'s Carry con kettlebell', grupoMuscular:'Hombro / Core', material:'Kettlebell',
     descripcion:'Caminar sujetando la kettlebell por encima de la cabeza con un brazo extendido, manteniendo el core estable.',
     precauciones:'Evitar en molestias de hombro; usar cargas ligeras.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -1035,7 +1036,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Elevación de piernas colgado (Hanging Leg Raise)', grupoMuscular:'Core', material:'Barra de dominadas',
     descripcion:'Colgado de la barra, elevar las piernas extendidas hacia el frente manteniendo el control del balanceo.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rodilla al pecho colgado (Hanging Knee Raise)', grupoMuscular:'Core', material:'Barra de dominadas',
     descripcion:'Colgado de la barra, elevar las rodillas flexionadas hacia el pecho de forma controlada.',
     precauciones:'Progresión más accesible que el hanging leg raise; evitar en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -1092,10 +1093,10 @@ const DEFAULT_EXERCISES = [
     precauciones:'El líder debe elegir movimientos aptos para todo el grupo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Circuito Hyrox por equipos', grupoMuscular:'Full body (dinámica de grupo)', material:'Wallballs, Diana hyrox, Kettlebell, Step', esDinamicaGrupal:true,
     descripcion:'Estaciones de wallball, step y kettlebell repartidas por la sala; los equipos van rotando de estación al terminar el tiempo asignado.',
-    precauciones:'Adaptar cada estación a las precauciones de los clientes que la ocupen en cada momento.', zonasRiesgo:'hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Adaptar cada estación a las precauciones de los clientes que la ocupen en cada momento.', zonasRiesgo:'hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wallball Slam (lanzamiento al suelo)', grupoMuscular:'Full body / Potencia', material:'Wallballs',
     descripcion:'Elevar el wallball por encima de la cabeza y lanzarlo con fuerza contra el suelo, recogiéndolo tras el bote.',
-    precauciones:'Evitar en molestias lumbares o de hombro; no recomendado en osteoporosis.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Evitar en molestias lumbares o de hombro; no recomendado en osteoporosis.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla sumo con mancuerna', grupoMuscular:'Piernas / Cadera', material:'Mancuernas',
     descripcion:'Pies separados y puntas hacia fuera, mancuerna sujeta con ambas manos entre las piernas, realizar la sentadilla.',
     precauciones:'', zonasRiesgo:'cadera, rodilla', videoUrl:'', imagenUrl:'' },
@@ -1188,7 +1189,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Evitar en hernias lumbares agudas; movimiento suave.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Clock Reach (equilibrio en reloj)', grupoMuscular:'Equilibrio', material:'Peso corporal',
     descripcion:'De pie sobre una pierna, tocar el suelo con el pie contrario en distintas direcciones imitando las horas de un reloj.',
-    precauciones:'Nivel avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca en clientes con mareos o riesgo de caída.', zonasRiesgo:'tobillo, cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Pase de kettlebell en círculo', grupoMuscular:'Full body (dinámica de grupo)', material:'Kettlebell', esDinamicaGrupal:true,
     descripcion:'El grupo forma un corro y se pasa la kettlebell de mano en mano, alternando el sentido y el ritmo.',
     precauciones:'Usar una kettlebell ligera; adaptar el ritmo al nivel del grupo.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
@@ -1284,7 +1285,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Step-Up explosivo con salto al cajón', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
     descripcion:'Subir al cajón con impulso y salto final, bajando de forma controlada para repetir.',
-    precauciones:'Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto — no recomendado en osteoporosis, fascitis plantar o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla búlgara con pie en el cajón', grupoMuscular:'Piernas', material:'Cajón de pliometría',
     descripcion:'Pie trasero apoyado sobre el cajón de pliometría, bajar la cadera con la pierna delantera de forma controlada.',
     precauciones:'Requiere buen equilibrio; la altura del cajón aumenta la exigencia frente a usar el banco.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
@@ -1302,7 +1303,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Zancada estática con pie trasero en plataforma inestable', grupoMuscular:'Piernas / Equilibrio', material:'Plataformas inestables',
     descripcion:'Pie trasero apoyado sobre la plataforma inestable, realizar la zancada estática controlando el equilibrio.',
-    precauciones:'Nivel avanzado; tener apoyo cerca.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estiramiento de isquiotibiales con rulo bajo los talones', grupoMuscular:'Movilidad', material:'Rulo de yoga',
     descripcion:'Tumbado boca arriba con los talones apoyados sobre el rulo, deslizar las piernas para estirar la parte posterior.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
@@ -1323,7 +1324,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Dominada con agarre ancho', grupoMuscular:'Espalda', material:'Barra de dominadas',
     descripcion:'Colgado de la barra con las manos más separadas que el ancho de hombros, tirar del cuerpo hacia arriba.',
-    precauciones:'Nivel avanzado; mayor exigencia de hombro que el agarre estándar.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; mayor exigencia de hombro que el agarre estándar.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Dead Hang (suspensión activa)', grupoMuscular:'Espalda / Agarre', material:'Barra de dominadas',
     descripcion:'Colgado de la barra con los brazos extendidos, mantener la posición activando ligeramente los hombros hacia abajo.',
     precauciones:'Muy recomendable para descompresión de columna y fuerza de agarre.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -1370,13 +1371,13 @@ const DEFAULT_EXERCISES = [
     precauciones:'Tener apoyo cerca; solo para clientes sin mareos.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Goblet Squat sobre plataforma inestable', grupoMuscular:'Piernas', material:'Plataformas inestables, Kettlebell',
     descripcion:'Sentadilla goblet realizada de pie sobre la plataforma inestable, aumentando la exigencia de estabilidad.',
-    precauciones:'Nivel avanzado; usar carga ligera.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; usar carga ligera.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo con banda sobre plataforma inestable', grupoMuscular:'Espalda / Core', material:'Plataformas inestables, Bandas elásticas',
     descripcion:'De pie sobre la plataforma inestable, remo con banda elástica manteniendo el equilibrio.',
     precauciones:'', zonasRiesgo:'tobillo, hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Zancada frontal con apoyo trasero en plataforma inestable', grupoMuscular:'Piernas', material:'Plataformas inestables',
     descripcion:'Pie trasero apoyado sobre la plataforma inestable, realizar la zancada controlando el balanceo.',
-    precauciones:'Nivel avanzado; tener apoyo cerca.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rotación de tronco de pie sobre plataforma inestable', grupoMuscular:'Core / Equilibrio', material:'Plataformas inestables',
     descripcion:'De pie sobre la plataforma, rotar el tronco suavemente de un lado a otro manteniendo el equilibrio.',
     precauciones:'', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
@@ -1385,16 +1386,16 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Apoyo de manos (Superman) sobre plataforma inestable', grupoMuscular:'Core / Hombro', material:'Plataformas inestables',
     descripcion:'Manos apoyadas sobre la plataforma en posición de plancha, elevar un brazo y la pierna contraria de forma controlada.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla búlgara con pie delantero en plataforma inestable', grupoMuscular:'Piernas', material:'Plataformas inestables',
     descripcion:'Pie delantero apoyado sobre la plataforma inestable, pie trasero elevado en banco, bajar la cadera controlando el equilibrio.',
-    precauciones:'Nivel avanzado.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Marcha en el sitio sobre plataforma inestable', grupoMuscular:'Equilibrio / Cardio suave', material:'Plataformas inestables',
     descripcion:'De pie sobre la plataforma, marcha suave elevando ligeramente las rodillas de forma alterna.',
     precauciones:'Buena progresión inicial antes de ejercicios más exigentes sobre la plataforma.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla con mancuernas sobre plataforma inestable', grupoMuscular:'Piernas', material:'Plataformas inestables, Mancuernas',
     descripcion:'Sentadilla con una mancuerna en cada mano realizada de pie sobre la plataforma inestable.',
-    precauciones:'Nivel avanzado; usar cargas ligeras.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; usar cargas ligeras.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Extensión de cadera con rulo bajo un pie', grupoMuscular:'Glúteo / Equilibrio', material:'Rulo de yoga',
     descripcion:'Apoyo de un pie sobre el rulo, extender la cadera de la pierna libre hacia atrás manteniendo el equilibrio.',
@@ -1407,7 +1408,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Presión suave, aumentar poco a poco.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Plancha lateral con antebrazo sobre el rulo', grupoMuscular:'Core', material:'Rulo de yoga',
     descripcion:'Plancha lateral apoyando el antebrazo sobre el rulo, añadiendo un componente de inestabilidad.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca o hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca o hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Puente de glúteo a una pierna con rulo', grupoMuscular:'Glúteo', material:'Rulo de yoga',
     descripcion:'Pie de apoyo sobre el rulo, puente de glúteo elevando la otra pierna extendida.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
@@ -1441,10 +1442,10 @@ const DEFAULT_EXERCISES = [
     precauciones:'Requiere buen equilibrio.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Plancha con pies elevados en el cajón', grupoMuscular:'Core', material:'Cajón de pliometría',
     descripcion:'Plancha frontal con los pies apoyados sobre el cajón, aumentando la exigencia sobre el core y el hombro.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Salto lateral repetido sobre el cajón', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
     descripcion:'Saltos laterales repetidos subiendo y bajando del cajón de forma continua.',
-    precauciones:'Ejercicio de impacto alto — no recomendado en osteoporosis o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Ejercicio de impacto alto — no recomendado en osteoporosis o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla con salto al cajón (Box Squat Jump)', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
     descripcion:'Sentadilla con el cajón detrás a modo de referencia de profundidad, seguida de un salto vertical.',
     precauciones:'Ejercicio de impacto — no recomendado en osteoporosis o problemas de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
@@ -1460,14 +1461,14 @@ const DEFAULT_EXERCISES = [
     precauciones:'La guía aporta estabilidad extra frente a la versión libre.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Empuje de cadera (Hip Thrust) unilateral en guía Smith', grupoMuscular:'Glúteo', material:'Barra con guía Smith, Banco',
     descripcion:'Espalda alta en el banco, una pierna apoyada y la otra extendida, empuje de cadera guiado por el carril.',
-    precauciones:'Nivel avanzado; requiere buen control de core.', zonasRiesgo:'cadera, lumbar', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; requiere buen control de core.', zonasRiesgo:'cadera, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Press cerrado en guía Smith (para tríceps)', grupoMuscular:'Brazo / Pecho', material:'Barra con guía Smith, Banco',
     descripcion:'Press de banca con las manos más juntas que el ancho de hombros, dando más énfasis al tríceps.',
     precauciones:'', zonasRiesgo:'hombro, muñeca', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Sprint corto en bici indoor con resistencia media', grupoMuscular:'Cardio', material:'Bici ciclo indoor',
     descripcion:'Tramos cortos de máxima velocidad manteniendo una resistencia media, alternando con pedaleo suave.',
-    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Bici indoor de pie (Standing Climb)', grupoMuscular:'Piernas / Cardio', material:'Bici ciclo indoor',
     descripcion:'Pedalear de pie sobre los pedales con resistencia alta, simulando una subida pronunciada.',
     precauciones:'Requiere buen equilibrio y ausencia de mareos.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
@@ -1563,10 +1564,10 @@ const DEFAULT_EXERCISES = [
     precauciones:'Buena progresión hacia la dominada completa.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo invertido con pies elevados', grupoMuscular:'Espalda', material:'Barra de dominadas',
     descripcion:'Remo invertido clásico pero con los pies apoyados en un punto elevado, aumentando la exigencia.',
-    precauciones:'Nivel avanzado.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Rotación de cadera colgado (Hanging Hip Rotation)', grupoMuscular:'Core', material:'Barra de dominadas',
     descripcion:'Colgado de la barra con las rodillas flexionadas, rotar la cadera suavemente de un lado a otro.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Dominada asistida con banda ligera', grupoMuscular:'Espalda', material:'Barra de dominadas, Bandas elásticas',
     descripcion:'Banda de asistencia ligera anclada en la barra, ofreciendo solo una pequeña ayuda en la tracción.',
     precauciones:'Progresión avanzada, cerca ya de la dominada sin asistencia.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -1578,7 +1579,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Excelente ejercicio de base antes de trabajar la dominada completa.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Mantenimiento isométrico en dominada (Pull-Up Hold)', grupoMuscular:'Espalda', material:'Barra de dominadas',
     descripcion:'Con ayuda para subir, mantener la posición alta de la dominada (barbilla sobre la barra) el mayor tiempo posible.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Bici indoor - Descenso simulado', grupoMuscular:'Cardio suave', material:'Bici ciclo indoor',
     descripcion:'Resistencia baja y cadencia alta, simulando el pedaleo fácil de una bajada.',
@@ -1586,7 +1587,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Bici indoor - Bloques de fuerza', grupoMuscular:'Piernas', material:'Bici ciclo indoor',
     descripcion:'Resistencia muy alta durante tramos cortos, priorizando la fuerza de piernas sobre la velocidad.',
     precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Bici indoor - Intervalos 15/15', grupoMuscular:'Cardio', material:'Bici ciclo indoor',
+  { id: uid(), nombre:'Bici indoor - Intervalos 15-15', grupoMuscular:'Cardio', material:'Bici ciclo indoor',
     descripcion:'15 segundos de esfuerzo alto seguidos de 15 segundos suaves, repitiendo varias rondas.',
     precauciones:'Ajustar intensidad en clientes con antecedentes cardiovasculares.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Bici indoor - Progresión de 10 minutos', grupoMuscular:'Cardio', material:'Bici ciclo indoor',
@@ -1628,7 +1629,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Evitar en molestias de rodilla.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Paso monstruo lateral con miniband en muñecas', grupoMuscular:'Hombro / Core', material:'Miniband',
     descripcion:'En posición de plancha con la miniband en las muñecas, desplazar una mano lateralmente venciendo la resistencia.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Curl de bíceps 21s con barra', grupoMuscular:'Brazo', material:'Barra olímpica con discos',
     descripcion:'7 repeticiones en la mitad inferior del recorrido, 7 en la mitad superior y 7 completas, sin soltar la barra.',
@@ -1735,7 +1736,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Burpee adaptado con step', grupoMuscular:'Full body / Cardio', material:'Step',
     descripcion:'Manos apoyadas en el step, extensión de piernas hacia atrás y vuelta a de pie, sin salto final.',
-    precauciones:'Versión de menor impacto que el burpee en el suelo.', zonasRiesgo:'muñeca, rodilla', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Versión de menor impacto que el burpee en el suelo.', zonasRiesgo:'muñeca, rodilla', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Wallball Reverse Lunge and Press', grupoMuscular:'Piernas / Hombro', material:'Wallballs',
     descripcion:'Zancada hacia atrás sujetando el wallball, seguida de un press por encima de la cabeza al volver a la posición inicial.',
@@ -1745,13 +1746,13 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wallball Slam lateral', grupoMuscular:'Core (rotación) / Potencia', material:'Wallballs',
     descripcion:'Elevar el wallball en diagonal y lanzarlo con fuerza hacia el suelo a un lado del cuerpo, alternando lados.',
-    precauciones:'Evitar en molestias lumbares o de columna; no recomendado en osteoporosis.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; Evitar en molestias lumbares o de columna; no recomendado en osteoporosis.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wallball Sit-Up clásico', grupoMuscular:'Core', material:'Wallballs',
     descripcion:'Tumbado con el wallball sujeto sobre el pecho, incorporar el tronco de forma controlada.',
     precauciones:'Evitar en hernias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wallball Overhead Hold and Squat', grupoMuscular:'Piernas / Hombro', material:'Wallballs',
     descripcion:'Sujetar el wallball por encima de la cabeza con los brazos extendidos y realizar la sentadilla manteniendo esa posición.',
-    precauciones:'Nivel avanzado; requiere buena movilidad de hombro.', zonasRiesgo:'hombro, rodilla', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; requiere buena movilidad de hombro.', zonasRiesgo:'hombro, rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Wallball Chop (rotación diagonal)', grupoMuscular:'Core (rotación)', material:'Wallballs',
     descripcion:'Llevar el wallball en diagonal desde arriba de un lado hasta abajo del lado contrario, con rotación de tronco.',
     precauciones:'Evitar en hernias o molestias lumbares/de columna.', zonasRiesgo:'columna, lumbar', videoUrl:'', imagenUrl:'' },
@@ -1780,7 +1781,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Buena opción para clientes con poco equilibrio.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Fondos de tríceps con pies en el cajón', grupoMuscular:'Brazo', material:'Cajón de pliometría, Banco',
     descripcion:'Manos apoyadas en el banco y pies sobre el cajón, flexionar y extender los codos bajando la cadera.',
-    precauciones:'Nivel avanzado; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Estocada lateral con pie en el cajón', grupoMuscular:'Piernas / Aductores', material:'Cajón de pliometría',
     descripcion:'Un pie apoyado sobre el cajón, realizar la estocada lateral hacia el lado contrario.',
     precauciones:'', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
@@ -1796,7 +1797,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Movimiento muy suave.', zonasRiesgo:'cervical', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Equilibrio sobre el rulo (core avanzado)', grupoMuscular:'Core / Equilibrio', material:'Rulo de yoga',
     descripcion:'Sentado sobre el rulo colocado transversalmente, mantener el equilibrio activando el core.',
-    precauciones:'Nivel avanzado; tener apoyo cerca.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Extensión de cadera con rulo bajo ambos pies', grupoMuscular:'Glúteo / Equilibrio', material:'Rulo de yoga',
     descripcion:'Ambos pies apoyados sobre el rulo, realizar el puente de glúteo controlando el equilibrio.',
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
@@ -1813,13 +1814,13 @@ const DEFAULT_EXERCISES = [
 
   { id: uid(), nombre:'Plancha lateral con pies en plataforma inestable', grupoMuscular:'Core', material:'Plataformas inestables',
     descripcion:'Plancha lateral con ambos pies apoyados sobre la plataforma inestable, aumentando la exigencia de estabilidad.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Bird Dog con manos en plataforma inestable', grupoMuscular:'Core / Equilibrio', material:'Plataformas inestables',
     descripcion:'Manos apoyadas sobre la plataforma en cuadrupedia, extender brazo y pierna contraria de forma controlada.',
-    precauciones:'Nivel avanzado.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Elevación de talones a una pierna sobre plataforma inestable', grupoMuscular:'Piernas (gemelo) / Equilibrio', material:'Plataformas inestables',
     descripcion:'De pie con una sola pierna sobre la plataforma, subir y bajar el talón manteniendo el equilibrio.',
-    precauciones:'Nivel avanzado; tener apoyo cerca.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; tener apoyo cerca.', zonasRiesgo:'tobillo', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'Rotación externa de cadera de pie con banda circular', grupoMuscular:'Cadera', material:'Bandas circulares',
     descripcion:'Banda por encima de las rodillas, de pie, separar y juntar las rodillas de forma controlada.',
@@ -1829,7 +1830,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Marcha lateral con banda circular en muñecas (plancha)', grupoMuscular:'Hombro / Core', material:'Bandas circulares',
     descripcion:'En posición de plancha con la banda circular en las muñecas, desplazar una mano lateralmente venciendo la resistencia.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
 
   { id: uid(), nombre:'El Cien (The Hundred)', grupoMuscular:'Core', material:'Colchoneta (Pilates)',
     descripcion:'Tumbado boca arriba, elevar cabeza y hombros con las piernas en mesa o extendidas a 45°, bombeando los brazos junto al cuerpo al ritmo de la respiración (5 tiempos inhalando, 5 exhalando).',
@@ -2001,7 +2002,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Plancha con manos sobre softball', grupoMuscular:'Core / Hombro', material:'Softball',
     descripcion:'Plancha frontal apoyando ambas manos sobre la softball, aumentando de forma notable el reto de estabilidad por su tamaño.',
-    precauciones:'Nivel avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
+    precauciones:'Nivel muy avanzado; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, abdomen', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Círculo de cadera sentado sobre softball', grupoMuscular:'Core / Equilibrio', material:'Softball',
     descripcion:'Sentado sobre la softball con los pies apoyados en el suelo, describir pequeños círculos con la cadera manteniendo el equilibrio.',
     precauciones:'Tener apoyo cerca si el equilibrio es bajo.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
@@ -2031,7 +2032,194 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel muy avanzado; requiere apoyo o pared cerca.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Zancada con softball sujeta al pecho', grupoMuscular:'Piernas', material:'Softball',
     descripcion:'Zancada frontal controlada sujetando la softball con ambas manos contra el pecho, priorizando equilibrio y alineación.',
-    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
+    precauciones:'', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Clean and Press con barra olímpica', grupoMuscular:'Piernas / Hombro / Espalda', material:'Barra olímpica con discos',
+    descripcion:'Desde el suelo, llevar la barra a los hombros con un tirón explosivo (clean) y empujarla por encima de la cabeza (press) en un solo movimiento fluido.',
+    precauciones:'Nivel avanzado; requiere buena técnica y movilidad de hombro y cadera; evitar en molestias lumbares o de hombro.', zonasRiesgo:'lumbar, hombro, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Push Jerk con barra olímpica', grupoMuscular:'Hombro / Piernas', material:'Barra olímpica con discos',
+    descripcion:'Con la barra en los hombros, flexionar ligeramente las piernas y empujarla por encima de la cabeza con un impulso explosivo de piernas.',
+    precauciones:'Nivel avanzado; evitar en molestias de hombro, rodilla o lumbares.', zonasRiesgo:'hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Thruster con barra olímpica', grupoMuscular:'Piernas / Hombro', material:'Barra olímpica con discos',
+    descripcion:'Sentadilla frontal con la barra en los hombros seguida de un empuje explosivo hacia arriba al subir, en un único movimiento continuo.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular y técnica; evitar en molestias de rodilla, hombro o lumbares.', zonasRiesgo:'rodilla, hombro, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada con salto con barra olímpica', grupoMuscular:'Piernas / Potencia', material:'Barra olímpica con discos',
+    descripcion:'Con la barra en la espalda, alternar zancadas con un salto explosivo en el cambio de pierna.',
+    precauciones:'Ejercicio de impacto y carga combinados; nivel muy avanzado; no recomendado en molestias de rodilla u osteoporosis.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla frontal con salto con barra olímpica', grupoMuscular:'Piernas / Potencia', material:'Barra olímpica con discos',
+    descripcion:'Sentadilla frontal con la barra en los hombros, añadiendo un salto explosivo en la fase de subida.',
+    precauciones:'Nivel muy avanzado; no recomendado en molestias de rodilla, tobillo u osteoporosis.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Kettlebell Swing a dos manos', grupoMuscular:'Glúteo / Espalda / Core', material:'Kettlebell',
+    descripcion:'Con la kettlebell entre las piernas, generar un impulso de cadera explosivo para balancear la pesa hasta la altura del pecho, con los brazos relajados.',
+    precauciones:'Nivel avanzado; requiere buena técnica de bisagra de cadera; evitar en molestias lumbares.', zonasRiesgo:'lumbar, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Kettlebell Snatch', grupoMuscular:'Hombro / Espalda / Piernas', material:'Kettlebell',
+    descripcion:'Desde el suelo o entre las piernas, llevar la kettlebell por encima de la cabeza en un único movimiento explosivo y fluido.',
+    precauciones:'Nivel muy avanzado; alta exigencia técnica; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Kettlebell Clean and Press', grupoMuscular:'Piernas / Hombro / Espalda', material:'Kettlebell',
+    descripcion:'Llevar la kettlebell del suelo al hombro con un tirón (clean) y después empujarla por encima de la cabeza (press).',
+    precauciones:'Nivel avanzado; evitar en molestias de hombro, muñeca o lumbares.', zonasRiesgo:'hombro, muñeca, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Turkish Get-Up con kettlebell', grupoMuscular:'Core / Hombro / Piernas', material:'Kettlebell',
+    descripcion:'Desde tumbado boca arriba con la kettlebell extendida hacia el techo, incorporarse hasta quedar de pie manteniendo el brazo extendido todo el recorrido, y volver a tumbarse con control.',
+    precauciones:'Nivel muy avanzado; movimiento técnico y lento; evitar en molestias de hombro, muñeca o lumbares.', zonasRiesgo:'hombro, muñeca, lumbar, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Kettlebell Thruster', grupoMuscular:'Piernas / Hombro', material:'Kettlebell',
+    descripcion:'Sentadilla goblet con la kettlebell seguida de un empuje explosivo por encima de la cabeza al subir.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular; evitar en molestias de rodilla u hombro.', zonasRiesgo:'rodilla, hombro', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Salto profundo desde el cajón (Depth Jump)', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
+    descripcion:'Bajar del cajón dejándose caer y, nada más tocar el suelo, realizar un salto vertical explosivo inmediato.',
+    precauciones:'Ejercicio pliométrico de alto impacto; nivel muy avanzado; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Burpee con salto al cajón', grupoMuscular:'Cuerpo completo / Cardio', material:'Cajón de pliometría',
+    descripcion:'Realizar un burpee completo y, al ponerse de pie, saltar directamente encima del cajón.',
+    precauciones:'Nivel muy avanzado; alta exigencia cardiovascular y de impacto; no recomendado en osteoporosis o molestias articulares.', zonasRiesgo:'rodilla, tobillo, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Salto a una pierna con giro sobre el cajón', grupoMuscular:'Piernas / Equilibrio', material:'Cajón de pliometría',
+    descripcion:'Saltar al cajón apoyando una sola pierna, añadiendo un giro de 90° en el aire antes de aterrizar con control.',
+    precauciones:'Nivel muy avanzado; alto riesgo de impacto asimétrico; no recomendado en molestias de rodilla o tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Skater Jump lateral al cajón', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
+    descripcion:'Saltar lateralmente de un lado a otro del cajón como un patinador, aterrizando a una pierna cada vez con control.',
+    precauciones:'Nivel avanzado; no recomendado en molestias de rodilla, cadera u osteoporosis.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Wallball a máxima velocidad', grupoMuscular:'Piernas / Hombro / Cardio', material:'Wallballs',
+    descripcion:'Sentadilla profunda seguida de un lanzamiento explosivo de la wallball a la diana, encadenando repeticiones al ritmo más alto posible.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular; evitar en molestias de rodilla u hombro.', zonasRiesgo:'rodilla, hombro, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Circuito wallball + burpee', grupoMuscular:'Cuerpo completo / Cardio', material:'Wallballs',
+    descripcion:'Alternar una serie de wallballs con una serie de burpees sin descanso entre ambos, repitiendo el circuito.',
+    precauciones:'Nivel muy avanzado; alta exigencia cardiovascular combinada; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla, hombro, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Sentadilla a una pierna con salto en plataforma inestable', grupoMuscular:'Piernas / Equilibrio', material:'Plataformas inestables',
+    descripcion:'Sobre la plataforma inestable, realizar una sentadilla a una pierna añadiendo un pequeño salto controlado en la subida.',
+    precauciones:'Nivel muy avanzado; alto riesgo de inestabilidad; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Press de hombro de pie sobre plataforma inestable', grupoMuscular:'Hombro / Core', material:'Plataformas inestables',
+    descripcion:'De pie sobre la plataforma inestable, realizar un press de hombro con mancuernas manteniendo el equilibrio durante todo el movimiento.',
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro o problemas de equilibrio.', zonasRiesgo:'hombro, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Burpee sobre plataforma inestable', grupoMuscular:'Cuerpo completo / Cardio', material:'Plataformas inestables',
+    descripcion:'Realizar un burpee completo apoyando manos y pies sobre la plataforma inestable en cada fase del movimiento.',
+    precauciones:'Nivel muy avanzado; alto riesgo de inestabilidad combinado con esfuerzo cardiovascular; no recomendado en molestias de muñeca.', zonasRiesgo:'muñeca, hombro, rodilla', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Landmine Clean and Press', grupoMuscular:'Piernas / Hombro / Espalda', material:'Landmine',
+    descripcion:'Llevar la barra landmine del suelo al hombro con un tirón explosivo y empujarla por encima de la cabeza en un movimiento continuo.',
+    precauciones:'Nivel avanzado; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Landmine Rotational Throw explosivo', grupoMuscular:'Core / Hombro / Piernas', material:'Landmine',
+    descripcion:'Sujetando el extremo de la barra landmine con ambas manos, rotar el tronco explosivamente de un lado al otro simulando un lanzamiento.',
+    precauciones:'Nivel avanzado; movimiento explosivo de rotación; evitar en molestias lumbares o de columna.', zonasRiesgo:'lumbar, columna, hombro', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Muscle-Up adaptado', grupoMuscular:'Espalda / Hombro / Brazo', material:'Barra de dominadas',
+    descripcion:'Desde una dominada, continuar el movimiento transicionando por encima de la barra hasta quedar apoyado con los brazos extendidos.',
+    precauciones:'Nivel muy avanzado; requiere fuerza y técnica considerables; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Dominada con toque de pecho a la barra', grupoMuscular:'Espalda / Brazo', material:'Barra de dominadas',
+    descripcion:'Realizar una dominada llevando el pecho hasta tocar la barra, mucho más exigente que la dominada estándar.',
+    precauciones:'Nivel muy avanzado; evitar en molestias de hombro.', zonasRiesgo:'hombro, codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'L-Sit en barra de dominadas', grupoMuscular:'Core / Hombro', material:'Barra de dominadas',
+    descripcion:'Colgado de la barra, elevar ambas piernas extendidas hasta formar una "L" y mantener la posición isométrica.',
+    precauciones:'Nivel muy avanzado; alta exigencia de core y hombro; evitar en molestias lumbares o de hombro.', zonasRiesgo:'hombro, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Pistol Squat (sentadilla a una pierna)', grupoMuscular:'Piernas / Equilibrio', material:'Peso corporal',
+    descripcion:'Sentadilla completa apoyado sobre una sola pierna, con la otra extendida al frente sin tocar el suelo, bajando hasta el máximo rango posible.',
+    precauciones:'Nivel muy avanzado; requiere gran movilidad y fuerza unilateral; no recomendado en molestias de rodilla.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión pliométrica con palmada', grupoMuscular:'Pecho / Brazo / Hombro', material:'Peso corporal',
+    descripcion:'Flexión de brazos explosiva que impulsa el cuerpo lo suficiente para despegar las manos del suelo y dar una palmada antes de aterrizar.',
+    precauciones:'Nivel muy avanzado; alto impacto en muñeca y hombro; evitar en molestias de muñeca, hombro o codo.', zonasRiesgo:'muñeca, hombro, codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Burpee con dominada', grupoMuscular:'Cuerpo completo / Cardio', material:'Peso corporal',
+    descripcion:'Al finalizar cada burpee, saltar para agarrar una barra (real o imaginaria a la altura adecuada) y realizar una dominada antes de repetir.',
+    precauciones:'Nivel muy avanzado; combina esfuerzo cardiovascular y de fuerza máxima; no recomendado sin buena base previa.', zonasRiesgo:'hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Salto de longitud (Broad Jump)', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
+    descripcion:'Desde parado, flexionar las piernas y saltar hacia adelante con ambos pies lo más lejos posible, amortiguando bien el aterrizaje.',
+    precauciones:'Ejercicio explosivo de impacto; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Tuck Jump (salto con rodillas al pecho)', grupoMuscular:'Piernas / Core / Potencia', material:'Peso corporal',
+    descripcion:'Saltar verticalmente llevando ambas rodillas hacia el pecho en el punto más alto del salto, aterrizando con control.',
+    precauciones:'Ejercicio pliométrico de alto impacto; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sprawl explosivo', grupoMuscular:'Cuerpo completo / Cardio', material:'Peso corporal',
+    descripcion:'Desde de pie, tirarse rápidamente al suelo en plancha y volver a levantarse de un impulso, sin el salto final del burpee, a ritmo alto.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular; evitar en molestias de muñeca o lumbares.', zonasRiesgo:'muñeca, lumbar, rodilla', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Sprint máximo en bici indoor', grupoMuscular:'Piernas / Cardio', material:'Bici ciclo indoor',
+    descripcion:'Pedalear a máxima velocidad e intensidad posible durante 20-30 segundos, con resistencia media-alta.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular; ajustar intensidad según condición física y controlar la tensión arterial.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Tabata en bici indoor', grupoMuscular:'Piernas / Cardio', material:'Bici ciclo indoor',
+    descripcion:'8 rondas de 20 segundos a máxima intensidad seguidos de 10 segundos de descanso, con resistencia media.',
+    precauciones:'Nivel avanzado; formato de alta intensidad; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Man Maker con mancuernas', grupoMuscular:'Cuerpo completo / Cardio', material:'Mancuernas',
+    descripcion:'Con una mancuerna en cada mano, encadenar una flexión, un remo a cada lado, una sentadilla y un press de hombro en un único movimiento continuo.',
+    precauciones:'Nivel muy avanzado; combina varios patrones de movimiento exigentes; evitar en molestias de muñeca, hombro o lumbares.', zonasRiesgo:'muñeca, hombro, lumbar, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Renegade Row con salto lateral', grupoMuscular:'Espalda / Core / Piernas', material:'Mancuernas',
+    descripcion:'Desde la posición de plancha con mancuernas, realizar un remo a cada lado y después saltar lateralmente con ambos pies antes de repetir.',
+    precauciones:'Nivel muy avanzado; combina fuerza de tren superior con salto lateral; evitar en molestias de muñeca, hombro o rodilla.', zonasRiesgo:'muñeca, hombro, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada con salto y mancuernas', grupoMuscular:'Piernas / Potencia', material:'Mancuernas',
+    descripcion:'Con una mancuerna en cada mano, alternar zancadas añadiendo un salto explosivo en el cambio de pierna.',
+    precauciones:'Nivel avanzado; ejercicio de impacto con carga añadida; no recomendado en molestias de rodilla u osteoporosis.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Burpee con step-up explosivo', grupoMuscular:'Cuerpo completo / Cardio', material:'Step',
+    descripcion:'Realizar un burpee completo y, al ponerse de pie, subir de forma explosiva al step con una sola pierna.',
+    precauciones:'Nivel avanzado; alta exigencia cardiovascular y de impacto; evitar en molestias de rodilla, tobillo o muñeca.', zonasRiesgo:'rodilla, tobillo, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Salto lateral repetido sobre el step', grupoMuscular:'Piernas / Potencia', material:'Step',
+    descripcion:'Saltar lateralmente de un lado a otro por encima del step de forma repetida y a ritmo alto, aterrizando con control.',
+    precauciones:'Nivel avanzado; no recomendado en molestias de rodilla, tobillo u osteoporosis.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Sentadilla pesada con pausa en guía Smith', grupoMuscular:'Piernas / Core', material:'Barra con guía Smith',
+    descripcion:'Sentadilla con carga elevada en la guía Smith, manteniendo una pausa de 2-3 segundos en el punto más bajo antes de subir.',
+    precauciones:'Nivel muy avanzado; carga elevada; evitar en molestias de rodilla o lumbares.', zonasRiesgo:'rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Zancada búlgara con salto en guía Smith', grupoMuscular:'Piernas / Potencia', material:'Barra con guía Smith',
+    descripcion:'Zancada búlgara con el pie trasero elevado, añadiendo un salto explosivo en la fase de subida con la barra en la espalda.',
+    precauciones:'Nivel muy avanzado; combina carga con salto; no recomendado en molestias de rodilla u osteoporosis.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+
+  { id: uid(), nombre:'Kettlebell Snatch a máxima intensidad', grupoMuscular:'Hombro / Espalda / Piernas', material:'Kettlebell',
+    descripcion:'Series de Kettlebell Snatch encadenadas al ritmo más alto posible, alternando de brazo cada pocas repeticiones.',
+    precauciones:'Nivel muy avanzado; alta exigencia técnica y cardiovascular combinadas; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Complejo de barra: Clean + Front Squat + Push Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Barra olímpica con discos',
+    descripcion:'Encadenar sin soltar la barra un clean, una sentadilla frontal y un push press en una sola serie continua, repitiendo el complejo completo.',
+    precauciones:'Nivel muy avanzado; combina varios levantamientos técnicos exigentes en una sola serie; evitar en molestias de hombro, rodilla o lumbares.', zonasRiesgo:'hombro, rodilla, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Muscle-Up en anillas adaptado a barra', grupoMuscular:'Espalda / Hombro / Brazo', material:'Barra de dominadas',
+    descripcion:'Dominada explosiva que transiciona directamente a un fondo por encima de la barra, sin pausa entre ambas fases.',
+    precauciones:'Nivel muy avanzado; movimiento de gimnasia de alta exigencia; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Wallball Slam a máxima velocidad', grupoMuscular:'Cuerpo completo / Cardio', material:'Wallballs',
+    descripcion:'Series continuas de Wallball Slam al ritmo más alto posible, sin pausa entre repeticiones.',
+    precauciones:'Nivel muy avanzado; alta exigencia cardiovascular explosiva; evitar en molestias lumbares o de hombro.', zonasRiesgo:'lumbar, hombro, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sprint máximo con cambios de dirección', grupoMuscular:'Piernas / Cardio / Potencia', material:'Peso corporal',
+    descripcion:'Serie de sprints cortos a máxima velocidad con cambios de dirección bruscos cada pocos metros.',
+    precauciones:'Nivel muy avanzado; alto riesgo de lesión sin buen calentamiento previo; no recomendado en molestias de rodilla o tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Complejo de mancuernas: Clean + Squat + Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Mancuernas',
+    descripcion:'Encadenar sin soltar las mancuernas un clean, una sentadilla y un press por encima de la cabeza, repitiendo el complejo completo sin pausa.',
+    precauciones:'Nivel muy avanzado; combina varios patrones exigentes en una sola serie; evitar en molestias de hombro, rodilla o lumbares.', zonasRiesgo:'hombro, rodilla, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla búlgara con salto y mancuernas', grupoMuscular:'Piernas / Potencia', material:'Mancuernas',
+    descripcion:'Sentadilla búlgara con el pie trasero elevado sujetando una mancuerna en cada mano, añadiendo un salto explosivo en la subida.',
+    precauciones:'Nivel muy avanzado; combina carga, equilibrio unilateral y salto; no recomendado en molestias de rodilla u osteoporosis.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Escalador explosivo a máxima velocidad', grupoMuscular:'Core / Cardio / Hombro', material:'Peso corporal',
+    descripcion:'Mountain Climbers ejecutados al ritmo más alto posible, con las rodillas llegando explosivamente hacia el pecho.',
+    precauciones:'Nivel muy avanzado; alta exigencia cardiovascular; evitar en molestias de muñeca o lumbares.', zonasRiesgo:'muñeca, lumbar, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Handstand Push-Up asistido en pared', grupoMuscular:'Hombro / Brazo / Core', material:'Peso corporal',
+    descripcion:'En pino apoyado contra la pared, flexionar los brazos bajando la cabeza hacia el suelo y volver a empujar hasta la extensión completa.',
+    precauciones:'Nivel muy avanzado; requiere fuerza y control considerables; evitar en molestias de hombro, muñeca o tensión arterial alta.', zonasRiesgo:'hombro, muñeca, cervical', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Salto al cajón a doble pierna con carga', grupoMuscular:'Piernas / Potencia', material:'Cajón de pliometría',
+    descripcion:'Saltar al cajón sujetando una mancuerna en cada mano, aterrizando con control antes de bajar y repetir.',
+    precauciones:'Nivel muy avanzado; combina impacto pliométrico con carga añadida; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo con landmine a una mano y rotación explosiva', grupoMuscular:'Espalda / Core / Hombro', material:'Landmine',
+    descripcion:'Remo a una mano con la barra landmine seguido de una rotación explosiva de tronco al finalizar cada repetición.',
+    precauciones:'Nivel muy avanzado; combina fuerza y rotación explosiva; evitar en molestias lumbares, de columna u hombro.', zonasRiesgo:'lumbar, columna, hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Circuito Hyrox individual completo', grupoMuscular:'Cuerpo completo / Cardio / Potencia', material:'Diana hyrox',
+    descripcion:'Encadenar wallballs, sprint, y ejercicios de fuerza siguiendo el formato de estación Hyrox, sin descanso entre estaciones.',
+    precauciones:'Nivel muy avanzado; formato de altísima exigencia cardiovascular y muscular combinada; no recomendado sin muy buena base previa ni supervisión médica en problemas cardiovasculares.', zonasRiesgo:'rodilla, hombro, lumbar, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Dominada lastrada adaptada', grupoMuscular:'Espalda / Brazo / Core', material:'Barra de dominadas',
+    descripcion:'Dominada estricta añadiendo peso extra sujeto al cuerpo (chaleco, banda o mochila con carga) para aumentar la exigencia.',
+    precauciones:'Nivel muy avanzado; requiere una base sólida de dominadas estrictas antes de añadir carga; evitar en molestias de hombro.', zonasRiesgo:'hombro, codo, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla pistol con salto', grupoMuscular:'Piernas / Potencia / Equilibrio', material:'Peso corporal',
+    descripcion:'Pistol Squat completo añadiendo un pequeño salto explosivo en la fase de subida antes de volver a bajar a una pierna.',
+    precauciones:'Nivel muy avanzado; combina fuerza unilateral máxima con impacto; no recomendado en molestias de rodilla, tobillo u osteoporosis.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Bear Crawl explosivo con cambios de dirección', grupoMuscular:'Cuerpo completo / Core / Cardio', material:'Peso corporal',
+    descripcion:'Desplazamiento en cuadrupedia con las rodillas ligeramente separadas del suelo, avanzando y cambiando de dirección a ritmo alto.',
+    precauciones:'Nivel muy avanzado; alta exigencia de core y hombro combinada con esfuerzo cardiovascular; evitar en molestias de muñeca u hombro.', zonasRiesgo:'muñeca, hombro, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Kettlebell Clean and Jerk', grupoMuscular:'Piernas / Hombro / Espalda', material:'Kettlebell',
+    descripcion:'Llevar la kettlebell al hombro con un tirón (clean) y después empujarla por encima de la cabeza con un impulso de piernas (jerk).',
+    precauciones:'Nivel muy avanzado; combina dos levantamientos técnicos exigentes; evitar en molestias de hombro, muñeca, rodilla o lumbares.', zonasRiesgo:'hombro, muñeca, rodilla, lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla con salto a máxima altura', grupoMuscular:'Piernas / Potencia', material:'Peso corporal',
+    descripcion:'Sentadilla completa seguida de un salto vertical explosivo buscando la máxima altura posible en cada repetición.',
+    precauciones:'Nivel muy avanzado; ejercicio de impacto máximo; no recomendado en osteoporosis o molestias de rodilla/tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Fondos en paralelas con lastre adaptado', grupoMuscular:'Pecho / Brazo / Hombro', material:'Peso corporal',
+    descripcion:'Fondos de tríceps en paralelas o entre dos bancos, añadiendo peso extra sujeto al cuerpo para aumentar la exigencia.',
+    precauciones:'Nivel muy avanzado; requiere base sólida de fondos estrictos antes de añadir carga; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sprint en bici indoor a resistencia máxima', grupoMuscular:'Piernas / Cardio / Potencia', material:'Bici ciclo indoor',
+    descripcion:'Pedalear a máxima intensidad con resistencia alta durante series cortas de 15-20 segundos, con recuperación breve entre series.',
+    precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
 ];
 
 const APP_VERSION = '2026-08-07-1';
@@ -2606,7 +2794,7 @@ function pitido(frecuencia, duracionMs){
 // ---------- Mi perfil (autoservicio para quien instale la app) ----------
 function perfilVacio(){
   return {
-    nombre:'',
+    nombre:'', edad:'',
     salud:{ diagnostico:'', medicacion:'', lesionOperacion:'', evitar:'', sintomas:'', revision:'' },
     cuerpo:{ altura:'', pesoActual:'', pesoDeseado:'', ejercicioRegular:'', nivelForma:'Medio', estres:'', sueno:'', alimentacion:'', fumaAlcohol:'' },
     objetivos:{ principal:'', zona:'', dias:'', preferencia:'' },
@@ -2617,6 +2805,7 @@ function htmlFormularioMiPerfil(perfil){
   const p = perfil || perfilVacio();
   return `
     <div class="field"><label>Tu nombre</label><input id="mp-nombre" value="${escapeHtml(p.nombre||'')}" placeholder="Cómo te llamas"></div>
+    <div class="field"><label>Edad</label><input id="mp-edad" value="${escapeHtml(p.edad||'')}" placeholder="Años"></div>
 
     <div class="field-group-title">Estado de salud y antecedentes médicos</div>
     <div class="field"><label>¿Problema médico diagnosticado?</label><input id="mp-diagnostico" value="${escapeHtml(p.salud.diagnostico||'')}" placeholder="No / Sí — describe"></div>
@@ -2661,6 +2850,7 @@ function htmlFormularioMiPerfil(perfil){
 function leerFormularioMiPerfil(overlay){
   return {
     nombre: overlay.querySelector('#mp-nombre').value.trim(),
+    edad: overlay.querySelector('#mp-edad').value.trim(),
     salud: {
       diagnostico: overlay.querySelector('#mp-diagnostico').value.trim(),
       medicacion: overlay.querySelector('#mp-medicacion').value.trim(),
@@ -2771,6 +2961,7 @@ function miPerfilView(){
     state.misSesiones.unshift({ id: uid(), fecha: new Date().toISOString(), items: elegidos.map(c=>({ exerciseId:c.ex.id, series:c.series, reps:c.reps, descanso:c.descanso })) });
     scheduleSave();
     render();
+    if(ultimaGeneracionDiluida) showAlert('Aviso: con estos filtros había pocos ejercicios del nivel de dificultad elegido, así que se ha completado la sesión con algunos "normal" además de los del nivel pedido.');
   };
 
   if(state.misSesiones && state.misSesiones.length>0){
@@ -2892,7 +3083,9 @@ function temporizadorView(){
     const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s'], equilibrarGrupos: filtros.grupos.length===0});
     sesionTemporizadorActual = elegidos.map(c=>({ ex:c.ex, series:c.series, reps:c.reps, descansoSeg: segundosDeDescanso(c.descanso) }));
     wrap.querySelector('#t-rondas').value = sesionTemporizadorActual.length;
-    estadoTxt.textContent = `✓ Sesión generada: ${sesionTemporizadorActual.length} ejercicios (rondas ajustadas)`;
+    estadoTxt.textContent = ultimaGeneracionDiluida
+      ? `⚠ Sesión generada: ${sesionTemporizadorActual.length} ejercicios (había pocos del nivel elegido con estos filtros, se completó con algunos "normal")`
+      : `✓ Sesión generada: ${sesionTemporizadorActual.length} ejercicios (rondas ajustadas)`;
     generarWrap.querySelector('#t-quitar-sesion').style.display='inline-flex';
     renderListaSesion();
   };
@@ -4428,7 +4621,7 @@ function clientesView(){
 function openClientModal(clientId){
   const isNew = !clientId;
   const c = isNew ? {
-    id:uid(), nombre:'', salud:{diagnostico:'',medicacion:'',lesionOperacion:'',evitar:'',sintomas:'',revision:''},
+    id:uid(), nombre:'', edad:'', salud:{diagnostico:'',medicacion:'',lesionOperacion:'',evitar:'',sintomas:'',revision:''},
     cuerpo:{altura:'',pesoActual:'',pesoDeseado:'',ejercicioRegular:'',nivelForma:'',estres:'',sueno:'',alimentacion:'',fumaAlcohol:''},
     objetivos:{principal:'',zona:'',dias:'',preferencia:''}, notas:'', pareja:null, activo:true, fechaInicio:''
   } : JSON.parse(JSON.stringify(state.clients.find(x=>x.id===clientId)));
@@ -4443,6 +4636,9 @@ function openClientModal(clientId){
       </div>
       <div class="field-row">
         <div class="field"><label>Nombre</label><input id="f-nombre" value="${escapeHtml(c.nombre)}"></div>
+        <div class="field"><label>Edad</label><input id="f-edad" value="${escapeHtml(c.edad||'')}" placeholder="Años"></div>
+      </div>
+      <div class="field-row">
         <div class="field"><label>Entrena en pareja con (dejar vacío si es individual)</label><input id="f-pareja" value="${escapeHtml(c.pareja||'')}" placeholder="Nombre del compañero/a"></div>
       </div>
       <div class="field-row">
@@ -4526,6 +4722,7 @@ function openClientModal(clientId){
   overlay.querySelector('#save-btn').onclick=()=>{
     const g=id=>overlay.querySelector('#'+id).value;
     c.nombre=g('f-nombre')||'Sin nombre';
+    c.edad=g('f-edad').trim();
     c.pareja=g('f-pareja').trim()||null;
     c.activo = overlay.querySelector('#f-activo').checked;
     c.fechaInicio = overlay.querySelector('#f-fechaInicio').value;
@@ -4574,9 +4771,12 @@ function manejarErrorImagenEjercicio(imgEl){
     imgEl.dataset.fallbacks = JSON.stringify(restantes);
     imgEl.src = siguiente;
   } else {
+    // Reutilizamos EXACTAMENTE la misma clase que tenía la imagen, para que el hueco vacío
+    // ocupe siempre el mismo tamaño que ocuparía la foto real en ese sitio concreto — nunca más grande.
     const placeholder = document.createElement('div');
-    placeholder.className = imgEl.className.includes('ex-foto') ? 'ex-foto-vacia' : 'ex-img-placeholder';
-    if(placeholder.className==='ex-img-placeholder') placeholder.innerHTML = '📷<span>Sin imagen</span>';
+    placeholder.className = (imgEl.className||'ex-inline-thumb') + ' img-placeholder-generico';
+    const esGrande = imgEl.className.includes('ex-card-img') || imgEl.className.includes('info-ejercicio-img') || imgEl.className.includes('sd-img') || imgEl.className.includes('t-actual-img');
+    placeholder.innerHTML = esGrande ? '📷<span>Sin imagen</span>' : '📷';
     imgEl.replaceWith(placeholder);
   }
 }
@@ -4805,11 +5005,7 @@ function bateriaView(){
     const grid=document.createElement('div'); grid.className='grid';
     list.forEach(ex=>{
       const card=document.createElement('div'); card.className='card ex-card';
-      const imgTag = htmlImagenEjercicio(ex, '');
-      const imagenHtml = `
-        <div class="ex-img-placeholder">📷<span>Sin imagen</span></div>
-        ${imgTag}
-      `;
+      const imagenHtml = htmlImagenEjercicio(ex, 'ex-card-img');
       card.innerHTML=`
         <div class="ex-img-wrap">${imagenHtml}</div>
         <span class="tag">${escapeHtml(ex.grupoMuscular||'General')}</span>
@@ -5479,7 +5675,7 @@ function weekBlockGrupo(clase, horario, week, wIdx){
     }
     const exNameHtml = `<div class="exname">
       <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
-      ${ex?htmlImagenEjercicio(ex,''):''}
+      ${ex?htmlImagenEjercicio(ex,'ex-inline-thumb'):''}
       <span class="ex-nombre-click" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;">${ex?escapeHtml(ex.nombre):'(ejercicio eliminado)'}</span>${item.supersetId?badgeSuperset(item.supersetId,week):''}
     </div>`;
     row.innerHTML = (isRotativa ? exNameHtml+`<div class="ex-campo"><input value="${escapeHtml(item.estacion||'')}" data-f="estacion" placeholder="Estación 1"></div>` : exNameHtml) + `
@@ -5674,6 +5870,7 @@ function generateRandomGroupWeek(clase, horario, week){
     }
     week.items = newItems;
     scheduleSave(); render();
+    if(ultimaGeneracionDiluida) showAlert('Aviso: con estos filtros había pocos ejercicios del nivel de dificultad elegido, así que se ha completado la sesión con algunos "normal" además de los del nivel pedido.');
   };
   if(week.items.length>0){
     showConfirm('Esto sustituirá los ejercicios actuales de esta semana por una selección aleatoria. ¿Continuar?', pedirDias);
@@ -6169,6 +6366,7 @@ function abrirInfoEjercicio(ex){
       <span class="tag">${escapeHtml(ex.grupoMuscular||'General')}</span>
       ${ex.esPareja?'<span class="tag" style="background:rgba(127,179,217,.16);color:var(--accent-b);margin-left:6px;">En pareja</span>':''}
       ${ex.esDinamicaGrupal?'<span class="tag" style="background:rgba(232,178,78,.16);color:var(--accent-2);margin-left:6px;">Dinámica de grupo</span>':''}
+      ${(()=>{ const rpe=rpeEstimadoEjercicio(ex); const nivel=nivelDificultadEjercicio(ex); const emoji=nivel==='duro'?'🥵':nivel==='suave'?'🥳':'🙂'; const color=nivel==='duro'?'var(--danger)':nivel==='suave'?'#3FAF7F':'var(--ink-soft)'; return `<span class="tag" style="background:transparent;border:1px solid ${color};color:${color};margin-left:6px;">${emoji} Esfuerzo estimado (Borg): ${rpe}/10</span>`; })()}
       <p style="margin-top:12px;">${escapeHtml(ex.descripcion||'Sin descripción todavía.')}</p>
       ${ex.material?`<p style="font-size:12.5px;"><strong>Material:</strong> ${escapeHtml(ex.material)}</p>`:''}
       ${ex.zonasRiesgo?`<p style="font-size:12.5px;"><strong>Precaución si:</strong> ${escapeHtml(ex.zonasRiesgo)}</p>`:''}
@@ -6375,7 +6573,7 @@ function weekBlock(unitClients, program, week, wIdx){
       row.innerHTML=`
         <div class="exname">
           <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
-          ${ex?htmlImagenEjercicio(ex,''):''}
+          ${ex?htmlImagenEjercicio(ex,'ex-inline-thumb'):''}
           ${nombreExClickeable(ex, (item.supersetId?badgeSuperset(item.supersetId,week):''))}
         </div>
         <div class="ex-campo"><input value="${escapeHtml(item.series)}" data-f="series"></div>
@@ -6426,7 +6624,7 @@ function weekBlock(unitClients, program, week, wIdx){
       const otroNombre = item.soloPara==='a' ? unitClients[1].nombre : item.soloPara==='b' ? unitClients[0].nombre : null;
       headEl.innerHTML=`
         <button type="button" class="ex-fold-btn" style="background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:2px;display:flex;">${flechaColapso(itemColapsado)}</button>
-        <span class="exname">${ex?htmlImagenEjercicio(ex,''):''}${nombreExClickeable(ex)}</span>
+        <span class="exname">${ex?htmlImagenEjercicio(ex,'ex-inline-thumb-sm'):''}${nombreExClickeable(ex)}</span>
         ${item.supersetId?badgeSuperset(item.supersetId,week):''}${item.esPareja?'<span class="pair-badge">Ejercicio en pareja</span>':''}${soloNombre?`<span class="pair-badge" style="background:var(--surface-2);color:var(--ink-soft);">Solo ${escapeHtml(soloNombre)}</span>`:''}
       `;
       if(soloNombre){
@@ -6634,13 +6832,17 @@ function clientRiskText(client){
 // en su diagnóstico o notas, o por tener un nivel de forma física muy bajo — no basta con evitar zonas de riesgo concretas,
 // también hay que evitar movimientos técnicamente exigentes aunque no toquen ninguna zona lesionada.
 const PALABRAS_NECESITA_SIMPLICIDAD = ['discapacidad intelectual','discapacidad física e intelectual','discapacidad psíquica','discapacidad psiquica','discapacidad cognitiva','meningitis de nacimiento','instrucciones simples','instrucciones claras','apoyo verbal constante'];
+function clienteEsMuyMayor(client){
+  const edad = parseInt(client.edad, 10);
+  return !isNaN(edad) && edad>=70;
+}
 function clienteNecesitaEjerciciosSimples(client){
   const diagnostico = (client.salud && client.salud.diagnostico) || '';
   const notas = client.notas || '';
   const texto = (diagnostico + ' ' + notas).toLowerCase();
   const mencionaDiscapacidad = PALABRAS_NECESITA_SIMPLICIDAD.some(p=>texto.includes(p));
   const nivelMuyBajo = client.cuerpo && (client.cuerpo.nivelForma||'').toLowerCase().includes('muy bajo');
-  return mencionaDiscapacidad || nivelMuyBajo;
+  return mencionaDiscapacidad || nivelMuyBajo || clienteEsMuyMayor(client);
 }
 function isExerciseSafeForClient(ex, client, nivelElegido){
   if(ex.zonasRiesgo){
@@ -6807,11 +7009,11 @@ function construirSesionPorPresupuesto(disponibles, opciones){
 function htmlFiltrosGeneracion(){
   return `
     <div class="field">
-      <label>Nivel de la sesión</label>
+      <label>Nivel de la sesión (según esfuerzo estimado, Escala de Borg)</label>
       <div id="rw-nivel" style="display:flex;gap:6px;">
-        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="suave" style="flex:1;">🥳 Suave</button>
-        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="normal" style="flex:1;">🙂 Normal</button>
-        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="duro" style="flex:1;">🥵 Duro</button>
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="suave" style="flex:1;">🥳 Suave <span style="opacity:.7;font-size:10.5px;">(0-4)</span></button>
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="normal" style="flex:1;">🙂 Normal <span style="opacity:.7;font-size:10.5px;">(5-7)</span></button>
+        <button type="button" class="btn btn-sm rw-nivel-btn" data-val="duro" style="flex:1;">🥵 Duro <span style="opacity:.7;font-size:10.5px;">(8-10)</span></button>
       </div>
     </div>
     <div class="field">
@@ -6897,18 +7099,35 @@ function grupoMuscularCoincideConFiltro(grupoMuscular, filtro){
 // ya que no guardamos un nivel de dificultad propio en cada ejercicio.
 const PALABRAS_NIVEL_DURO = ['salto','saltar','explosiv','burpee','sprint','máxima','maxima','pliométric','pliometric','plyo','muy avanzado','nivel avanzado','swing','arranque','sled','carga pesada','box jump','squat jump','jump','potencia','impacto alto','hyrox','wallball slam','sacacorchos','boomerang','control balance','navaja','jack knife','equilibrio de control'];
 const PALABRAS_NIVEL_SUAVE = ['estiramiento','movilidad','respirac','activaci','rodamiento','liberación miofascial','liberacion miofascial','báscula','bascula','marcha en el sitio','marcha suave','muy suave','calentamiento','equilibrio bipodal','pausa','suave','descanso activo','apertura','iniciación','iniciacion','nivel bajo','muy accesible'];
-function nivelDificultadEjercicio(ex){
+function contarGruposMusculares(grupoMuscular){
+  if(!grupoMuscular) return 1;
+  return grupoMuscular.split('/').map(s=>s.trim()).filter(Boolean).length;
+}
+// Estima el esfuerzo percibido de un ejercicio según la Escala de Borg CR10 (0 = nada de esfuerzo, 10 = esfuerzo máximo),
+// a partir de su nombre/descripción/precauciones y de cuántos grupos musculares entran en juego. No es una medición real
+// (no tenemos frecuencia cardíaca ni feedback del cliente), sino una estimación orientativa para poder filtrar sesiones.
+function rpeEstimadoEjercicio(ex){
   const texto = ((ex.nombre||'')+' '+(ex.descripcion||'')+' '+(ex.precauciones||'')).toLowerCase();
-  let puntuacion = 0;
-  PALABRAS_NIVEL_DURO.forEach(p=>{ if(texto.includes(p)) puntuacion+=1; });
-  PALABRAS_NIVEL_SUAVE.forEach(p=>{ if(texto.includes(p)) puntuacion-=1; });
-  if(esEjercicioCardioContinuo(ex)) puntuacion+=0; // el cardio se regula solo por duración, no cuenta como "duro" per se
-  if(puntuacion>=1) return 'duro';
-  if(puntuacion<=-1) return 'suave';
+  let rpe = 5; // punto de partida: esfuerzo moderado
+  PALABRAS_NIVEL_DURO.forEach(p=>{ if(texto.includes(p)) rpe+=1; });
+  PALABRAS_NIVEL_SUAVE.forEach(p=>{ if(texto.includes(p)) rpe-=1; });
+  if(texto.includes('muy avanzado')) rpe+=1.5;
+  else if(texto.includes('nivel avanzado')) rpe+=1;
+  const numGrupos = contarGruposMusculares(ex.grupoMuscular);
+  if(numGrupos>=3) rpe+=1;
+  return Math.max(0, Math.min(10, Math.round(rpe)));
+}
+// Traduce el RPE estimado (0-10, Escala de Borg) a las tres categorías que usan los filtros de la app.
+function nivelDificultadEjercicio(ex){
+  const rpe = rpeEstimadoEjercicio(ex);
+  if(rpe>=8) return 'duro';
+  if(rpe<=4) return 'suave';
   return 'normal';
 }
+let ultimaGeneracionDiluida = false; // true si el último filtro de nivel tuvo que rellenarse con ejercicios "normal" por falta de suficientes del nivel pedido
 function aplicarFiltrosGeneracion(pool, filtros){
   let resultado = pool;
+  ultimaGeneracionDiluida = false;
   if(filtros.grupos.length>0) resultado = resultado.filter(ex=>filtros.grupos.some(g=>grupoMuscularCoincideConFiltro(ex.grupoMuscular, g)));
   if(filtros.materiales.length>0) resultado = resultado.filter(ex=>{
     const materialesEx = (ex.material||'').split(',').map(m=>m.trim());
@@ -6916,9 +7135,14 @@ function aplicarFiltrosGeneracion(pool, filtros){
   });
   if(filtros.nivel && filtros.nivel!=='normal'){
     const filtradoPorNivel = resultado.filter(ex=>nivelDificultadEjercicio(ex)===filtros.nivel);
-    // Si el filtro de nivel deja muy pocos ejercicios, mezclamos con "normal" para no quedarnos sin variedad
-    if(filtradoPorNivel.length>=6) resultado = filtradoPorNivel;
-    else resultado = [...filtradoPorNivel, ...resultado.filter(ex=>nivelDificultadEjercicio(ex)==='normal')];
+    // Solo rellenamos con "normal" si de verdad no hay ni para intentar una sesión corta (menos de 3);
+    // así "Duro"/"Suave" se respetan de verdad en vez de diluirse en cuanto se combinan con otros filtros.
+    if(filtradoPorNivel.length>=3){
+      resultado = filtradoPorNivel;
+    } else {
+      ultimaGeneracionDiluida = filtradoPorNivel.length < resultado.length;
+      resultado = [...filtradoPorNivel, ...resultado.filter(ex=>nivelDificultadEjercicio(ex)==='normal')];
+    }
   } else if(filtros.nivel==='normal'){
     // "Normal" prioriza ejercicios normales, pero no descarta el resto si hacen falta para completar la sesión
     const normales = resultado.filter(ex=>nivelDificultadEjercicio(ex)==='normal');
@@ -7008,6 +7232,7 @@ function generateRandomWeek(program, week, unitClients){
     }
     week.items = newItems;
     scheduleSave(); render();
+    if(ultimaGeneracionDiluida) showAlert('Aviso: con estos filtros había pocos ejercicios del nivel de dificultad elegido, así que se ha completado la sesión con algunos "normal" además de los del nivel pedido.');
   };
 
   if(week.items.length>0){
