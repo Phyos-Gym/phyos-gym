@@ -2522,6 +2522,7 @@ async function loadState(){
       if(!state.temporizadorPlantillas) state.temporizadorPlantillas = [];
       if(state.miPerfil===undefined) state.miPerfil = null;
       if(!state.misSesiones) state.misSesiones = [];
+      if(!state.misMedidas) state.misMedidas = [];
       if(state.miSesion){ // migración: si había una sesión suelta de antes, se convierte en la primera del historial
         state.misSesiones.push({ id: uid(), fecha: new Date().toISOString(), items: state.miSesion });
         delete state.miSesion;
@@ -2598,7 +2599,7 @@ async function loadState(){
       return;
     }
   }
-  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, misSesiones: [], activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
+  state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, misSesiones: [], misMedidas: [], activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
   await saveState();
 }
 function guardarCopiaLocalDeSeguridad(payloadStr){
@@ -2808,6 +2809,27 @@ function render(){
     root.appendChild(headerEl());
     const panel=document.createElement('div'); panel.className='tab-panel';
     panel.appendChild(miPerfilView());
+    root.appendChild(panel);
+    return;
+  }
+  if(appScreen==='miBateria'){
+    root.appendChild(headerEl());
+    const panel=document.createElement('div'); panel.className='tab-panel';
+    panel.appendChild(miBateriaView());
+    root.appendChild(panel);
+    return;
+  }
+  if(appScreen==='miProgreso'){
+    root.appendChild(headerEl());
+    const panel=document.createElement('div'); panel.className='tab-panel';
+    panel.appendChild(miProgresoView());
+    root.appendChild(panel);
+    return;
+  }
+  if(appScreen==='vistaDoble'){
+    root.appendChild(headerEl());
+    const panel=document.createElement('div'); panel.className='tab-panel';
+    panel.appendChild(vistaDobleView());
     root.appendChild(panel);
     return;
   }
@@ -3078,6 +3100,205 @@ function abrirModalMiPerfil(){
     render();
   };
 }
+// ---------- Explorar ejercicios (solo lectura, para el autoservicio) ----------
+// ---------- Mi progreso (peso corporal, sesiones completadas, evolución de cargas) ----------
+function miProgresoView(){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='max-width:640px;margin:0 auto;';
+  const titulo=document.createElement('h2'); titulo.textContent='Mi progreso'; titulo.style.marginBottom='16px';
+  wrap.appendChild(titulo);
+
+  // --- Sesiones completadas ---
+  const sesiones = state.misSesiones||[];
+  const completadas = sesiones.filter(s=>s.completada);
+  const statsWrap=document.createElement('div');
+  statsWrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;';
+  statsWrap.innerHTML=`
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:26px;font-weight:800;font-family:'Manrope',sans-serif;">${completadas.length}</div>
+      <div style="font-size:11.5px;color:var(--ink-soft);">Sesiones completadas</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:26px;font-weight:800;font-family:'Manrope',sans-serif;">${sesiones.length}</div>
+      <div style="font-size:11.5px;color:var(--ink-soft);">Sesiones generadas en total</div>
+    </div>
+  `;
+  wrap.appendChild(statsWrap);
+
+  // --- Peso corporal ---
+  const pesoTitulo=document.createElement('div'); pesoTitulo.style.cssText='font-size:13.5px;font-weight:600;margin-bottom:10px;';
+  pesoTitulo.textContent='⚖️ Peso corporal';
+  wrap.appendChild(pesoTitulo);
+  const pesoForm=document.createElement('div');
+  pesoForm.style.cssText='display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;';
+  pesoForm.innerHTML=`
+    <input type="date" id="pc-fecha" value="${todayStr()}" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;">
+    <input id="pc-peso" placeholder="Peso (kg)" style="padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;width:110px;">
+    <button class="btn btn-sm btn-accent" id="pc-guardar">+ Registrar</button>
+  `;
+  wrap.appendChild(pesoForm);
+  pesoForm.querySelector('#pc-guardar').onclick=()=>{
+    const fecha = pesoForm.querySelector('#pc-fecha').value;
+    const peso = pesoForm.querySelector('#pc-peso').value.trim();
+    if(!fecha || !peso || isNaN(parseFloat(peso))){ showAlert('Indica una fecha y un peso numérico.'); return; }
+    if(!state.misMedidas) state.misMedidas = [];
+    state.misMedidas.push({ id: uid(), fecha, peso: parseFloat(peso) });
+    state.misMedidas.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    scheduleSave();
+    render();
+  };
+  const medidas = state.misMedidas||[];
+  if(medidas.length>0){
+    const w=560, h=140, pad=30;
+    const pesos = medidas.map(m=>m.peso);
+    const minP = Math.min(...pesos), maxP = Math.max(...pesos);
+    const rango = (maxP-minP)||1;
+    const xFor = (i)=> pad + (i/(Math.max(medidas.length-1,1))) * (w-2*pad);
+    const yFor = (p)=> h-pad - ((p-minP)/rango) * (h-2*pad);
+    const path = medidas.map((m,i)=>`${i===0?'M':'L'}${xFor(i)},${yFor(m.peso)}`).join(' ');
+    const puntos = medidas.map((m,i)=>`<circle cx="${xFor(i)}" cy="${yFor(m.peso)}" r="4" fill="var(--accent)"></circle><text x="${xFor(i)}" y="${yFor(m.peso)-10}" font-size="10" fill="var(--ink)" text-anchor="middle">${m.peso}</text>`).join('');
+    const chartWrap=document.createElement('div');
+    chartWrap.style.cssText='margin-bottom:12px;';
+    chartWrap.innerHTML=`<svg width="100%" viewBox="0 0 ${w} ${h}" style="background:var(--surface);border-radius:8px;border:1px solid var(--line);">
+      <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line)"></line>
+      <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2"></path>
+      ${puntos}
+    </svg>`;
+    wrap.appendChild(chartWrap);
+    const listaMedidas=document.createElement('div');
+    listaMedidas.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;';
+    [...medidas].reverse().slice(0,8).forEach(m=>{
+      const chip=document.createElement('span');
+      chip.style.cssText='font-size:11px;padding:4px 10px;border-radius:10px;background:var(--surface-2);color:var(--ink-soft);';
+      chip.textContent = `${new Date(m.fecha).toLocaleDateString('es-ES',{day:'2-digit',month:'short'})}: ${m.peso} kg`;
+      listaMedidas.appendChild(chip);
+    });
+    wrap.appendChild(listaMedidas);
+  } else {
+    const vacio=document.createElement('p'); vacio.style.cssText='color:var(--ink-soft);font-size:12.5px;margin-bottom:24px;';
+    vacio.textContent='Todavía no has registrado ningún peso. Añade el de hoy arriba para empezar a ver tu evolución.';
+    wrap.appendChild(vacio);
+  }
+
+  // --- Progreso de carga por ejercicio ---
+  const cargaTitulo=document.createElement('div'); cargaTitulo.style.cssText='font-size:13.5px;font-weight:600;margin-bottom:10px;';
+  cargaTitulo.textContent='🏋️ Evolución de carga por ejercicio';
+  wrap.appendChild(cargaTitulo);
+
+  const ejerciciosConDatos = new Map();
+  sesiones.forEach(sesion=>{
+    sesion.items.forEach(item=>{
+      if(!isNaN(parseFloat(item.carga))){
+        const ex = state.exercises.find(e=>e.id===item.exerciseId);
+        ejerciciosConDatos.set(item.exerciseId, ex?ex.nombre:'(ejercicio eliminado)');
+      }
+    });
+  });
+  if(ejerciciosConDatos.size===0){
+    const vacio2=document.createElement('p'); vacio2.style.cssText='color:var(--ink-soft);font-size:12.5px;';
+    vacio2.textContent='Todavía no hay ninguna carga numérica anotada (p.ej. "12kg") en tus sesiones generadas. Anótala en el campo "Carga usada" de cada ejercicio, dentro de "Mi perfil", para ver aquí la evolución.';
+    wrap.appendChild(vacio2);
+    return wrap;
+  }
+  const selectorEx=document.createElement('div'); selectorEx.className='field';
+  selectorEx.innerHTML=`<label>Elige un ejercicio</label><select id="mprog-ex">${[...ejerciciosConDatos.entries()].map(([id,nombre])=>`<option value="${id}">${escapeHtml(nombre)}</option>`).join('')}</select>`;
+  wrap.appendChild(selectorEx);
+  const areaChart=document.createElement('div'); areaChart.style.marginTop='14px';
+  wrap.appendChild(areaChart);
+
+  function dibujarGraficoCarga(exerciseId){
+    const puntos = [];
+    sesiones.forEach(sesion=>{
+      const item = sesion.items.find(it=>it.exerciseId===exerciseId);
+      if(!item) return;
+      const peso = parseFloat(item.carga);
+      if(!isNaN(peso)) puntos.push({ fecha: sesion.fecha, peso });
+    });
+    puntos.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    if(puntos.length===0){
+      areaChart.innerHTML = `<p style="color:var(--ink-soft);font-size:12.5px;">No hay cargas numéricas guardadas para este ejercicio todavía.</p>`;
+      return;
+    }
+    const w=560, h=180, pad=34;
+    const pesos = puntos.map(p=>p.peso);
+    const minP = Math.min(...pesos), maxP = Math.max(...pesos);
+    const rango = (maxP-minP)||1;
+    const xFor = (i)=> pad + (i/(Math.max(puntos.length-1,1))) * (w-2*pad);
+    const yFor = (p)=> h-pad - ((p-minP)/rango) * (h-2*pad);
+    const path = puntos.map((p,i)=>`${i===0?'M':'L'}${xFor(i)},${yFor(p.peso)}`).join(' ');
+    const circles = puntos.map((p,i)=>`<circle cx="${xFor(i)}" cy="${yFor(p.peso)}" r="4" fill="var(--accent-b)"></circle><text x="${xFor(i)}" y="${yFor(p.peso)-10}" font-size="10" fill="var(--ink)" text-anchor="middle">${p.peso}</text>`).join('');
+    const ejeX = puntos.map((p,i)=>`<text x="${xFor(i)}" y="${h-8}" font-size="9.5" fill="var(--ink-soft)" text-anchor="middle">${new Date(p.fecha).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})}</text>`).join('');
+    areaChart.innerHTML = `
+      <svg width="100%" viewBox="0 0 ${w} ${h}" style="background:var(--surface);border-radius:8px;border:1px solid var(--line);">
+        <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line)"></line>
+        <path d="${path}" fill="none" stroke="var(--accent-b)" stroke-width="2"></path>
+        ${circles}
+        ${ejeX}
+      </svg>
+    `;
+  }
+  selectorEx.querySelector('#mprog-ex').onchange=(e)=>dibujarGraficoCarga(e.target.value);
+  dibujarGraficoCarga([...ejerciciosConDatos.keys()][0]);
+
+  return wrap;
+}
+function miBateriaView(){
+  const wrap=document.createElement('div');
+  const toolbar=document.createElement('div');
+  toolbar.className='toolbar';
+  toolbar.style.flexWrap='wrap';
+
+  const gruposUnicos = ['Tren superior','Tren inferior', ...new Set(state.exercises.map(e=>e.grupoMuscular).filter(Boolean))].filter((v,i,a)=>a.indexOf(v)===i);
+  const materialesUnicos = [...new Set(state.exercises.flatMap(e=>(e.material||'').split(',').map(m=>m.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'es'));
+
+  toolbar.innerHTML=`
+    <input class="search" placeholder="Buscar ejercicio...">
+    <input class="search" id="ex-filtro-grupo" placeholder="Grupo muscular (todos)" style="min-width:170px;" value="${escapeHtml(exGrupoFilter||'')}">
+    <input class="search" id="ex-filtro-material" placeholder="Material (todo)" style="min-width:170px;" value="${escapeHtml(exMaterialFilter||'')}">
+  `;
+  toolbar.querySelector('input.search').value=exSearch;
+  toolbar.querySelector('input.search').oninput=(e)=>{exSearch=e.target.value; renderGrid();};
+  crearSelectorFiltroBuscable(toolbar.querySelector('#ex-filtro-grupo'), gruposUnicos, ()=>exGrupoFilter, (v)=>{ exGrupoFilter=v; renderGrid(); });
+  crearSelectorFiltroBuscable(toolbar.querySelector('#ex-filtro-material'), materialesUnicos, ()=>exMaterialFilter, (v)=>{ exMaterialFilter=v; renderGrid(); });
+  wrap.appendChild(toolbar);
+
+  const gridHolder=document.createElement('div');
+  wrap.appendChild(gridHolder);
+
+  function renderGrid(){
+    gridHolder.innerHTML='';
+    const list=state.exercises.filter(e=>{
+      const coincideNombre = normalizarBusqueda(e.nombre).includes(normalizarBusqueda(exSearch));
+      const coincideGrupo = !exGrupoFilter || grupoMuscularCoincideConFiltro(e.grupoMuscular, exGrupoFilter);
+      const coincideMaterial = !exMaterialFilter || (e.material||'').split(',').map(m=>m.trim()).includes(exMaterialFilter);
+      return coincideNombre && coincideGrupo && coincideMaterial;
+    });
+    if(list.length===0){
+      gridHolder.innerHTML=`<div class="empty"><h3>Sin resultados</h3><p>Prueba a cambiar la búsqueda o los filtros.</p></div>`;
+      return;
+    }
+    const grid=document.createElement('div'); grid.className='grid';
+    list.forEach(ex=>{
+      const card=document.createElement('div'); card.className='card ex-card'; card.style.cursor='pointer';
+      const imagenHtml = htmlImagenEjercicio(ex, 'ex-card-img');
+      const nivel = nivelDificultadEjercicio(ex);
+      const emoji = nivel==='duro'?'🥵':nivel==='suave'?'🥳':'🙂';
+      card.innerHTML=`
+        <div class="ex-img-wrap">${imagenHtml}</div>
+        <span class="tag">${escapeHtml(ex.grupoMuscular||'General')}</span>
+        <span class="tag" style="margin-left:6px;">${emoji} ${nivel}</span>
+        <h3>${escapeHtml(ex.nombre)}</h3>
+        <p>${escapeHtml(ex.descripcion||'')}</p>
+        ${ex.material?`<p style="font-size:11.5px;"><strong>Material:</strong> ${escapeHtml(ex.material)}</p>`:''}
+      `;
+      card.onclick=()=>abrirInfoEjercicio(ex);
+      grid.appendChild(card);
+    });
+    gridHolder.appendChild(grid);
+  }
+  renderGrid();
+  return wrap;
+}
 function miPerfilView(){
   const wrap=document.createElement('div');
   wrap.style.cssText='max-width:640px;margin:0 auto;';
@@ -3153,14 +3374,14 @@ function miPerfilView(){
       const cabecera=document.createElement('div');
       cabecera.style.cssText='display:flex;justify-content:space-between;align-items:center;cursor:pointer;';
       cabecera.innerHTML=`
-        <div><strong style="font-size:13.5px;">${fechaTexto}</strong> <span style="font-size:11.5px;color:var(--ink-soft);">· ${sesion.items.length} ejercicios</span></div>
+        <div><strong style="font-size:13.5px;">${fechaTexto}</strong> <span style="font-size:11.5px;color:var(--ink-soft);">· ${sesion.items.length} ejercicios</span>${sesion.completada?' <span style="font-size:11px;color:#3FAF7F;">✓ Completada</span>':''}</div>
         <span class="mp-flecha" style="color:var(--ink-soft);">${abierta?'▲':'▼'}</span>
       `;
       bloque.appendChild(cabecera);
 
       const cuerpo=document.createElement('div');
       cuerpo.style.cssText=`margin-top:12px;${abierta?'':'display:none;'}`;
-      sesion.items.forEach(item=>{
+      sesion.items.forEach((item,idxItem)=>{
         const ex = state.exercises.find(e=>e.id===item.exerciseId);
         if(!ex) return;
         const fila=document.createElement('div');
@@ -3171,10 +3392,22 @@ function miPerfilView(){
             <div style="font-weight:600;font-size:13.5px;">${escapeHtml(ex.nombre)}</div>
             <div style="font-size:11.5px;color:var(--ink-soft);">${escapeHtml(item.series)} series × ${escapeHtml(item.reps)} · Descanso ${escapeHtml(item.descanso)}</div>
           </div>
+          <input class="mp-carga-input" data-idx="${idxItem}" value="${escapeHtml(item.carga||'')}" placeholder="Carga usada" style="width:100px;flex-shrink:0;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12px;">
         `;
+        fila.querySelector('.mp-carga-input').onchange=(e)=>{
+          sesion.items[idxItem].carga = e.target.value.trim();
+          scheduleSave();
+        };
         cuerpo.appendChild(fila);
       });
       const accionesFila=document.createElement('div'); accionesFila.style.cssText='display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;';
+      const completarBtn=document.createElement('button'); completarBtn.className='btn btn-sm'+(sesion.completada?'':' btn-accent'); completarBtn.textContent=sesion.completada?'✓ Completada':'Marcar como completada';
+      completarBtn.onclick=()=>{
+        sesion.completada = !sesion.completada;
+        sesion.fechaCompletada = sesion.completada ? new Date().toISOString() : null;
+        scheduleSave();
+        render();
+      };
       const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm btn-accent'; timerBtn.textContent='⏱ Hacerla con el temporizador';
       timerBtn.onclick=()=>{
         sesionTemporizadorActual = sesion.items.map(item=>{
@@ -3190,7 +3423,7 @@ function miPerfilView(){
         scheduleSave();
         render();
       };
-      accionesFila.appendChild(timerBtn); accionesFila.appendChild(borrarBtn);
+      accionesFila.appendChild(completarBtn); accionesFila.appendChild(timerBtn); accionesFila.appendChild(borrarBtn);
       cuerpo.appendChild(accionesFila);
       bloque.appendChild(cuerpo);
 
@@ -4543,7 +4776,13 @@ function homeView(){
   const optPerfil=document.createElement('div'); optPerfil.className='card'; optPerfil.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
   optPerfil.innerHTML=`${iconBadge('orange','<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Para ti</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Mi perfil</h3><p style="max-width:90%;">${state.miPerfil?'Genera tu propia sesión de entrenamiento.':'Crea tu perfil para entrenar por tu cuenta.'}</p>`;
   optPerfil.onclick=()=>{ appScreen='miPerfil'; render(); };
-  grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador); grid.appendChild(optPerfil);
+  const optBateria=document.createElement('div'); optBateria.className='card'; optBateria.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optBateria.innerHTML=`${iconBadge('purple','<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 4v16"/>')}<span class="tag" style="background:rgba(155,109,255,.16);color:var(--accent-b);">Referencia</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Ejercicios</h3><p style="max-width:90%;">Explora la Batería completa, con foto y técnica de cada uno.</p>`;
+  optBateria.onclick=()=>{ appScreen='miBateria'; render(); };
+  const optProgreso=document.createElement('div'); optProgreso.className='card'; optProgreso.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
+  optProgreso.innerHTML=`${iconBadge('orange','<path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Tu evolución</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Mi progreso</h3><p style="max-width:90%;">Peso corporal, sesiones completadas y evolución de cargas.</p>`;
+  optProgreso.onclick=()=>{ appScreen='miProgreso'; render(); };
+  grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador); grid.appendChild(optPerfil); grid.appendChild(optBateria); grid.appendChild(optProgreso);
   wrap.appendChild(grid);
 
   const backupFooter=document.createElement('div');
@@ -4567,12 +4806,19 @@ function homeView(){
 function headerEl(){
   const h=document.createElement('div');
   h.className='header';
-  const modoLabel = appScreen==='grupos' ? 'Grupos' : appScreen==='horarios' ? 'Horarios' : appScreen==='miPerfil' ? 'Mi perfil' : 'Entrenamientos personales';
+  const modoLabel = appScreen==='grupos' ? 'Grupos' : appScreen==='horarios' ? 'Horarios' : appScreen==='miPerfil' ? 'Mi perfil' : appScreen==='miBateria' ? 'Ejercicios' : appScreen==='miProgreso' ? 'Mi progreso' : appScreen==='vistaDoble' ? 'Vista doble' : 'Entrenamientos personales';
   let statsLine;
   if(appScreen==='grupos'){
     statsLine = `${state.grupos.length} categorías · ${state.grupos.reduce((n,c)=>n+c.horarios.length,0)} horarios`;
   } else if(appScreen==='miPerfil'){
     statsLine = state.miPerfil ? `Perfil de ${state.miPerfil.nombre}` : 'Todavía no has creado tu perfil';
+  } else if(appScreen==='miBateria'){
+    statsLine = `${state.exercises.length} ejercicios disponibles`;
+  } else if(appScreen==='miProgreso'){
+    const completadas = (state.misSesiones||[]).filter(s=>s.completada).length;
+    statsLine = `${completadas} sesiones completadas · ${(state.misMedidas||[]).length} registros de peso`;
+  } else if(appScreen==='vistaDoble'){
+    statsLine = 'Dos clientes, dos entrenamientos distintos, a la vez';
   } else {
     const scoped = screenClients();
     const activos = scoped.filter(c=>c.activo!==false).length;
@@ -6087,6 +6333,9 @@ function sesionesView(){
   });
   select.onchange=()=>{ state.activeClientId=select.value; render(); };
   toolbar.appendChild(select);
+  const vistaDobleBtn=document.createElement('button'); vistaDobleBtn.className='btn btn-sm'; vistaDobleBtn.textContent='👥 Vista doble';
+  vistaDobleBtn.onclick=()=>{ appScreen='vistaDoble'; render(); };
+  toolbar.appendChild(vistaDobleBtn);
   const client = state.clients.find(c=>c.id===state.activeClientId);
   const unitClients = getUnitClients(client);
   const isPair = unitClients.length===2;
@@ -6099,6 +6348,65 @@ function sesionesView(){
     toolbar.appendChild(pill);
   }
   wrap.appendChild(toolbar);
+  wrap.appendChild(renderClienteSessionPanel(state.activeClientId));
+  return wrap;
+}
+let vistaDobleClienteA = null, vistaDobleClienteB = null;
+function vistaDobleView(){
+  const wrap=document.createElement('div');
+  const titulo=document.createElement('h2'); titulo.textContent='Vista doble'; titulo.style.marginBottom='4px';
+  wrap.appendChild(titulo);
+  const hint=document.createElement('p'); hint.style.cssText='color:var(--ink-soft);font-size:13px;margin:0 0 18px;';
+  hint.textContent='Elige dos clientes (no hace falta que sean pareja) para ver y editar sus sesiones a la vez, lado a lado — pensado para cuando coinciden en el horario pero cada uno lleva un entrenamiento distinto.';
+  wrap.appendChild(hint);
+
+  const selectoresFila=document.createElement('div');
+  selectoresFila.style.cssText='display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;';
+  function construirSelector(label, valorActual, onElegir){
+    const campo=document.createElement('div'); campo.style.cssText='flex:1;min-width:220px;';
+    campo.innerHTML=`<label style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);display:block;margin-bottom:4px;">${label}</label>`;
+    const input=document.createElement('input'); input.className='search'; input.placeholder='Buscar cliente...';
+    if(valorActual){ const c=state.clients.find(x=>x.id===valorActual); if(c) input.value=c.nombre; }
+    campo.appendChild(input);
+    crearAutocompleteCliente(input, ()=>state.clients, (cliente)=>{ onElegir(cliente.id); render(); });
+    return campo;
+  }
+  selectoresFila.appendChild(construirSelector('Cliente A', vistaDobleClienteA, (id)=>{ vistaDobleClienteA=id; }));
+  selectoresFila.appendChild(construirSelector('Cliente B', vistaDobleClienteB, (id)=>{ vistaDobleClienteB=id; }));
+  wrap.appendChild(selectoresFila);
+
+  const columnas=document.createElement('div');
+  columnas.style.cssText='display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;';
+
+  function construirColumna(clienteId, colorAcento){
+    const col=document.createElement('div');
+    col.style.cssText=`flex:1;min-width:340px;border-left:3px solid ${colorAcento};padding-left:16px;`;
+    if(!clienteId){
+      col.innerHTML=`<div class="empty"><p>Elige un cliente arriba.</p></div>`;
+      return col;
+    }
+    const c = state.clients.find(x=>x.id===clienteId);
+    if(!c){
+      col.innerHTML=`<div class="empty"><p>Ese cliente ya no existe.</p></div>`;
+      return col;
+    }
+    const nombreEl=document.createElement('h3'); nombreEl.textContent=c.nombre; nombreEl.style.marginBottom='10px';
+    col.appendChild(nombreEl);
+    col.appendChild(renderClienteSessionPanel(clienteId));
+    return col;
+  }
+  columnas.appendChild(construirColumna(vistaDobleClienteA, 'var(--accent)'));
+  columnas.appendChild(construirColumna(vistaDobleClienteB, 'var(--accent-b)'));
+  wrap.appendChild(columnas);
+
+  return wrap;
+}
+function renderClienteSessionPanel(clientId){
+  const wrap=document.createElement('div');
+  const client = state.clients.find(c=>c.id===clientId);
+  if(!client) return wrap;
+  const unitClients = getUnitClients(client);
+  const isPair = unitClients.length===2;
 
   const salaBox=document.createElement('details'); salaBox.style.marginBottom='14px';
   salaBox.innerHTML=`<summary style="cursor:pointer;color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Material disponible y reglas de sala</summary>
