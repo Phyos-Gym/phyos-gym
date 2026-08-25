@@ -6368,7 +6368,13 @@ function sesionesView(){
   select.onchange=()=>{ state.activeClientId=select.value; render(); };
   toolbar.appendChild(select);
   const vistaDobleBtn=document.createElement('button'); vistaDobleBtn.className='btn btn-sm'; vistaDobleBtn.textContent='👥 Vista doble';
-  vistaDobleBtn.onclick=()=>{ appScreen='vistaDoble'; render(); };
+  vistaDobleBtn.onclick=()=>{
+    // Lleva al cliente que ya se estaba viendo (con su sesión recién generada) a la columna A,
+    // para que no "desaparezca" al entrar en vista doble — el buscador de al lado es solo para elegir al B.
+    vistaDobleClienteA = state.activeClientId;
+    appScreen='vistaDoble';
+    render();
+  };
   toolbar.appendChild(vistaDobleBtn);
   const client = state.clients.find(c=>c.id===state.activeClientId);
   const unitClients = getUnitClients(client);
