@@ -3365,7 +3365,10 @@ function miPerfilView(){
     }
     const elegidos = construirSesionPorPresupuesto(pool, {repsOptions:['10','12','15'], restOptions:['30s','45s','60s'], equilibrarGrupos: filtros.grupos.length===0});
     if(!state.misSesiones) state.misSesiones = [];
-    state.misSesiones.unshift({ id: uid(), fecha: new Date().toISOString(), items: elegidos.map(c=>({ exerciseId:c.ex.id, series:c.series, reps:c.reps, descanso:c.descanso })) });
+    state.misSesiones.unshift({ id: uid(), fecha: new Date().toISOString(), items: elegidos.map(c=>{
+      const p = prescripcionAjustadaParaCliente(c.ex, c.series, c.reps, c.descanso, state.miPerfil);
+      return { exerciseId:c.ex.id, series:p.series, reps:p.reps, descanso:p.descanso };
+    }) });
     scheduleSave();
     render();
     if(ultimaGeneracionDiluida) showAlert('Aviso: con estos filtros había pocos ejercicios del nivel de dificultad elegido, así que se ha completado la sesión con algunos "normal" además de los del nivel pedido.');
@@ -3628,8 +3631,17 @@ function temporizadorView(){
         `;
       }).join('');
     colLista.querySelectorAll('.t-lista-item').forEach(el=>{
+      const i = parseInt(el.dataset.i);
+      const onReordenado = ()=>{
+        const rondasInput = wrap.querySelector('#t-rondas');
+        if(rondasInput) rondasInput.value = sesionTemporizadorActual.length;
+        renderListaSesion();
+      };
+      const reorderCtrl = crearControlReordenar(sesionTemporizadorActual, i, onReordenado);
+      el.insertBefore(reorderCtrl, el.firstChild);
+      habilitarSoltarReordenar(el, sesionTemporizadorActual, i, onReordenado);
       el.onclick=(e)=>{
-        if(e.target.classList.contains('t-lista-quitar')) return;
+        if(e.target.classList.contains('t-lista-quitar') || e.target.closest('.reorder-handle')) return;
         const info = sesionTemporizadorActual[parseInt(el.dataset.i)];
         if(info) abrirInfoEjercicio(info.ex);
       };
@@ -6133,6 +6145,10 @@ function weekBlockGrupo(clase, horario, week, wIdx){
       inp.oninput=()=>{ item[inp.dataset.f]=inp.value; marcarModificada(week); scheduleSave(); };
     });
     row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; marcarModificada(week); scheduleSave(); render(); }));
+    const reorderCtrl = crearControlReordenar(week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
+    const exNameDiv = row.querySelector('.exname');
+    exNameDiv.insertBefore(reorderCtrl, exNameDiv.firstChild);
+    habilitarSoltarReordenar(row, week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
     const rmBtn=document.createElement('button'); rmBtn.className='btn btn-sm btn-ghost'; rmBtn.textContent='✕';
     rmBtn.onclick=()=>{ week.items.splice(iIdx,1); marcarModificada(week); scheduleSave(); render(); };
     row.lastElementChild.appendChild(rmBtn);
@@ -6149,7 +6165,8 @@ function weekBlockGrupo(clase, horario, week, wIdx){
     const poolBase = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c)));
     añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
       const cardio = esEjercicioCardioContinuo(ex);
-      return { exerciseId: ex.id, series: cardio?'1':'3', reps: cardio?'15-20 min':'12', carga:'', descanso: cardio?'—':'45s', notas:'' };
+      const p = prescripcionAjustadaParaGrupo(ex, cardio?'1':'3', cardio?'15-20 min':'12', cardio?'—':'45s', clientesInscritos);
+      return { exerciseId: ex.id, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
     }, 'este grupo');
   };
   foot.appendChild(addRandomBtn);
@@ -6299,11 +6316,12 @@ function generateRandomGroupWeek(clase, horario, week){
       const chosen = construirSesionPorPresupuesto(disponibles, {repsOptions, restOptions, equilibrarGrupos: filtros.grupos.length===0});
       chosen.forEach(c=>usadosEnEstaSemana.add(c.ex.id));
       chosen.forEach(({ex, series, reps, descanso}, i)=>{
+        const p = prescripcionAjustadaParaGrupo(ex, series, reps, descanso, clientesInscritos);
         newItems.push({
           exerciseId: ex.id,
           diaSesion: numDias>1?dia:undefined,
           estacion: isRotativa ? `Estación ${(i % numEstaciones)+1}` : '',
-          series, reps, carga:'', descanso, notas:''
+          series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota
         });
       });
     }
@@ -6852,6 +6870,54 @@ let semanasColapsadas = new Set();
 function marcarModificada(week){
   week.ultimaModificacion = new Date().toISOString();
 }
+
+// ---------- Reordenar ejercicios de una sesión (arrastrar y soltar + botones subir/bajar) ----------
+let _dragReorderState = null;
+function crearControlReordenar(array, idx, onChange){
+  const wrap=document.createElement('div');
+  wrap.className='reorder-handle';
+  wrap.title='Arrastra para reordenar';
+  wrap.draggable = true;
+  wrap.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:grab;user-select:none;color:var(--ink-soft);flex-shrink:0;touch-action:none;';
+  wrap.innerHTML = `
+    <button type="button" class="reorder-btn" data-dir="up" title="Subir ejercicio" aria-label="Subir ejercicio" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;line-height:9px;font-size:9px;">▲</button>
+    <span style="font-size:10px;line-height:9px;">⠿</span>
+    <button type="button" class="reorder-btn" data-dir="down" title="Bajar ejercicio" aria-label="Bajar ejercicio" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;line-height:9px;font-size:9px;">▼</button>
+  `;
+  const upBtn = wrap.querySelector('[data-dir="up"]');
+  const downBtn = wrap.querySelector('[data-dir="down"]');
+  if(idx===0){ upBtn.disabled=true; upBtn.style.opacity='.25'; upBtn.style.cursor='default'; }
+  if(idx===array.length-1){ downBtn.disabled=true; downBtn.style.opacity='.25'; downBtn.style.cursor='default'; }
+  upBtn.onclick=(e)=>{ e.stopPropagation(); if(idx===0) return; const [it]=array.splice(idx,1); array.splice(idx-1,0,it); onChange(); };
+  downBtn.onclick=(e)=>{ e.stopPropagation(); if(idx===array.length-1) return; const [it]=array.splice(idx,1); array.splice(idx+1,0,it); onChange(); };
+  wrap.ondragstart=(e)=>{
+    e.stopPropagation();
+    _dragReorderState = { array, fromIdx: idx };
+    if(e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', String(idx)); }catch(err){} }
+  };
+  wrap.ondragend=()=>{ _dragReorderState=null; };
+  return wrap;
+}
+function habilitarSoltarReordenar(rowEl, array, idx, onChange){
+  rowEl.ondragover=(e)=>{
+    if(!_dragReorderState || _dragReorderState.array!==array) return;
+    e.preventDefault();
+    rowEl.style.outline='2px dashed var(--accent)';
+    rowEl.style.outlineOffset='-2px';
+  };
+  rowEl.ondragleave=()=>{ rowEl.style.outline=''; };
+  rowEl.ondrop=(e)=>{
+    e.preventDefault();
+    rowEl.style.outline='';
+    if(!_dragReorderState || _dragReorderState.array!==array) return;
+    const from = _dragReorderState.fromIdx;
+    _dragReorderState = null;
+    if(from===idx) return;
+    const [moved] = array.splice(from,1);
+    array.splice(idx,0,moved);
+    onChange();
+  };
+}
 function formatearFechaModificacion(iso){
   if(!iso) return 'sin cambios registrados';
   const d = new Date(iso);
@@ -7092,6 +7158,10 @@ function weekBlock(unitClients, program, week, wIdx){
         inp.oninput=()=>{ item[inp.dataset.f]=inp.value; marcarModificada(week); scheduleSave(); };
       });
       row.querySelector('.dif-slot').appendChild(renderDificultad(item.dificultad||null, (v)=>{ item.dificultad=v; marcarModificada(week); scheduleSave(); render(); }));
+      const reorderCtrl = crearControlReordenar(week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
+      const exNameDiv = row.querySelector('.exname');
+      exNameDiv.insertBefore(reorderCtrl, exNameDiv.firstChild);
+      habilitarSoltarReordenar(row, week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
       const rmBtn=document.createElement('button'); rmBtn.className='btn btn-sm btn-ghost'; rmBtn.textContent='✕';
       rmBtn.onclick=()=>{ week.items.splice(iIdx,1); marcarModificada(week); scheduleSave(); render(); };
       row.lastElementChild.appendChild(rmBtn);
@@ -7138,6 +7208,10 @@ function weekBlock(unitClients, program, week, wIdx){
       headEl.appendChild(rmBtn);
       headEl.querySelector('.ex-fold-btn').onclick=()=>{ if(itemColapsado) itemsColapsados.delete(item.id); else itemsColapsados.add(item.id); render(); };
       headEl.querySelector('.ex-nombre-click').onclick=()=>abrirInfoEjercicio(ex);
+      const reorderCtrl = crearControlReordenar(week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
+      const exNameSpan = headEl.querySelector('.exname');
+      exNameSpan.insertBefore(reorderCtrl, exNameSpan.firstChild);
+      habilitarSoltarReordenar(wrap, week.items, iIdx, ()=>{ marcarModificada(week); scheduleSave(); render(); });
       wrap.appendChild(headEl);
 
       if(!itemColapsado){
@@ -7178,11 +7252,16 @@ function weekBlock(unitClients, program, week, wIdx){
     if(!isPair) poolBase = poolBase.filter(ex=>!ex.esPareja);
     añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
       const cardio = esEjercicioCardioContinuo(ex);
+      const baseSeries = cardio?'1':'3', baseReps = cardio?'15-20 min':'12', baseDescanso = cardio?'—':'45s';
       if(!isPair){
-        return { exerciseId: ex.id, series: cardio?'1':'3', reps: cardio?'15-20 min':'12', carga:'', descanso: cardio?'—':'45s', notas:'' };
+        const p = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
+        return { exerciseId: ex.id, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
       }
-      const datosPersona = { series: cardio?'1':'3', reps: cardio?'15-20 min':'12', carga:'', descanso: cardio?'—':'45s', notas:'' };
-      return { exerciseId: ex.id, esPareja: !!ex.esPareja, soloPara: null, a: {...datosPersona}, b: {...datosPersona} };
+      const pa = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
+      const pb = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[1]);
+      return { exerciseId: ex.id, esPareja: !!ex.esPareja, soloPara: null,
+        a: { series:pa.series, reps:pa.reps, carga:pa.carga, descanso:pa.descanso, notas:pa.nota },
+        b: { series:pb.series, reps:pb.reps, carga:pb.carga, descanso:pb.descanso, notas:pb.nota } };
     }, unitClients.map(c=>c.nombre).join(' y '));
   };
   foot.appendChild(addRandomBtn);
@@ -7417,6 +7496,72 @@ function isExerciseSafeForClient(ex, client, nivelElegido){
 function isExerciseSafeForUnit(ex, unitClients, nivelElegido){
   return unitClients.every(c=>isExerciseSafeForClient(ex, c, nivelElegido));
 }
+
+// 4) Ajuste de prescripción (reps/descanso/carga) según patología detectada: además de decidir si un ejercicio
+// se propone o no (isExerciseSafeForClient), esto adapta CÓMO se prescribe cuando sí se propone — descansos más
+// largos, tope de repeticiones y nota de carga recomendada — para que la sesión generada sea individual de verdad
+// y no solo "el mismo genérico con algunos ejercicios quitados".
+const AJUSTES_POR_PATOLOGIA = {
+  'hipertensión': { descansoMinSeg:60, repsMax:12, nota:'controlar la tensión: sin apneas ni esfuerzo máximo, carga moderada' },
+  'osteoporosis': { repsMax:12, carga:'carga ligera, sin impacto', nota:'priorizar técnica y carga baja; evitar impacto' },
+  'vértigo/mareos': { descansoMinSeg:45, nota:'evitar cambios bruscos de postura; progresar despacio' },
+  'embarazo': { repsMax:12, carga:'carga ligera o peso corporal', nota:'intensidad moderada; parar ante cualquier molestia' },
+  'epilepsia': { nota:'no llevar al fallo muscular ni a esfuerzo máximo' },
+  'problema cardiovascular': { descansoMinSeg:60, repsMax:12, nota:'controlar la intensidad cardiovascular, carga moderada' },
+};
+function ajustesActivosParaCliente(client){
+  const ajustes = patologiasDelCliente(client).map(r=>AJUSTES_POR_PATOLOGIA[r.patologia]).filter(Boolean);
+  if(clienteNecesitaEjerciciosSimples(client)){
+    ajustes.push({ descansoMinSeg:45, repsMax:12, nota:'ir progresando poco a poco, priorizando la técnica' });
+  }
+  return ajustes;
+}
+// Aplica los ajustes activos de UN cliente a una prescripción ya calculada (series/reps/descanso). No decide
+// si el ejercicio se propone (eso ya lo hace isExerciseSafeForClient antes de llegar aquí), solo adapta cómo.
+function prescripcionAjustadaParaCliente(ex, series, reps, descanso, client){
+  const ajustes = client ? ajustesActivosParaCliente(client) : [];
+  if(ajustes.length===0) return { series, reps, carga:'', descanso, nota:'' };
+  const cardio = esEjercicioCardioContinuo(ex);
+  let descansoSeg = segundosDeDescanso(descanso);
+  let repsNum = cardio ? null : (parseInt(reps)||null);
+  let carga = '';
+  const notas = [];
+  ajustes.forEach(a=>{
+    if(a.descansoMinSeg && descansoSeg < a.descansoMinSeg) descansoSeg = a.descansoMinSeg;
+    if(a.repsMax && repsNum && repsNum > a.repsMax) repsNum = a.repsMax;
+    if(a.carga) carga = a.carga;
+    if(a.nota && !notas.includes(a.nota)) notas.push(a.nota);
+  });
+  return {
+    series,
+    reps: (repsNum!==null) ? String(repsNum) : reps,
+    carga,
+    descanso: descanso==='—' ? descanso : descansoSeg+'s',
+    nota: notas.join(' · '),
+  };
+}
+// Misma idea pero para varias personas a la vez (clase grupal): no hay campos por persona en un item de grupo,
+// así que se aplica el ajuste más conservador combinado de todo el grupo, con una nota genérica (sin nombrar
+// la patología de nadie, para no exponer información médica individual en una ficha que ven todos los inscritos).
+function prescripcionAjustadaParaGrupo(ex, series, reps, descanso, clientesInscritos){
+  const combinados = (clientesInscritos||[]).flatMap(c=>ajustesActivosParaCliente(c));
+  if(combinados.length===0) return { series, reps, carga:'', descanso, nota:'' };
+  const cardio = esEjercicioCardioContinuo(ex);
+  let descansoSeg = segundosDeDescanso(descanso);
+  let repsNum = cardio ? null : (parseInt(reps)||null);
+  combinados.forEach(a=>{
+    if(a.descansoMinSeg && descansoSeg < a.descansoMinSeg) descansoSeg = a.descansoMinSeg;
+    if(a.repsMax && repsNum && repsNum > a.repsMax) repsNum = a.repsMax;
+  });
+  return {
+    series,
+    reps: (repsNum!==null) ? String(repsNum) : reps,
+    carga:'',
+    descanso: descanso==='—' ? descanso : descansoSeg+'s',
+    nota: 'Series/descanso ajustados por precaución para uno o más inscritos',
+  };
+}
+
 // Elige UN ejercicio nuevo para añadir a una semana ya existente: no repite ejercicios ya presentes,
 // y prioriza las zonas musculares menos trabajadas hasta ahora en esa semana, para repartir el esfuerzo.
 function elegirEjercicioAleatorioParaAñadir(week, poolBase){
@@ -7774,15 +7919,18 @@ function generateRandomWeek(program, week, unitClients){
 
       chosen.forEach(({ex, series, reps, descanso})=>{
         if(!isPair){
-          newItems.push({ exerciseId: ex.id, diaSesion: numDias>1?dia:undefined, series, reps, carga:'', descanso, notas:'' });
+          const p = prescripcionAjustadaParaCliente(ex, series, reps, descanso, unitClients[0]);
+          newItems.push({ exerciseId: ex.id, diaSesion: numDias>1?dia:undefined, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota });
         } else {
           const esPareja = !!ex.esPareja;
+          const pa = prescripcionAjustadaParaCliente(ex, series, reps, descanso, unitClients[0]);
+          const pb = prescripcionAjustadaParaCliente(ex, series, reps, descanso, unitClients[1]);
           newItems.push({
             exerciseId: ex.id,
             diaSesion: numDias>1?dia:undefined,
             esPareja,
-            a: { series, reps, carga:'', descanso, notas:'' },
-            b: { series, reps, carga:'', descanso, notas:'' },
+            a: { series: pa.series, reps: pa.reps, carga: pa.carga, descanso: pa.descanso, notas: pa.nota },
+            b: { series: pb.series, reps: pb.reps, carga: pb.carga, descanso: pb.descanso, notas: pb.nota },
           });
         }
       });
