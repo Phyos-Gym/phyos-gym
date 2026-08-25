@@ -7341,19 +7341,17 @@ function prescripcionAjustadaParaCliente(ex, series, reps, descanso, client){
   let descansoSeg = segundosDeDescanso(descanso);
   let repsNum = cardio ? null : (parseInt(reps)||null);
   let carga = '';
-  const notas = [];
   ajustes.forEach(a=>{
     if(a.descansoMinSeg && descansoSeg < a.descansoMinSeg) descansoSeg = a.descansoMinSeg;
     if(a.repsMax && repsNum && repsNum > a.repsMax) repsNum = a.repsMax;
     if(a.carga) carga = a.carga;
-    if(a.nota && !notas.includes(a.nota)) notas.push(a.nota);
   });
   return {
     series,
     reps: (repsNum!==null) ? String(repsNum) : reps,
     carga,
     descanso: descanso==='—' ? descanso : descansoSeg+'s',
-    nota: notas.join(' · '),
+    nota: '', // el campo Notas se deja siempre en blanco al generar, aunque haya ajuste por patología
   };
 }
 // Misma idea pero para varias personas a la vez (clase grupal): no hay campos por persona en un item de grupo,
@@ -7374,7 +7372,7 @@ function prescripcionAjustadaParaGrupo(ex, series, reps, descanso, clientesInscr
     reps: (repsNum!==null) ? String(repsNum) : reps,
     carga:'',
     descanso: descanso==='—' ? descanso : descansoSeg+'s',
-    nota: 'Series/descanso ajustados por precaución para uno o más inscritos',
+    nota: '', // el campo Notas se deja siempre en blanco al generar, aunque haya ajuste por patología
   };
 }
 
