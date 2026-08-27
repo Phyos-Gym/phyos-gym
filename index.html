@@ -103,7 +103,7 @@ input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(0.8);cursor:
 .ex-card-img{width:100%;height:130px;object-fit:cover;border-radius:6px;margin-bottom:10px;background:var(--surface-2);}
 .ex-inline-thumb{width:32px;height:32px;object-fit:cover;border-radius:5px;flex-shrink:0;background:var(--surface-2);font-size:15px;}
 .ex-inline-thumb-sm{width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;background:var(--surface-2);font-size:13px;}
-.info-ejercicio-img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px;background:var(--surface-2);}
+.info-ejercicio-img{width:100%;max-height:260px;object-fit:contain;border-radius:8px;margin-bottom:12px;background:var(--surface-2);}
 .t-lista-thumb{width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--surface-2);}
 .t-actual-img{max-height:150px;border-radius:10px;margin-bottom:8px;object-fit:cover;background:var(--surface-2);}
 .sd-img{max-height:180px;border-radius:10px;margin:8px 0;background:var(--surface-2);}
@@ -6173,6 +6173,19 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   const randomBtn=document.createElement('button'); randomBtn.className='btn btn-sm'; randomBtn.textContent='🎲 Generar semana aleatoria';
   randomBtn.onclick=()=>generateRandomGroupWeek(clase, horario, week);
   foot.appendChild(randomBtn);
+  const iaExportBtn=document.createElement('button'); iaExportBtn.className='btn btn-sm'; iaExportBtn.textContent='📋 IA: exportar';
+  iaExportBtn.onclick=()=>{
+    const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
+    const poolBase = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c)));
+    abrirFlujoExportarIA({ tipo:'grupo', clientesInscritos, isRotativa, personas: personasDesdeClientes(clientesInscritos), poolBase });
+  };
+  foot.appendChild(iaExportBtn);
+  const iaImportBtn=document.createElement('button'); iaImportBtn.className='btn btn-sm'; iaImportBtn.textContent='📥 IA: importar';
+  iaImportBtn.onclick=()=>{
+    const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
+    abrirImportarSesionIA(week, { tipo:'grupo', clientesInscritos, isRotativa });
+  };
+  foot.appendChild(iaImportBtn);
   const ssBtn=document.createElement('button'); ssBtn.className='btn btn-sm'; ssBtn.textContent='🔗 Superseries';
   ssBtn.onclick=()=>abrirModalSuperseries(week);
   foot.appendChild(ssBtn);
@@ -7274,6 +7287,17 @@ function weekBlock(unitClients, program, week, wIdx){
   const randomBtn=document.createElement('button'); randomBtn.className='btn btn-sm'; randomBtn.textContent='🎲 Generar semana aleatoria';
   randomBtn.onclick=()=>generateRandomWeek(program, week, unitClients);
   foot.appendChild(randomBtn);
+  const iaExportBtn=document.createElement('button'); iaExportBtn.className='btn btn-sm'; iaExportBtn.textContent='📋 IA: exportar';
+  iaExportBtn.onclick=()=>{
+    let poolBase = state.exercises.filter(ex=>isExerciseSafeForUnit(ex, unitClients));
+    poolBase = poolBase.filter(ex=>!ex.esDinamicaGrupal);
+    if(!isPair) poolBase = poolBase.filter(ex=>!ex.esPareja);
+    abrirFlujoExportarIA({ tipo: isPair?'pareja':'individual', unitClients, personas: personasDesdeClientes(unitClients), poolBase });
+  };
+  foot.appendChild(iaExportBtn);
+  const iaImportBtn=document.createElement('button'); iaImportBtn.className='btn btn-sm'; iaImportBtn.textContent='📥 IA: importar';
+  iaImportBtn.onclick=()=>abrirImportarSesionIA(week, { tipo: isPair?'pareja':'individual', unitClients });
+  foot.appendChild(iaImportBtn);
   const ssBtn=document.createElement('button'); ssBtn.className='btn btn-sm'; ssBtn.textContent='🔗 Superseries';
   ssBtn.onclick=()=>abrirModalSuperseries(week);
   foot.appendChild(ssBtn);
@@ -7644,10 +7668,19 @@ function añadirEjercicioAleatorioAWeek(week, poolBase, construirItem, tituloUni
   render();
 }
 
+// Antes cualquier ejercicio con "Cardio" en el grupo muscular (o hecho en la bici) se trataba como UN bloque
+// continuo de 15-20 min al calcular tiempos y repeticiones. Eso hacía que sprints, tabatas, burpees o series
+// cortas en bici — que sí son "duro" pero duran segundos, no minutos — ocuparan el presupuesto de la sesión
+// como si fueran una tanda larga, dejando fuera a otros ejercicios duros igual de intensos pero breves.
+const PALABRAS_CARDIO_POR_INTERVALOS = ['sprint','tabata','intervalo','corto','cortos','burpee','salto','saltar','explosiv','máxima','maxima','potencia','plyo','pliométric','pliometric','hiit','segundos','ráfaga','rafaga'];
 function esEjercicioCardioContinuo(ex){
   const mat = (ex.material||'').toLowerCase();
   const grupo = (ex.grupoMuscular||'').toLowerCase();
-  return mat.includes('bici ciclo indoor') || grupo.includes('cardio');
+  const esCardio = mat.includes('bici ciclo indoor') || grupo.includes('cardio');
+  if(!esCardio) return false;
+  const texto = ((ex.nombre||'')+' '+(ex.descripcion||'')).toLowerCase();
+  if(texto.includes('continu')) return true; // señal explícita de que sí es un bloque continuo
+  return !PALABRAS_CARDIO_POR_INTERVALOS.some(p=>texto.includes(p));
 }
 function segundosDeDescanso(str){
   const m = (str||'').match(/(\d+)/);
@@ -7949,6 +7982,221 @@ function generateRandomWeek(program, week, unitClients){
   } else {
     pedirDias();
   }
+}
+
+// ---------- Puente manual con IA externa (exportar prompt / importar sesión) ----------
+// La app es una PWA estática (GitHub Pages, sin servidor propio), así que no puede llamar directamente
+// a una IA sin exponer una clave de API a quien abra el código fuente. Este puente resuelve la parte
+// que de verdad se pedía —sesiones mejor curadas que las del generador aleatorio— sin necesidad de eso:
+// exporta un prompt ya armado (perfil + SOLO ejercicios ya filtrados por seguridad) para pegar en Claude
+// u otra IA, y al importar su respuesta se reaplica el mismo ajuste por patología que usa el generador
+// aleatorio. La IA decide qué proponer y en qué orden; la seguridad la sigue decidiendo la app, no la IA.
+
+function textoFiltrosGeneracion(filtros){
+  const partes=[];
+  if(filtros.grupos && filtros.grupos.length>0) partes.push('grupos: '+filtros.grupos.join(', '));
+  if(filtros.materiales && filtros.materiales.length>0) partes.push('material: '+filtros.materiales.join(', '));
+  return partes.join(' · ');
+}
+
+function abrirFiltrosParaIA(onConfirm){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:400px;">
+      <div class="modal-head"><h2>📋 Exportar para IA</h2><button class="close-x">✕</button></div>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Elige el nivel y, si quieres, algún filtro extra — se incluirán en el prompt junto con los ejercicios ya seguros para esta persona/estas personas.</p>
+      ${htmlFiltrosGeneracion()}
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="ia-filtros-confirm">Generar prompt</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  const filtrosCtrl = conectarFiltrosGeneracion(overlay);
+  overlay.querySelector('#ia-filtros-confirm').onclick=()=>{
+    const filtros = filtrosCtrl.leer();
+    overlay.remove();
+    onConfirm(filtros);
+  };
+}
+
+function htmlListaEjerciciosParaIA(pool){
+  return pool.map(ex=>{
+    const nivel = nivelDificultadEjercicio(ex);
+    const pareja = ex.esPareja ? ' | pareja' : '';
+    return `${ex.id} | ${ex.nombre} | ${ex.grupoMuscular||'General'} | ${ex.material||'—'} | ${nivel}${pareja}`;
+  }).join('\n');
+}
+
+function construirPromptIA(ctx){
+  const personasTxt = ctx.personas.map(p=>{
+    const partes = [`- ${p.nombre}${p.edad?` (${p.edad} años)`:''}`];
+    if(p.objetivo) partes.push(`  Objetivo: ${p.objetivo}`);
+    if(p.zona) partes.push(`  Zona a mejorar: ${p.zona}`);
+    if(p.nivelForma) partes.push(`  Nivel de forma física: ${p.nivelForma}`);
+    if(p.preferencia) partes.push(`  Preferencia de entrenamiento: ${p.preferencia}`);
+    return partes.join('\n');
+  }).join('\n');
+
+  const contextoUnidad = ctx.tipo==='grupo'
+    ? `Es una CLASE GRUPAL con ${ctx.personas.length} persona(s) inscrita(s) con ficha. Los ajustes de descanso/repeticiones ya se han combinado de forma conservadora entre todos ellos antes de darte esta lista, así que no hace falta que tú vuelvas a mirar patologías individuales.`
+    : ctx.tipo==='pareja'
+      ? `Es una sesión EN PAREJA para estas 2 personas. Cuando un ejercicio de la lista lleve la marca "pareja", puedes proponerlo pensando en que lo hagan juntos a la vez (agarrados de las manos, chocando una mano cada vez, espalda con espalda...) si encaja con el enfoque de la sesión.`
+      : `Es una sesión INDIVIDUAL para esta persona.`;
+
+  return `Eres un entrenador personal experto ayudando a programar UNA sesión de entrenamiento de 60 minutos (cuenta con unos 45 minutos de bloque principal; el calentamiento y el enfriamiento ya están reservados aparte).
+
+${contextoUnidad}
+
+PERSONA(S):
+${personasTxt}
+
+NIVEL DE ESFUERZO PEDIDO (Escala de Borg CR10): ${ctx.nivel==='duro'?'🥵 Duro (8-10)':ctx.nivel==='suave'?'🥳 Suave (0-4)':'🙂 Normal (5-7)'}
+${ctx.filtrosTexto ? 'Filtros adicionales ya aplicados: '+ctx.filtrosTexto : ''}
+
+REGLAS FIJAS DE ESTE GIMNASIO (no negociables):
+- Jamás peso muerto (ya no aparece en la lista de abajo, no hace falta que lo vigiles).
+- No repitas el mismo ejercicio dos veces en la misma sesión.
+- Se valora mucho la innovación: varía la selección de verdad, no te limites a cambiar reps o descansos sobre los ejercicios más obvios.
+- SOLO puedes elegir ejercicios de la lista de abajo — ya están filtrados por seguridad para esta persona/estas personas (patologías, zonas de riesgo, nivel de forma). No inventes ni añadas ningún ejercicio que no esté en la lista, ni cambies su id.
+
+EJERCICIOS DISPONIBLES Y SEGUROS (id | nombre | grupo muscular | material | nivel de esfuerzo):
+${htmlListaEjerciciosParaIA(ctx.pool)}
+
+TU TAREA:
+Elige entre 6 y 10 ejercicios de esa lista, bien repartidos entre grupos musculares, coherentes con el nivel pedido, y decide series/repeticiones/descanso razonables para cada uno.
+- reps: un número ("12") o, solo si el ejercicio es claramente cardio continuo, un rango de minutos ("15-20 min").
+- descanso: "30s", "45s" o "60s"; usa "—" solo si es cardio continuo.
+
+Responde ÚNICAMENTE con este JSON (sin texto antes ni después, sin backticks de markdown):
+[
+  {"exerciseId":"(id tal cual de la lista de arriba)","series":"3","reps":"12","descanso":"45s"}
+]`;
+}
+
+function abrirExportarIA(ctx){
+  if(ctx.pool.length===0){
+    showAlert('No hay ejercicios seguros disponibles con los filtros elegidos para exportar. Prueba a quitar algún filtro.');
+    return;
+  }
+  const prompt = construirPromptIA(ctx);
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:600px;">
+      <div class="modal-head"><h2>📋 Prompt listo</h2><button class="close-x">✕</button></div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:0;">Cópialo y pégalo en Claude (o tu IA favorita). Cuando tengas su respuesta, vuelve aquí y usa "📥 IA: importar".</p>
+      <textarea id="ia-prompt-texto" readonly style="width:100%;min-height:260px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);resize:vertical;">${escapeHtml(prompt)}</textarea>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;gap:8px;">
+        <button class="btn btn-sm" id="ia-seleccionar-todo">Seleccionar todo</button>
+        <button class="btn btn-accent" id="ia-copiar">📋 Copiar al portapapeles</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  const textarea = overlay.querySelector('#ia-prompt-texto');
+  overlay.querySelector('#ia-seleccionar-todo').onclick=()=>{ textarea.focus(); textarea.select(); };
+  overlay.querySelector('#ia-copiar').onclick=async ()=>{
+    try{
+      await navigator.clipboard.writeText(prompt);
+      showAlert('Copiado. Pégalo ya en Claude o en tu IA favorita.');
+    }catch(err){
+      textarea.focus(); textarea.select();
+      showAlert('No se pudo copiar automáticamente: el texto ya está seleccionado arriba, usa Ctrl/Cmd+C.');
+    }
+  };
+}
+
+function aplicarSesionImportadaIA(week, itemsIA, ctx){
+  let validos=0, descartados=0;
+  const newItems=[];
+  itemsIA.forEach(it=>{
+    if(!it || typeof it.exerciseId!=='string'){ descartados++; return; }
+    const ex = state.exercises.find(e=>e.id===it.exerciseId);
+    if(!ex){ descartados++; return; }
+    const series = String(it.series||'3'), reps=String(it.reps||'12'), descanso=String(it.descanso||'45s');
+    if(ctx.tipo==='grupo'){
+      if(!ctx.clientesInscritos.every(c=>isExerciseSafeForClient(ex,c))){ descartados++; return; }
+      const p = prescripcionAjustadaParaGrupo(ex, series, reps, descanso, ctx.clientesInscritos);
+      newItems.push({ exerciseId: ex.id, estacion: ctx.isRotativa ? `Estación ${(validos%4)+1}` : '', series:p.series, reps:p.reps, carga:p.carga, descanso:p.descanso, notas:'' });
+    } else if(ctx.tipo==='pareja'){
+      if(!isExerciseSafeForUnit(ex, ctx.unitClients)){ descartados++; return; }
+      const pa = prescripcionAjustadaParaCliente(ex, series, reps, descanso, ctx.unitClients[0]);
+      const pb = prescripcionAjustadaParaCliente(ex, series, reps, descanso, ctx.unitClients[1]);
+      newItems.push({ exerciseId: ex.id, esPareja: !!ex.esPareja, soloPara: null,
+        a: { series:pa.series, reps:pa.reps, carga:pa.carga, descanso:pa.descanso, notas:'' },
+        b: { series:pb.series, reps:pb.reps, carga:pb.carga, descanso:pb.descanso, notas:'' } });
+    } else {
+      if(!isExerciseSafeForClient(ex, ctx.unitClients[0])){ descartados++; return; }
+      const p = prescripcionAjustadaParaCliente(ex, series, reps, descanso, ctx.unitClients[0]);
+      newItems.push({ exerciseId: ex.id, series:p.series, reps:p.reps, carga:p.carga, descanso:p.descanso, notas:'' });
+    }
+    validos++;
+  });
+  if(validos>0){
+    week.items = newItems;
+    marcarModificada(week);
+    scheduleSave();
+  }
+  return { validos, descartados };
+}
+
+function personasDesdeClientes(clientes){
+  return clientes.map(c=>({ nombre:c.nombre, edad:c.edad, objetivo:c.objetivos&&c.objetivos.principal, zona:c.objetivos&&c.objetivos.zona, preferencia:c.objetivos&&c.objetivos.preferencia, nivelForma:c.cuerpo&&c.cuerpo.nivelForma }));
+}
+
+function abrirFlujoExportarIA(ctxBase){
+  abrirFiltrosParaIA((filtros)=>{
+    const pool = aplicarFiltrosGeneracion(ctxBase.poolBase, filtros);
+    abrirExportarIA({ ...ctxBase, pool, nivel: filtros.nivel, filtrosTexto: textoFiltrosGeneracion(filtros) });
+  });
+}
+
+function abrirImportarSesionIA(week, ctx){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:560px;">
+      <div class="modal-head"><h2>📥 Importar sesión IA</h2><button class="close-x">✕</button></div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:0;">Pega aquí el JSON que te ha devuelto la IA. Antes de cargarlo se vuelve a comprobar que cada ejercicio sea seguro — el que no lo sea (o ya no exista) se descarta y se avisa.</p>
+      <textarea id="ia-import-texto" placeholder='[{"exerciseId":"...","series":"3","reps":"12","descanso":"45s"}]' style="width:100%;min-height:220px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical;"></textarea>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="ia-cargar">Cargar sesión</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  const cargarDeVerdad = (items)=>{
+    const resultado = aplicarSesionImportadaIA(week, items, ctx);
+    if(resultado.validos===0){
+      showAlert('Ninguno de los ejercicios del JSON es válido o seguro para esta persona/estas personas. Revisa que los IDs sean exactamente los de la lista que exportaste.');
+      return;
+    }
+    overlay.remove();
+    render();
+    if(resultado.descartados>0){
+      showAlert(`Sesión cargada con ${resultado.validos} ejercicios. Se descartaron ${resultado.descartados} por no ser seguros o no existir ya en la batería.`);
+    }
+  };
+  overlay.querySelector('#ia-cargar').onclick=()=>{
+    const texto = overlay.querySelector('#ia-import-texto').value.trim();
+    if(!texto){ showAlert('Pega primero el JSON que te ha dado la IA.'); return; }
+    let items;
+    try{
+      const limpio = texto.replace(/^```(json)?/i,'').replace(/```$/,'').trim();
+      items = JSON.parse(limpio);
+      if(!Array.isArray(items)) throw new Error('no es una lista');
+    }catch(err){
+      showAlert('Ese texto no es un JSON válido. Revisa que hayas copiado toda la respuesta de la IA, tal cual, sin añadir ni quitar nada.');
+      return;
+    }
+    if(week.items.length>0){
+      showConfirm('Esto sustituirá los ejercicios actuales de esta semana por los de la IA. ¿Continuar?', ()=>cargarDeVerdad(items));
+    } else {
+      cargarDeVerdad(items);
+    }
+  };
 }
 
 // ---------- init ----------
