@@ -474,7 +474,17 @@ const RAW_CLIENTS = [
  diagnostico:"No", medicacion:"No — menciona migrañas", lesionOperacion:"Sí — fijación lumbar L3, L4, L5, S1", evitar:"No", sintomas:"Ninguno marcado", revision:"No especificada",
  altura:"170 cm", pesoActual:"67 kg", pesoDeseado:"No especificado", ejercicioRegular:"No — piscina ocasional", nivelForma:"Muy bajo", estres:"Bajo", sueno:"Bueno (8 h)", alimentacion:"Equilibrada", fumaAlcohol:"Sí — medio paquete y alcohol ocasionalmente",
  principal:"Ganancia muscular, tonificación, salud general", zona:"Cuerpo en general", dias:"2", preferencia:"Gimnasio",
- notas:"Fijación lumbar L3-L4-L5-S1: evitar flexión/extensión lumbar cargada y movimientos de impacto o rotación brusca de columna. Nivel de forma física muy bajo: progresar despacio.", activo:true, fechaInicio:"2026-07-01"}
+ notas:"Fijación lumbar L3-L4-L5-S1: evitar flexión/extensión lumbar cargada y movimientos de impacto o rotación brusca de columna. Nivel de forma física muy bajo: progresar despacio.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Mai", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — rotura de LCA en rodilla derecha (antigua) y de menisco en rodilla izquierda (antigua)", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 1 año — todo ok",
+ altura:"168 cm", pesoActual:"58 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio 3 veces/semana", nivelForma:"Bueno", estres:"Medio", sueno:"Bueno (7–8 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"No especificada", dias:"3", preferencia:"Combinado",
+ notas:"Antecedentes de LCA (rodilla derecha) y menisco (rodilla izquierda), ambas lesiones antiguas y sin limitación funcional actual ni restricción médica: puede hacer cualquier ejercicio, pero vigilar cargas de impacto alto y rotación brusca en ambas rodillas. Buen nivel de forma física de partida (ya entrena 3x/semana).", activo:true, fechaInicio:"2026-08-28"},
+{nombre:"Maite", pareja:null,
+ diagnostico:"Sí — artrosis en ambas rodillas (origen genético)", medicacion:"No especificado", lesionOperacion:"Sí — operada de LCA en una rodilla y de menisco en la otra (ambas antiguas)", evitar:"No — sin indicación médica de evitar ejercicios; puede realizar todo tipo de entrenamiento, antecedentes a tener en cuenta pero sin limitación funcional", sintomas:"Ninguno marcado", revision:"No especificada",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No especificado", nivelForma:"No especificado", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
+ principal:"Conseguir hacer una dominada estricta sin asistencia (progresión motivacional a medio/largo plazo)", zona:"Glúteo (sin hip thrust, no le gusta)", dias:"3", preferencia:"Full body",
+ notas:"Artrosis en ambas rodillas (origen genético) y antecedentes de cirugía de LCA (una rodilla) y menisco (la otra), ambas antiguas: tomar solo como antecedente, sin limitación funcional actual, puede hacer todo tipo de ejercicio con normalidad. Objetivo central y motivacional: progresión hacia la dominada estricta sin asistencia, sabiendo que no se conseguirá en una semana. Incluir trabajo de glúteo en las sesiones, nunca hip thrust (no le gusta). Full body, 3 días/semana, 40 años.", activo:true, fechaInicio:"2026-08-28"}
 ];
 
 const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
@@ -2400,7 +2410,7 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
 ];
 
-const APP_VERSION = '2026-08-07-1';
+const APP_VERSION = '2026-08-28-2';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -6507,7 +6517,7 @@ function renderClienteSessionPanel(clientId){
 
   if(program.weeks.length===0){
     const empty=document.createElement('div'); empty.className='empty';
-    empty.innerHTML=`<h3>Sin plan todavía</h3><p>Crea la Semana 1 para empezar el programa de 4 semanas.${isPair?' Este plan es compartido: se aplicará a ambos miembros de la pareja.':''}</p></div>`;
+    empty.innerHTML=`<h3>Sin plan todavía</h3><p>Crea la Semana 1 para empezar el programa.${isPair?' Este plan es compartido: se aplicará a ambos miembros de la pareja.':''}</p></div>`;
     wrap.appendChild(empty);
   }
 
