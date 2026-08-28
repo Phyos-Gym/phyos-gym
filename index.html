@@ -2410,7 +2410,159 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
 ];
 
-const APP_VERSION = '2026-08-28-2';
+// ---------- Semillas de programas (planes diseñados fuera de la app, para auto-cargarse una sola vez) ----------
+// Cada entrada es UNA semana concreta del programa de un cliente. Al cargar el estado (ver loadState más abajo),
+// si ese cliente existe y esa semana (por número) todavía no está en su programa, se crea automáticamente
+// resolviendo cada ejercicio por NOMBRE contra el catálogo ya cargado en este navegador — así no depende de
+// IDs, que se generan al azar en cada instalación. Es seguro volver a desplegar la app con esta lista:
+// cada semilla se marca como aplicada (state.programasSemillaAplicada) y no se vuelve a tocar, aunque el
+// entrenador ya la haya editado a mano; tampoco pisa nunca una semana con ese mismo número creada manualmente.
+const DEFAULT_PROGRAMS_SEED = [
+  { cliente:"Maite", numero:1, dias:{
+    A:[
+      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"5", descanso:"90s", notas:"Banda de asistencia ligera; buscar 1-2 reps en reserva."},
+      {nombre:"Goblet Squat con kettlebell", series:"4", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con banda", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Remo en polea sentado", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"30s", descanso:"45s", notas:""},
+      {nombre:"Pallof press con banda", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+    ],
+    B:[
+      {nombre:"Negativas de dominada", series:"3", reps:"5", descanso:"90s", notas:"Bajada controlada de 4-5s."},
+      {nombre:"Zancada búlgara con banco", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Press de banca con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Face pull con banda", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Dead bug", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Activación escapular en dominada (Scapular Pull-Up)", series:"3", reps:"8", descanso:"60s", notas:"Base antes de la dominada completa."},
+      {nombre:"Remo invertido (Australian Pull-Up)", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Step-up con step", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Press landmine a una mano", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Plancha lateral", series:"3", reps:"30s/lado", descanso:"45s", notas:""},
+      {nombre:"Wallball a diana hyrox", series:"3", reps:"10", descanso:"60s", notas:""}
+    ]
+  }},
+  { cliente:"Maite", numero:2, dias:{
+    A:[
+      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, un grado menos de asistencia."},
+      {nombre:"Sentadilla en guía Smith", series:"4", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con banda circular", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Jalón al pecho en polea", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Press Arnold con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Bird dog", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Rotación externa en polea a 90 grados", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+    ],
+    B:[
+      {nombre:"Negativas de dominada", series:"3", reps:"5", descanso:"90s", notas:"Bajada de 6s."},
+      {nombre:"Zancada con mancuernas", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
+      {nombre:"Clamshell con banda circular", series:"3", reps:"15/lado", descanso:"45s", notas:""},
+      {nombre:"Press banca en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Plancha con elevación de pierna", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Mantenimiento isométrico en dominada (Pull-Up Hold)", series:"3", reps:"10-15s", descanso:"60s", notas:"Con ayuda para subir, aguantar arriba."},
+      {nombre:"Remo invertido con agarre supino", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Landmine Squat", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Extensión de cadera cuadrupedia con miniband", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Press de hombro alterno con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Rodamiento de aro de pilates (core)", series:"3", reps:"10", descanso:"45s", notas:""},
+      {nombre:"Wallball Squat and Press", series:"3", reps:"10", descanso:"60s", notas:""}
+    ]
+  }},
+  { cliente:"Maite", numero:3, dias:{
+    A:[
+      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Reducir asistencia otro grado si el RIR lo permite."},
+      {nombre:"Sentadilla búlgara con pie en el cajón", series:"3", reps:"8/pierna", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Remo con landmine", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Press de hombro con banda", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Dead Hang (suspensión activa)", series:"3", reps:"20s", descanso:"45s", notas:""},
+      {nombre:"Pallof Press de rodillas", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+    ],
+    B:[
+      {nombre:"Negativas de dominada", series:"3", reps:"4", descanso:"90s", notas:"Bajada de 8s, casi al límite del control."},
+      {nombre:"Sentadilla sumo con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"10", descanso:"45s", notas:"Pausa de 2s arriba."},
+      {nombre:"Press banca con barra olímpica", series:"3", reps:"8", descanso:"75s", notas:""},
+      {nombre:"Remo sentado con banda", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Hollow Body Hold", series:"3", reps:"20s", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Activación escapular en dominada (Scapular Pull-Up)", series:"3", reps:"10", descanso:"60s", notas:"Cerrar la serie con un intento de dominada completa, sin forzar."},
+      {nombre:"Remo invertido con pies elevados", series:"3", reps:"8", descanso:"60s", notas:""},
+      {nombre:"Step-Up explosivo con salto al cajón", series:"3", reps:"8/pierna", descanso:"60s", notas:""},
+      {nombre:"Zancada frontal con banda circular en rodillas", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Landmine Overhead Press a una mano", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Plancha en plataforma inestable", series:"3", reps:"30s", descanso:"45s", notas:""},
+      {nombre:"Wallball Chest Pass a la diana", series:"3", reps:"10", descanso:"60s", notas:""}
+    ]
+  }},
+  { cliente:"Maite", numero:4, dias:{
+    A:[
+      {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin banda: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
+      {nombre:"Dominada asistida con banda ligera", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
+      {nombre:"Goblet Squat con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"35s", descanso:"45s", notas:""}
+    ],
+    B:[
+      {nombre:"Negativas de dominada", series:"3", reps:"4", descanso:"90s", notas:"Bajada de 10s, el máximo control que consiga."},
+      {nombre:"Zancada búlgara con banco", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con banda", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Jalón con agarre supino", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Face Pull en polea", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Russian Twist con bola blanda", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Remo invertido (Australian Pull-Up)", series:"4", reps:"10", descanso:"60s", notas:"Cierre de bloque: sube el volumen de tracción."},
+      {nombre:"Sentadilla en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Extensión de cadera cuadrupedia con banda circular", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Press landmine a una mano", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Plancha lateral", series:"3", reps:"30s/lado", descanso:"45s", notas:""},
+      {nombre:"Wallball a diana hyrox", series:"3", reps:"12", descanso:"60s", notas:""}
+    ]
+  }}
+];
+
+function aplicarSemillasDePrograma(){
+  try{
+    if(!state.programs) state.programs = {};
+    if(!state.programasSemillaAplicada) state.programasSemillaAplicada = {};
+    DEFAULT_PROGRAMS_SEED.forEach(seed=>{
+      const cliente = state.clients.find(c=>c.nombre.trim().toLowerCase()===seed.cliente.trim().toLowerCase());
+      if(!cliente) return;
+      const key = unitKeyFor(cliente);
+      const seedId = key + '::semana' + seed.numero;
+      if(state.programasSemillaAplicada[seedId]) return;
+      if(!state.programs[key]) state.programs[key] = { weeks: [] };
+      const yaExiste = state.programs[key].weeks.some(w=>w.numero===seed.numero);
+      if(!yaExiste){
+        const items = [];
+        ['A','B','C'].forEach((diaLabel, diaIdx)=>{
+          (seed.dias[diaLabel] || []).forEach(it=>{
+            const ex = state.exercises.find(e=>e.nombre.trim().toLowerCase()===it.nombre.trim().toLowerCase());
+            if(!ex) return; // ejercicio no encontrado por nombre: se omite en vez de romper la semilla entera
+            items.push({ id: uid(), exerciseId: ex.id, diaSesion: diaIdx+1, series: it.series||'3', reps: it.reps||'12', carga: it.carga||'', descanso: it.descanso||'45s', notas: it.notas||'' });
+          });
+        });
+        if(items.length>0){
+          state.programs[key].weeks.push({ id: uid(), numero: seed.numero, items, ultimaModificacion: new Date().toISOString() });
+        }
+      }
+      state.programasSemillaAplicada[seedId] = true;
+    });
+  }catch(err){
+    // si algo falla al aplicar una semilla, no debe romper la carga del resto de la app
+  }
+}
+
+const APP_VERSION = '2026-08-28-3';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -2558,6 +2710,7 @@ async function loadState(){
           }
         });
       }
+      aplicarSemillasDePrograma();
       if(!state.grupos || state.grupos.length===0){
         state.grupos = JSON.parse(JSON.stringify(DEFAULT_GRUPOS));
       } else if(state.grupos.some(g=>typeof g.horarios === 'undefined')){
@@ -2611,6 +2764,7 @@ async function loadState(){
     }
   }
   state = { clients: DEFAULT_CLIENTS, exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)), programs: {}, horario: JSON.parse(JSON.stringify(DEFAULT_HORARIO)), grupos: JSON.parse(JSON.stringify(DEFAULT_GRUPOS)), temporizadorPlantillas: [], miPerfil: null, misSesiones: [], misMedidas: [], activeGrupoId: null, activeTab:'clientes', activeClientId:null, version: DATA_VERSION };
+  aplicarSemillasDePrograma();
   await saveState();
 }
 function guardarCopiaLocalDeSeguridad(payloadStr){
