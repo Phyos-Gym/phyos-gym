@@ -1759,6 +1759,9 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Dominada asistida con banda ligera', grupoMuscular:'Espalda', material:'Barra de dominadas, Bandas elásticas',
     descripcion:'Banda de asistencia ligera anclada en la barra, ofreciendo solo una pequeña ayuda en la tracción.',
     precauciones:'Progresión avanzada, cerca ya de la dominada sin asistencia.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Dominada en máquina de peso asistido', grupoMuscular:'Espalda', material:'Máquina de peso asistido',
+    descripcion:'Máquina guiada con contrapeso seleccionable que asiste el movimiento de dominada: cuanto más peso se selecciona, más ayuda ofrece la máquina para subir.',
+    precauciones:'Ir reduciendo el peso de asistencia de forma progresiva a medida que se gana fuerza, buscando 1-2 repeticiones en reserva en cada serie.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo invertido con agarre supino', grupoMuscular:'Espalda / Brazo', material:'Barra de dominadas',
     descripcion:'Remo invertido con las palmas mirando hacia el propio cuerpo, más énfasis en el bíceps.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -2420,7 +2423,7 @@ const DEFAULT_EXERCISES = [
 const DEFAULT_PROGRAMS_SEED = [
   { cliente:"Maite", numero:1, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"5", descanso:"90s", notas:"Banda de asistencia ligera; buscar 1-2 reps en reserva."},
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"5", descanso:"90s", notas:"Nivel de asistencia en la máquina que permita completar las series con 1-2 repeticiones en reserva; si lo consigue con buena técnica, bajar el peso de asistencia la semana siguiente."},
       {nombre:"Goblet Squat con kettlebell", series:"4", reps:"10", descanso:"60s", notas:""},
       {nombre:"Puente de glúteo con banda", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Remo en polea sentado", series:"3", reps:"10", descanso:"60s", notas:""},
@@ -2448,7 +2451,7 @@ const DEFAULT_PROGRAMS_SEED = [
   }},
   { cliente:"Maite", numero:2, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, un grado menos de asistencia."},
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, bajar un escalón el peso de asistencia de la máquina."},
       {nombre:"Sentadilla en guía Smith", series:"4", reps:"10", descanso:"60s", notas:""},
       {nombre:"Puente de glúteo con banda circular", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Jalón al pecho en polea", series:"3", reps:"10", descanso:"60s", notas:""},
@@ -2476,7 +2479,7 @@ const DEFAULT_PROGRAMS_SEED = [
   }},
   { cliente:"Maite", numero:3, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Reducir asistencia otro grado si el RIR lo permite."},
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Reducir otro escalón el peso de asistencia de la máquina si el RIR lo permite."},
       {nombre:"Sentadilla búlgara con pie en el cajón", series:"3", reps:"8/pierna", descanso:"60s", notas:""},
       {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Remo con landmine", series:"3", reps:"10", descanso:"60s", notas:""},
@@ -2504,8 +2507,8 @@ const DEFAULT_PROGRAMS_SEED = [
   }},
   { cliente:"Maite", numero:4, dias:{
     A:[
-      {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin banda: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
-      {nombre:"Dominada asistida con banda ligera", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
+      {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin asistencia: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
+      {nombre:"Dominada en máquina de peso asistido", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
       {nombre:"Goblet Squat con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
       {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""},
       {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
