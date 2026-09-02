@@ -2594,7 +2594,7 @@ function aplicarSemillasDePrograma(){
   }
 }
 
-const APP_VERSION = '2026-09-02-1';
+const APP_VERSION = '2026-09-02-2';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -6879,8 +6879,13 @@ function exportarResumenSesion(week, unitClients, titulo, diaFiltro){
     }
     const ex = state.exercises.find(e=>e.id===item.exerciseId);
     const nombre = ex ? ex.nombre : '(ejercicio eliminado)';
-    const imagen = ex && ex.imagenUrl
-      ? `<img src="${ex.imagenUrl}" class="ex-foto" onerror="this.outerHTML='&lt;div class=&quot;ex-foto-vacia&quot;&gt;&lt;/div&gt;';">`
+    // Igual que htmlImagenEjercicio() en la app: si no hay imagenUrl explícita (o incluso si la hay, como
+    // reintento), se prueba también a adivinar la foto por el nombre exacto del ejercicio con varias
+    // extensiones. Antes el export solo miraba imagenUrl a pelo, así que ejercicios con foto real en
+    // ejercicios/ pero sin imagenUrl puesta a mano salían con hueco vacío aunque en la app sí se vieran.
+    const candidatosImg = ex ? [...(ex.imagenUrl?[ex.imagenUrl.trim()]:[]), ...candidatosImagenPorNombre(ex)] : [];
+    const imagen = candidatosImg.length>0
+      ? `<img src="${escapeHtml(candidatosImg[0])}" class="ex-foto" data-fallbacks='${escapeHtml(JSON.stringify(candidatosImg.slice(1)))}' onerror="manejarErrorImagenExport(this)">`
       : `<div class="ex-foto-vacia"></div>`;
     const etiquetas = `${item.supersetId?'<span class="badge badge-ss">Superserie</span>':''}${item.soloPara?'<span class="badge badge-solo">Individual</span>':''}`;
     let statsHtml;
@@ -6939,7 +6944,25 @@ function exportarResumenSesion(week, unitClients, titulo, diaFiltro){
       .pie-notas{margin-top:8px;font-style:italic;}
       .btn-imprimir{margin-top:28px;padding:11px 20px;font-size:13.5px;font-family:'Manrope',sans-serif;font-weight:700;background:var(--tinta);color:#fff;border:none;border-radius:8px;cursor:pointer;}
       @media print{ .btn-imprimir{display:none;} .hoja{padding:0;} @page{margin:20mm 18mm;} }
-    </style></head>
+    </style>
+    <script>
+      // Réplica mínima de manejarErrorImagenEjercicio() de la app: si la foto de un ejercicio falla,
+      // prueba con el resto de extensiones candidatas antes de rendirse y dejar el hueco vacío.
+      function manejarErrorImagenExport(imgEl){
+        let restantes = [];
+        try{ restantes = JSON.parse(imgEl.dataset.fallbacks||'[]'); }catch(e){}
+        if(restantes.length>0){
+          const siguiente = restantes.shift();
+          imgEl.dataset.fallbacks = JSON.stringify(restantes);
+          imgEl.src = siguiente;
+        } else {
+          const vacio = document.createElement('div');
+          vacio.className = 'ex-foto-vacia';
+          imgEl.replaceWith(vacio);
+        }
+      }
+    <\/script>
+    </head>
     <body>
       <div class="hoja">
         <div class="marca-header">
