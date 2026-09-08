@@ -484,7 +484,7 @@ const RAW_CLIENTS = [
  diagnostico:"Sí — artrosis en ambas rodillas (origen genético)", medicacion:"No especificado", lesionOperacion:"Sí — operada de LCA en una rodilla y de menisco en la otra (ambas antiguas)", evitar:"No — sin indicación médica de evitar ejercicios; puede realizar todo tipo de entrenamiento, antecedentes a tener en cuenta pero sin limitación funcional", sintomas:"Ninguno marcado", revision:"No especificada",
  altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No especificado", nivelForma:"No especificado", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
  principal:"Conseguir hacer una dominada estricta sin asistencia (progresión motivacional a medio/largo plazo)", zona:"Glúteo (sin hip thrust, no le gusta)", dias:"3", preferencia:"Full body",
- notas:"Artrosis en ambas rodillas (origen genético) y antecedentes de cirugía de LCA (una rodilla) y menisco (la otra), ambas antiguas: tomar solo como antecedente, sin limitación funcional actual, puede hacer todo tipo de ejercicio con normalidad. Objetivo central y motivacional: progresión hacia la dominada estricta sin asistencia, sabiendo que no se conseguirá en una semana. Incluir trabajo de glúteo en las sesiones, nunca hip thrust (no le gusta). Desde el 08/09/2026: eliminar de forma permanente los ejercicios de glúteo o pierna con banda elástica, banda circular o miniband (usar en su lugar mancuerna, kettlebell, polea, plataforma inestable, aro de pilates, bola blanda o peso corporal). Full body, 3 días/semana, 40 años.", activo:true, fechaInicio:"2026-08-28"}
+ notas:"Artrosis en ambas rodillas (origen genético) y antecedentes de cirugía de LCA (una rodilla) y menisco (la otra), ambas antiguas: tomar solo como antecedente, sin limitación funcional actual, puede hacer todo tipo de ejercicio con normalidad. Objetivo central y motivacional: progresión hacia la dominada estricta sin asistencia, sabiendo que no se conseguirá en una semana. Incluir trabajo de glúteo en las sesiones, nunca hip thrust (no le gusta). Desde el 08/09/2026: eliminar de forma permanente los ejercicios de glúteo o pierna con banda elástica, banda circular o miniband (usar en su lugar mancuerna, kettlebell, polea, plataforma inestable, aro de pilates, bola blanda o peso corporal). Su gimnasio no dispone de landmine: no usar ningún ejercicio con ese material (sustituir por mancuerna, kettlebell, polea, barra olímpica o aro de pilates). Full body, 3 días/semana, 40 años.", activo:true, fechaInicio:"2026-08-28"}
 ];
 
 const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
@@ -516,7 +516,7 @@ const SALA = {
   ]
 };
 
-const DATA_VERSION = 17;
+const DATA_VERSION = 18;
 
 // Horario semanal tipo, extraído de las capturas del chat "programación de clases y entrenamientos".
 // Es un patrón recurrente de lunes a viernes (se repite igual las semanas 2, 3, 4 y 5 de julio 2026),
@@ -2424,10 +2424,10 @@ const DEFAULT_EXERCISES = [
 // cada semilla se marca como aplicada (state.programasSemillaAplicada) y no se vuelve a tocar, aunque el
 // entrenador ya la haya editado a mano; tampoco pisa nunca una semana con ese mismo número creada manualmente.
 const DEFAULT_PROGRAMS_SEED = [
-  { cliente:"Maite", numero:1, revision:6, dias:{
+  { cliente:"Maite", numero:1, revision:7, dias:{
     A:[
       {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"5", descanso:"90s", notas:"Nivel de asistencia en la máquina que permita completar las series con 1-2 repeticiones en reserva; si lo consigue con buena técnica, bajar el peso de asistencia la semana siguiente."},
-      {nombre:"Remo con landmine", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"9/lado", descanso:"60s", notas:""},
       {nombre:"Man Maker con mancuernas", series:"3", reps:"6", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
       {nombre:"Push Press con barra olímpica", series:"3", reps:"8", descanso:"90s", notas:""},
       {nombre:"Goblet Squat con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
@@ -2458,16 +2458,16 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Wallball a diana hyrox", series:"3", reps:"8", descanso:"60s", notas:""},
       {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"8", descanso:"60s", notas:""},
       {nombre:"Pallof Press en polea", series:"3", reps:"10/lado", descanso:"45s", notas:""},
-      {nombre:"Press landmine a una mano", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Press de hombro a una mano con kettlebell", series:"3", reps:"8/lado", descanso:"60s", notas:""},
       {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:2, revision:6, dias:{
+  { cliente:"Maite", numero:2, revision:7, dias:{
     A:[
       {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, bajar un escalón el peso de asistencia de la máquina."},
       {nombre:"Puente de glúteo con aro entre las rodillas", series:"3", reps:"13", descanso:"45s", notas:""},
       {nombre:"Russian Twist con bola blanda", series:"3", reps:"11/lado", descanso:"45s", notas:""},
-      {nombre:"Press landmine a una mano", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Press de hombro a media rodilla con mancuerna", series:"3", reps:"9/lado", descanso:"60s", notas:""},
       {nombre:"Press Arnold con mancuernas", series:"3", reps:"11", descanso:"60s", notas:""},
       {nombre:"Kettlebell Swing a dos manos", series:"3", reps:"13", descanso:"60s", notas:"Bisagra de cadera, no sentadilla: impulso desde el glúteo, rodillas suaves. Impacto muy bajo, seguro para las rodillas."},
       {nombre:"Renegade Row con mancuernas", series:"3", reps:"6", descanso:"75s", notas:""},
@@ -2483,7 +2483,7 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Pallof Press en polea", series:"3", reps:"11/lado", descanso:"45s", notas:""},
       {nombre:"Man Maker con mancuernas", series:"3", reps:"7", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
       {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"9", descanso:"60s", notas:""},
-      {nombre:"Remo con landmine", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Remo con dos kettlebells", series:"3", reps:"11", descanso:"60s", notas:""},
       {nombre:"Cable Woodchop", series:"3", reps:"11/lado", descanso:"45s", notas:""},
       {nombre:"Abducción de cadera en polea baja", series:"3", reps:"13/lado", descanso:"45s", notas:""}
     ],
@@ -2497,14 +2497,14 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Goblet Squat con kettlebell", series:"3", reps:"11", descanso:"60s", notas:""},
       {nombre:"Press banca con barra olímpica", series:"3", reps:"8", descanso:"75s", notas:""},
       {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Landmine Squat", series:"3", reps:"10", descanso:"60s", notas:""}
+      {nombre:"Sentadilla búlgara con kettlebell", series:"3", reps:"8/lado", descanso:"60s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:3, revision:6, dias:{
+  { cliente:"Maite", numero:3, revision:7, dias:{
     A:[
       {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Reducir otro escalón el peso de asistencia de la máquina si el RIR lo permite."},
       {nombre:"Man Maker con mancuernas", series:"3", reps:"8", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
-      {nombre:"Remo con landmine", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Remo Pendlay con barra olímpica", series:"3", reps:"10", descanso:"75s", notas:"Compuesto de espalda con barra; técnica antes que carga."},
       {nombre:"Abducción de cadera en polea baja", series:"3", reps:"14/lado", descanso:"45s", notas:""},
       {nombre:"Rodamiento de aro de pilates (core)", series:"3", reps:"8", descanso:"45s", notas:""},
       {nombre:"Front Squat con barra olímpica", series:"3", reps:"9", descanso:"90s", notas:"Compuesto pesado; técnica antes que carga."},
@@ -2520,7 +2520,7 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"14", descanso:"45s", notas:""},
       {nombre:"Plancha frontal", series:"3", reps:"30s", descanso:"45s", notas:""},
       {nombre:"Press Arnold con mancuernas", series:"3", reps:"12", descanso:"60s", notas:""},
-      {nombre:"Press landmine a una mano", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Press de aro por encima de la cabeza", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Dead bug", series:"3", reps:"11", descanso:"45s", notas:""},
       {nombre:"Pallof Press en polea", series:"3", reps:"12/lado", descanso:"45s", notas:""},
       {nombre:"Sentadilla sumo con kettlebell", series:"3", reps:"13", descanso:"60s", notas:""}
@@ -2538,7 +2538,7 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"10", descanso:"60s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:4, revision:6, dias:{
+  { cliente:"Maite", numero:4, revision:7, dias:{
     A:[
       {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin asistencia: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
       {nombre:"Dominada en máquina de peso asistido", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
@@ -2559,7 +2559,7 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Dead bug", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"11/lado", descanso:"60s", notas:""},
       {nombre:"Kettlebell Row", series:"3", reps:"12", descanso:"60s", notas:""},
-      {nombre:"Remo con landmine", series:"3", reps:"13", descanso:"60s", notas:""},
+      {nombre:"Press de hombro a una mano con kettlebell", series:"3", reps:"11/lado", descanso:"60s", notas:""},
       {nombre:"Wallball Squat and Press", series:"3", reps:"9", descanso:"60s", notas:""},
       {nombre:"Single-Leg Reach en plataforma inestable", series:"3", reps:"7/lado", descanso:"45s", notas:""},
       {nombre:"Puente de glúteo con mancuerna", series:"3", reps:"14", descanso:"45s", notas:""}
@@ -2574,7 +2574,7 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Farmer's walk con mancuernas", series:"3", reps:"44m", descanso:"60s", notas:""},
       {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"15", descanso:"45s", notas:""},
       {nombre:"Remo unilateral en polea de pie", series:"3", reps:"10/lado", descanso:"60s", notas:""},
-      {nombre:"Remo con landmine", series:"3", reps:"13", descanso:"60s", notas:""}
+      {nombre:"Remo con dos kettlebells", series:"3", reps:"12", descanso:"60s", notas:""}
     ]
   }},
   { cliente:"Pilar Cloux", numero:1, revision:5, dias:{
@@ -2792,7 +2792,7 @@ function aplicarSemillasDePrograma(){
   }
 }
 
-const APP_VERSION = '2026-09-08-2';
+const APP_VERSION = '2026-09-08-3';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
