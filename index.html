@@ -2428,7 +2428,49 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel muy avanzado; requiere base sólida de fondos estrictos antes de añadir carga; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, codo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sprint en bici indoor a resistencia máxima', grupoMuscular:'Piernas / Cardio / Potencia', material:'Bici ciclo indoor',
     descripcion:'Pedalear a máxima intensidad con resistencia alta durante series cortas de 15-20 segundos, con recuperación breve entre series.',
-    precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
+    precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Goblet Squat con mancuerna', grupoMuscular:'Piernas', material:'Mancuernas',
+    descripcion:'Sentadilla sujetando una mancuerna en vertical pegada al pecho con ambas manos.',
+    precauciones:'Vigilar que la rodilla no sobrepase mucho la punta del pie en clientes con molestias articulares.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Press de pecho en suelo con mancuernas (Floor Press)', grupoMuscular:'Pecho', material:'Mancuernas',
+    descripcion:'Tumbada en el suelo, empujar las mancuernas hacia arriba; los codos tocan el suelo al final del recorrido, lo que limita el rango de forma segura.',
+    precauciones:'Alternativa segura al press de banca cuando no hay banco disponible; evitar en cirugía torácica/mamaria reciente.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Step-up al cajón de pliometría', grupoMuscular:'Piernas', material:'Cajón de pliometría',
+    descripcion:'Subir al cajón de pliometría con una pierna, apoyar el pie completo y extender la cadera arriba; bajar controlando el movimiento.',
+    precauciones:'Evitar en fascitis plantar activa o inestabilidad de rodilla; reducir altura del cajón si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Step-up alterno al cajón', grupoMuscular:'Piernas', material:'Cajón de pliometría',
+    descripcion:'Igual que el step-up al cajón, alternando la pierna que sube en cada repetición sin pausa entre lados.',
+    precauciones:'Evitar en fascitis plantar activa o inestabilidad de rodilla; reducir altura del cajón si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Curl de bíceps con barra Z', grupoMuscular:'Brazo', material:'Barra Z',
+    descripcion:'Curl de bíceps con barra Z, agarre en la zona angulada para reducir la tensión en la muñeca frente a la barra recta.',
+    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Press militar con barra Z', grupoMuscular:'Hombro', material:'Barra Z',
+    descripcion:'Press de hombro de pie o sentada empujando la barra Z desde la altura de los hombros hasta la extensión completa de brazos.',
+    precauciones:'Reducir carga o rango en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Extensión de tríceps tumbada con barra Z (Skull Crusher)', grupoMuscular:'Brazo', material:'Barra Z',
+    descripcion:'Tumbada, bajar la barra Z hacia la frente flexionando solo el codo y volver a extender.',
+    precauciones:'Codos fijos y peso ligero al principio; evitar en molestias de codo.', zonasRiesgo:'codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo con barra Z', grupoMuscular:'Espalda', material:'Barra Z',
+    descripcion:'Con el tronco inclinado hacia delante y espalda recta, tirar de la barra Z hacia el abdomen.',
+    precauciones:'Evitar en molestias lumbares agudas; mantener espalda neutra.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla con barra Z', grupoMuscular:'Piernas', material:'Barra Z',
+    descripcion:'Sentadilla con la barra Z apoyada sobre los trapecios, como una sentadilla con barra convencional pero con menos carga.',
+    precauciones:'Peso ligero mientras se aprende la técnica; vigilar profundidad y alineación de rodilla.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla sumo con mancuerna', grupoMuscular:'Piernas / Cadera', material:'Mancuernas',
+    descripcion:'Sentadilla con pies muy separados y puntas hacia fuera, sujetando una mancuerna con ambas manos entre las piernas.',
+    precauciones:'', zonasRiesgo:'cadera, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión inclinada apoyando las manos en el cajón', grupoMuscular:'Pecho / Core', material:'Cajón de pliometría, Peso corporal',
+    descripcion:'Flexión de brazos con las manos apoyadas en el cajón en vez de en el suelo, reduciendo la exigencia respecto a una flexión estándar.',
+    precauciones:'Cuanto más alto el apoyo, más fácil; bajar la altura del cajón según progrese la fuerza.', zonasRiesgo:'hombro, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo a una mano con mancuerna apoyada en el cajón', grupoMuscular:'Espalda', material:'Mancuernas, Cajón de pliometría',
+    descripcion:'Igual que el remo a una mano con mancuerna en banco, usando el cajón de pliometría como apoyo cuando no hay banco disponible.',
+    precauciones:'Cuidado con molestias de hombro en el brazo que rema.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Elevación de cadera con pies en el cajón (Hip Thrust pies elevados)', grupoMuscular:'Glúteo', material:'Cajón de pliometría, Peso corporal',
+    descripcion:'Tumbada con la espalda alta apoyada en el suelo y los pies sobre el cajón, elevar la cadera contrayendo el glúteo.',
+    precauciones:'Alternativa segura al peso muerto para trabajar cadena posterior sin flexión lumbar cargada.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Russian Twist con mancuerna', grupoMuscular:'Core', material:'Mancuernas',
+    descripcion:'Sentada con el tronco inclinado hacia atrás y pies ligeramente elevados, rotar el tronco de lado a lado sujetando una mancuerna.',
+    precauciones:'Peso ligero o sin peso al principio; evitar en molestias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' }
 ];
 
 // ---------- Semillas de programas (planes diseñados fuera de la app, para auto-cargarse una sola vez) ----------
@@ -2768,26 +2810,26 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Superman Hold", series:"3", reps:"18s", descanso:"60s", notas:"Rango pequeño, sin rebote."}
     ]
   }},
-  { cliente:"Inma Next", numero:1, revision:1, dias:{
+  { cliente:"Inma Next", numero:1, revision:2, dias:{
     A:[
       {nombre:"Goblet Squat con mancuerna", series:"3", reps:"12", descanso:"60s", notas:"Bajar solo hasta donde la técnica sea limpia; profundidad parcial si hace falta."},
       {nombre:"Press de pecho en suelo con mancuernas (Floor Press)", series:"3", reps:"10", descanso:"60s", notas:"Sin banco: tumbada en el suelo, codos apoyando al final del recorrido."},
       {nombre:"Step-up al cajón de pliometría", series:"3", reps:"10/lado", descanso:"60s", notas:"Altura del cajón baja al principio; subir sin impulso, controlando la bajada."},
       {nombre:"Curl de bíceps con barra Z", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Plancha frontal (rodillas si hace falta)", series:"3", reps:"20s", descanso:"45s", notas:"Empezar con apoyo de rodillas si la plancha completa es muy exigente."},
+      {nombre:"Plancha frontal", series:"3", reps:"20s", descanso:"45s", notas:"Empezar con apoyo de rodillas si la plancha completa es muy exigente."},
       {nombre:"Elevaciones laterales con mancuernas", series:"3", reps:"12", descanso:"45s", notas:"Peso ligero, sin balanceo del tronco."},
       {nombre:"Puente de glúteo", series:"3", reps:"15", descanso:"45s", notas:""},
-      {nombre:"Marcha con rodilla alta en el sitio (step jacks)", series:"3", reps:"30s", descanso:"30s", notas:"Cardio de bajo impacto, sin salto."}
+      {nombre:"Marcha con elevación de rodillas", series:"3", reps:"30s", descanso:"30s", notas:"Cardio de bajo impacto, sin salto."}
     ],
     B:[
       {nombre:"Remo a una mano con mancuerna apoyada en el cajón", series:"3", reps:"10/lado", descanso:"60s", notas:"El cajón hace de apoyo en lugar de banco."},
-      {nombre:"Zancada estática con mancuernas", series:"3", reps:"10/lado", descanso:"60s", notas:"Rango cómodo, sin forzar la rodilla delantera más allá de la punta del pie."},
+      {nombre:"Zancada con mancuernas", series:"3", reps:"10/lado", descanso:"60s", notas:"Rango cómodo, sin forzar la rodilla delantera más allá de la punta del pie."},
       {nombre:"Press militar con barra Z", series:"3", reps:"10", descanso:"60s", notas:""},
       {nombre:"Elevación de cadera con pies en el cajón (Hip Thrust pies elevados)", series:"3", reps:"12", descanso:"60s", notas:"Espalda alta apoyada en el suelo, pies sobre el cajón."},
       {nombre:"Extensión de tríceps tumbada con barra Z (Skull Crusher)", series:"3", reps:"12", descanso:"45s", notas:"Codos fijos, peso ligero al principio."},
       {nombre:"Dead Bug", series:"3", reps:"10/lado", descanso:"45s", notas:"Controlar la zona lumbar pegada al suelo."},
       {nombre:"Sentadilla sumo con mancuerna", series:"3", reps:"12", descanso:"60s", notas:""},
-      {nombre:"Plancha lateral con apoyo de rodilla", series:"3", reps:"20s/lado", descanso:"45s", notas:"Subir a plancha lateral completa cuando la versión con rodilla sea cómoda."}
+      {nombre:"Plancha lateral", series:"3", reps:"20s/lado", descanso:"45s", notas:"Empezar con apoyo de rodilla si la plancha lateral completa es muy exigente."}
     ],
     C:[
       {nombre:"Sentadilla con barra Z", series:"3", reps:"10", descanso:"60s", notas:"Barra sobre los trapecios, peso ligero para aprender la técnica."},
@@ -2796,8 +2838,8 @@ const DEFAULT_PROGRAMS_SEED = [
       {nombre:"Curl martillo con mancuernas", series:"3", reps:"12", descanso:"45s", notas:""},
       {nombre:"Remo con barra Z", series:"3", reps:"12", descanso:"60s", notas:"Espalda recta, tirar hacia el abdomen."},
       {nombre:"Russian Twist con mancuerna", series:"3", reps:"10/lado", descanso:"45s", notas:"Peso ligero o sin peso al principio."},
-      {nombre:"Sentadilla isométrica en la pared (Wall Sit)", series:"3", reps:"25s", descanso:"45s", notas:""},
-      {nombre:"Escalador (Mountain Climber) ritmo controlado", series:"3", reps:"20s", descanso:"30s", notas:"Ritmo suave, sin prisa; priorizar técnica sobre velocidad dado el nivel de forma inicial."}
+      {nombre:"Wall Sit", series:"3", reps:"25s", descanso:"45s", notas:""},
+      {nombre:"Mountain Climber", series:"3", reps:"20s", descanso:"30s", notas:"Ritmo suave, sin prisa; priorizar técnica sobre velocidad dado el nivel de forma inicial."}
     ]
   }}
 ];
@@ -2839,7 +2881,7 @@ function aplicarSemillasDePrograma(){
   }
 }
 
-const APP_VERSION = '2026-09-13-2';
+const APP_VERSION = '2026-09-22-1';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
