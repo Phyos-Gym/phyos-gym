@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest-cliente.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#181420">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -329,12 +329,178 @@ function clientsWithUpcomingAviso(){
 }
 
 const RAW_CLIENTS = [
+{nombre:"Alba Polo", pareja:"Nacho Andrés",
+ diagnostico:"No", medicacion:"No", lesionOperacion:"No — bruxismo mencionado", evitar:"Sí — hipertono (evitar ejercicios que lo aumenten)", sintomas:"Ninguno marcado", revision:"Hace 3 meses",
+ altura:"156 cm", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio y baile", nivelForma:"Bajo", estres:"Medio", sueno:"Bueno (8 h)", alimentacion:"No especificada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación", zona:"Brazos y cuerpo en general", dias:"1", preferencia:"Gimnasio",
+ notas:"Evitar tempos explosivos por hipertonía. Entrena en pareja con Nacho Andrés.", fechaInicio:"2026-07-01"},
+{nombre:"Nacho Andrés", pareja:"Alba Polo",
+ diagnostico:"No", medicacion:"No", lesionOperacion:"No especificada", evitar:"Brazo derecho (restricción actual). Nota: el 'meñique' del cuestionario era del pie y es lesión pasada ya resuelta, no restricción vigente.", sintomas:"Ninguno marcado", revision:"Mayo",
+ altura:"172 cm", pesoActual:"70 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Bajo", estres:"Bajo", sueno:"Bueno (8 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación", zona:"Espalda, brazos y general", dias:"1 (quizás 2)", preferencia:"Gimnasio",
+ notas:"Adaptar agarres por restricción de brazo derecho. Entrena en pareja con Alba Polo.", fechaInicio:"2026-07-01"},
+{nombre:"Alfonso Pueyo", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí (zona y fecha no especificadas)", evitar:"Autoprohibición personal (no indicación médica) por sensaciones propias", sintomas:"Ninguno marcado", revision:"Principio de año, todo correcto",
+ altura:"179 cm", pesoActual:"66 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio y cardio", nivelForma:"Bueno", estres:"Alto", sueno:"Regular (5–6 h)", alimentacion:"Celíaco, intolerante a la fructosa", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación, rehabilitación (hombro/escápula)", zona:"No especificado", dias:"1", preferencia:"Gimnasio + combinado (también aire libre)",
+ notas:"Foco en rehabilitación de hombro/escápula.", fechaInicio:"2026-07-01"},
+{nombre:"Amparo Such", pareja:null,
+ diagnostico:"Sí — osteoporosis", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Osteopenia/osteoporosis", revision:"No especificada",
+ altura:"1,64 m", pesoActual:"59 kg", pesoDeseado:"58 kg", ejercicioRegular:"Sí — andar y bici estática a diario, pilates 1x/sem, natación 1x/sem", nivelForma:"Medio", estres:"Bajo", sueno:"No especificado", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular", zona:"Espalda, abdominal y brazos", dias:"1", preferencia:"Combinado",
+ notas:"Osteoporosis: evitar cargas de impacto alto y flexión espinal brusca.", activo:false, fechaInicio:"2026-06-15"},
+{nombre:"Benito Muñoz", pareja:null,
+ diagnostico:"Sí — 2 stents en el corazón, próstata extirpada", medicacion:"Sí — Miapresín, Micardis, Adiro (tensión); riñón con problema", lesionOperacion:"Sí — muñeca izquierda", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 1 mes (control de riñón)",
+ altura:"175 cm", pesoActual:"82 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — poco", nivelForma:"Bajo", estres:"Bajo", sueno:"Bueno (6 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Ganancia muscular, tonificación", zona:"General", dias:"1", preferencia:"Combinado",
+ notas:"Precaución cardiovascular (2 stents): controlar intensidad, evitar Valsalva. Adaptar agarre por muñeca izquierda.", fechaInicio:"2026-07-01"},
+{nombre:"Carmen Villarroya", pareja:"Concepción Soriano",
+ diagnostico:"No", medicacion:"Sí — colesterol, tensión alta, azúcar", lesionOperacion:"Sí — ostomía (bolsa), hernia abdominal, divertículos", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 2 meses, todo bien",
+ altura:"150 cm", pesoActual:"49 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — fuerza con propio peso, andar 1h/día", nivelForma:"Medio", estres:"Bajo", sueno:"Regular — 1/2 pastilla (6h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, salud general", zona:"General", dias:"1", preferencia:"Combinado",
+ notas:"Evitar presión intraabdominal alta por ostomía/hernia (sin Valsalva, sin flexión abdominal fuerte).", fechaInicio:"2026-07-01"},
+{nombre:"Concepción Soriano", pareja:"Carmen Villarroya",
+ diagnostico:"Sí — sepsis (infección), operación lumbar sin fijación", medicacion:"Sí — tensión (algo alta) y Sintrón", lesionOperacion:"No", evitar:"No", sintomas:"Falta de aire; problemas de estabilidad", revision:"Cada 4 meses, todo bien",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Muy bajo", estres:"Bajo", sueno:"Bueno (7 h)", alimentacion:"No especificada", fumaAlcohol:"No",
+ principal:"Pérdida de peso, mayor estabilidad", zona:"No especificado", dias:"2", preferencia:"Gimnasio",
+ notas:"Sintrón (anticoagulante): evitar golpes/caídas. Priorizar equilibrio con apoyo.", fechaInicio:"2026-07-01"},
+{nombre:"Benito Balado", pareja:"Conchi Lucas",
+ diagnostico:"No (colesterol mencionado)", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Ninguno marcado", revision:"Abril — tensión alta a veces",
+ altura:"173 cm", pesoActual:"75 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio 3 días/semana", nivelForma:"Bajo", estres:"Bajo", sueno:"Regular (6–7 h)", alimentacion:"Irregular", fumaAlcohol:"No — ocasionalmente",
+ principal:"Ganancia muscular", zona:"General", dias:"1", preferencia:"Combinado", notas:"", fechaInicio:"2026-07-01"},
+{nombre:"Conchi Lucas", pareja:"Benito Balado",
+ diagnostico:"Sí — colesterol", medicacion:"Sí — omega 3, cúrcuma", lesionOperacion:"Sí — escoliosis de grado alto; cervicales (mareos)", evitar:"No", sintomas:"Mareos asociados a cervicales", revision:"Hace 1 mes — vitamina D y colesterol",
+ altura:"165 cm", pesoActual:"82 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — pilates 2 veces/semana", nivelForma:"Bajo", estres:"Alto", sueno:"Malo", alimentacion:"No especificada", fumaAlcohol:"No",
+ principal:"Salud general", zona:"General", dias:"1", preferencia:"Combinado",
+ notas:"Cuidado con movimientos cervicales bruscos y cambios rápidos de posición por mareos.", fechaInicio:"2026-07-01"},
+{nombre:"Cristina del Valle", pareja:null,
+ diagnostico:"Sí — leve desviación levoconvexa del raquis torácico (escoliosis)", medicacion:"Sí — tetrazepam, etoricoxib, lansoprazol", lesionOperacion:"Sí — operación de explantación de prótesis mamarias (11/3/2026)", evitar:"No", sintomas:"Dolor en el pecho", revision:"Últimos meses — varias analíticas y radiografía",
+ altura:"170 cm", pesoActual:"58 kg", pesoDeseado:"No especificado", ejercicioRegular:"No — solo caminar 6–7 km/día", nivelForma:"Muy bajo", estres:"Alto", sueno:"Bueno", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación, salud general, rehabilitación", zona:"De cintura para arriba, todo", dias:"2", preferencia:"Combinado",
+ notas:"Excluir carga directa en pecho por cirugía reciente. Trabajar postura por escoliosis torácica. Asistencia en ejercicios de equilibrio.", fechaInicio:"2026-07-01"},
+{nombre:"Daniel Barcelona", pareja:null,
+ diagnostico:"Sí — ictus hace 18 años, prótesis de cadera izquierda, diabetes tipo 2", medicacion:"Sí — para diabetes, Plavix, enalapril, pantoprazol, Sinjardi", lesionOperacion:"Sí — cadera", evitar:"Sí — cruzar la pierna, por la prótesis de cadera", sintomas:"Ninguno marcado", revision:"Hace 15 días, todo bien",
+ altura:"170 cm", pesoActual:"89 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Muy bajo", estres:"Bajo", sueno:"Regular (5–6 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Otro — mejorar tras el ictus, mantener y fortalecer piernas", zona:"No especificado", dias:"1", preferencia:"Gimnasio",
+ notas:"No cruzar la pierna. Vigilar equilibrio/coordinación por secuela de ictus.", activo:false, fechaInicio:"2026-10-01", pendienteInicio:true, avisoDias:15},
+{nombre:"M. Jesús Salvador", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — escoliosis (11mm diferencia entre piernas), hernia cervical C4-C5, propensa a esguinces, fractura previa 5º metatarsiano", evitar:"No", sintomas:"Ninguno marcado", revision:"No especificada — colesterol en el límite",
+ altura:"168 cm", pesoActual:"84 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — pilates 1 vez/semana", nivelForma:"Bajo", estres:"Medio", sueno:"Regular (7 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, ganancia muscular, tonificación", zona:"General", dias:"1", preferencia:"Combinado",
+ notas:"Cuidado cervical (hernia C4-C5): evitar cargas axiales altas en cuello. Estabilidad de tobillo por esguinces/fractura previa.", fechaInicio:"2026-07-01"},
+{nombre:"Marisa Flores", pareja:null,
+ diagnostico:"Sí — colesterol, síndrome de colon irritable, divertículos", medicacion:"Sí — probióticos, simvastatina, espasmoctil", lesionOperacion:"Sí — glúteo menor y medio, troquíter, endometriosis", evitar:"Sí — giros de pierna abiertos", sintomas:"Mareos; acúfenos", revision:"Hace 3–4 meses — todo bien excepto colesterol",
+ altura:"165 cm", pesoActual:"66 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Medio", estres:"Alto", sueno:"Malo — se despierta muchas veces (6h intermitente)", alimentacion:"Exceso de azúcar/grasas", fumaAlcohol:"No — ocasionalmente",
+ principal:"Otro — agilidad y salud general", zona:"Glúteo (lesión)", dias:"1", preferencia:"Combinado",
+ notas:"Evitar giros de pierna abiertos. Cuidado con lesión de glúteo medio/menor y troquíter. Deja el gimnasio en septiembre: no volverá, no reactivar.", activo:false, fechaInicio:"2026-08-01", pendienteInicio:true, pausaInicio:"2026-09-01", pausaFin:""},
+{nombre:"Esther Ballestero", pareja:"Miriam Ballestero",
+ diagnostico:"Sí — hipotiroidismo autoinmune", medicacion:"Sí — Eutirox 75 mg", lesionOperacion:"No", evitar:"No", sintomas:"Problemas de tensión arterial", revision:"Marzo 2026",
+ altura:"163 cm", pesoActual:"47 kg", pesoDeseado:"50 kg", ejercicioRegular:"Sí — caminar 3 veces/semana, 6 km en 1h", nivelForma:"Bajo", estres:"Alto", sueno:"Regular", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Tonificación, salud general", zona:"Extremidades", dias:"2", preferencia:"Gimnasio + casa + aire libre", notas:"", activo:false, fechaInicio:"2026-09-01", pendienteInicio:true},
+{nombre:"Miriam Ballestero", pareja:"Esther Ballestero",
+ diagnostico:"No", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Ninguno marcado", revision:"Agosto",
+ altura:"169 cm", pesoActual:"51 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Medio", estres:"Alto", sueno:"Regular (7 h)", alimentacion:"No especificada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación — fortalecer", zona:"General", dias:"1", preferencia:"Combinado", notas:"", activo:false, fechaInicio:"2026-09-01", pendienteInicio:true},
+{nombre:"Pilar Cloux", pareja:null,
+ diagnostico:"Sí — escoliosis y cifosis, migrañas", medicacion:"Sí — Engaliti (migraña)", lesionOperacion:"Sí — clavícula mal soldada", evitar:"No", sintomas:"Ninguno marcado", revision:"Diciembre",
+ altura:"156 cm", pesoActual:"62 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Muy bajo", estres:"Alto", sueno:"Malo (4–5 h)", alimentacion:"Excesos por estrés", fumaAlcohol:"No",
+ principal:"Pérdida de peso, ganancia muscular, tonificación", zona:"Espalda y core (bloque actual) — tren inferior de fondo", dias:"3", preferencia:"Gimnasio / casa",
+ notas:"Evitar carga directa sobre clavícula mal soldada: nunca apoyo en manos extendidas ni presión directa de hombro — toda plancha se hace en antebrazos. Trabajo postural por escoliosis/cifosis con rango pequeño y controlado. Retoma actividad el 2026-09-01 tras la pausa: bloque de 4 semanas, 3 días/semana, 100% peso corporal, foco en espalda y core.", fechaInicio:"2026-07-01", activo:true, pausaFin:"2026-09-01"},
+{nombre:"Puri Villarroya", pareja:null,
+ diagnostico:"Sí — hipotiroidismo y abdominoplastia", medicacion:"Sí — Eutirox", lesionOperacion:"Sí (zona y fecha no especificadas)", evitar:"No", sintomas:"Ninguno marcado", revision:"Una vez al año",
+ altura:"167 cm", pesoActual:"64 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — baile y espalda sana integral", nivelForma:"Medio", estres:"Bajo", sueno:"Bueno (8 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, ganancia muscular, tonificación", zona:"Espalda y suelo pélvico", dias:"1", preferencia:"Gimnasio",
+ notas:"Core enfocado a estabilización (no flexión abdominal directa) por abdominoplastia. Prioridad suelo pélvico.", fechaInicio:"2026-07-01", pausaInicio:"2026-08-01", pausaFin:"2026-09-15"},
+{nombre:"Raquel Clemente", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Ninguno marcado", revision:"No especificada",
+ altura:"157 cm", pesoActual:"54 kg", pesoDeseado:"51 kg", ejercicioRegular:"No", nivelForma:"Bajo", estres:"Alto", sueno:"Regular", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Pérdida de peso, ganancia muscular", zona:"Espalda, brazos y piernas", dias:"1", preferencia:"Combinado", notas:"", activo:false, fechaInicio:"2026-07-01"},
+{nombre:"Ricardo Mosteo", pareja:null,
+ diagnostico:"Sí — obesidad (bajó de 133kg a 103kg)", medicacion:"Sí — Monjaro", lesionOperacion:"No", evitar:"No", sintomas:"Mareos", revision:"Hace un año (diciembre)",
+ altura:"190 cm", pesoActual:"103 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — 10km diarios y pesas", nivelForma:"Medio", estres:"Alto", sueno:"Bueno (7 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Pérdida de peso, ganancia muscular, tonificación, salud general", zona:"General", dias:"1", preferencia:"Combinado",
+ notas:"Vigilar mareos; progresar carga articular con cautela por peso corporal elevado.", fechaInicio:"2026-07-01"},
+{nombre:"Silvia Martín", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — fascitis plantar, posibles hernias lumbares", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 1 mes — colesterol un poco alto",
+ altura:"168 cm", pesoActual:"73 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Bajo", estres:"Alto", sueno:"Regular (5–6 h)", alimentacion:"Exceso de azúcar/grasas", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, ganancia muscular", zona:"Core", dias:"1", preferencia:"Gimnasio",
+ notas:"Evitar impacto alto por fascitis plantar. Cuidado lumbar.", activo:false, fechaInicio:"2026-09-01", pendienteInicio:true},
+{nombre:"Fernando Belenchón", pareja:null,
+ diagnostico:"Sí — hipertensión, apnea del sueño", medicacion:"Sí — para la tensión", lesionOperacion:"Sí — 3 hernias en zona lumbosacra", evitar:"No (evitar los propios de la hernia)", sintomas:"Ninguno marcado", revision:"Hace 6 meses — hiperplasia de próstata",
+ altura:"173 cm", pesoActual:"81 kg", pesoDeseado:"No especificado", ejercicioRegular:"No — algo de pilates", nivelForma:"Bueno", estres:"Medio", sueno:"Bueno con CPAP (8 h)", alimentacion:"No especificada — toma chocolate 70%", fumaAlcohol:"No — ocasionalmente",
+ principal:"Rehabilitación — reducir dolores de espalda (cifosis)", zona:"Espalda — cifosis", dias:"1", preferencia:"Gimnasio",
+ notas:"Evitar flexión lumbar cargada por hernias. Foco en corrección de cifosis.", fechaInicio:"2026-07-01"},
+{nombre:"Aroa Torrijos", pareja:null,
+ diagnostico:"Sí — SIBO, hipotiroidismo, bruxismo, cefaleas ocasionales", medicacion:"No especificado", lesionOperacion:"Sí — fractura de peroné (hace 1 año, curada), hiperlordosis lumbar, hombros adelantados", evitar:"No", sintomas:"Ninguno marcado", revision:"No especificada",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Bajo", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, ganancia muscular, tonificación, salud general", zona:"Espalda y core", dias:"1", preferencia:"Gimnasio",
+ notas:"Principiante retomando actividad. Corrección de hiperlordosis lumbar y hombros adelantados. Vigilar tobillo (fractura de peroné curada).", fechaInicio:"2026-07-01"},
+{nombre:"Elena Edo", pareja:null,
+ diagnostico:"", medicacion:"", lesionOperacion:"", evitar:"", sintomas:"", revision:"",
+ altura:"", pesoActual:"", pesoDeseado:"", ejercicioRegular:"", nivelForma:"", estres:"", sueno:"", alimentacion:"", fumaAlcohol:"",
+ principal:"", zona:"", dias:"", preferencia:"",
+ notas:"Ficha pendiente de completar con el cuestionario inicial.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Angelita", pareja:null,
+ diagnostico:"", medicacion:"", lesionOperacion:"", evitar:"", sintomas:"", revision:"",
+ altura:"", pesoActual:"", pesoDeseado:"", ejercicioRegular:"", nivelForma:"", estres:"", sueno:"", alimentacion:"", fumaAlcohol:"",
+ principal:"", zona:"", dias:"", preferencia:"",
+ notas:"Ficha pendiente de completar con el cuestionario inicial (apellido por confirmar).", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Pilar Pérez", pareja:null,
+ diagnostico:"No", medicacion:"Sí — hipertensión, colesterol, tiroides", lesionOperacion:"Sí — prótesis cadera derecha, prótesis rodilla derecha, hernia discal L4-L5, desgaste vertebral, hernia inguinal, matriz y ovario extirpados", evitar:"No", sintomas:"Dolor articular", revision:"Febrero — todo bien",
+ altura:"165 cm", pesoActual:"70 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — entrenamiento personal", nivelForma:"Medio", estres:"Alto", sueno:"Malo (4 h)", alimentacion:"Equilibrada — menciona chocolate", fumaAlcohol:"No — 1 copa de vino diaria",
+ principal:"Pérdida de peso, ganancia muscular", zona:"Tren inferior", dias:"1", preferencia:"Combinado",
+ notas:"Doble prótesis (cadera y rodilla derechas): evitar impacto alto y cargas axiales bruscas en esa pierna. Hernia discal L4-L5 y desgaste vertebral: evitar flexión lumbar cargada. Cliente distinta de Pilar Cloux.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Ascensión Garcés", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — isquio (agujero), cervicales", evitar:"No", sintomas:"Ninguno marcado", revision:"Pendiente de hacerse",
+ altura:"160 cm", pesoActual:"68 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — pilates 2 veces/semana, andar 10 km diarios, fuerza en casa casi todos los días", nivelForma:"Bueno", estres:"Alto", sueno:"Malo (6–7 h)", alimentacion:"No especificada", fumaAlcohol:"No — ocasionalmente",
+ principal:"Pérdida de peso, tonificación, salud general", zona:"Core", dias:"5 o más", preferencia:"Combinado",
+ notas:"Cuidado con la zona de isquio (agujero) y cervicales.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Amanda Monleón", pareja:null,
+ diagnostico:"Sí — ansiedad, intestino irritable", medicacion:"No", lesionOperacion:"Sí — rodillas", evitar:"No", sintomas:"Mareos, falta de aire", revision:"Hace 1 año — todo ok",
+ altura:"165 cm", pesoActual:"49 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio por su cuenta", nivelForma:"Muy bajo", estres:"Alto", sueno:"Malo (6 h)", alimentacion:"Irregular", fumaAlcohol:"Sí — alcohol ocasionalmente",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"Rodillas, espalda, tren inferior, cervicales y brazos", dias:"1", preferencia:"Combinado",
+ notas:"Cuidado con rodillas y cervicales. Vigilar mareos/falta de aire durante el esfuerzo; progresar despacio dado el nivel de forma muy bajo.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"María Prades", pareja:null,
+ diagnostico:"Sí — hernia inguinal, discapacidad física e intelectual, meningitis de nacimiento", medicacion:"No", lesionOperacion:"No", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 3 meses — todo bien",
+ altura:"158 cm", pesoActual:"54 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — bici estática y andar", nivelForma:"Bajo", estres:"Medio", sueno:"Regular (7 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular", zona:"Mejorar lado izquierdo", dias:"1 cada 15 días", preferencia:"Gimnasio",
+ notas:"Discapacidad física e intelectual (meningitis de nacimiento): instrucciones simples y claras, apoyo verbal constante. Hernia inguinal: evitar presión intraabdominal alta. Prioridad en trabajo de lado izquierdo.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Miguel Izquierdo", pareja:null,
+ diagnostico:"Sí — hipertensión, diabetes tipo 2", medicacion:"Sí — para diabetes y tensión", lesionOperacion:"Sí — rodilla izquierda (ligamentos muy dañados), ciática ocasional", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 1 año",
+ altura:"178 cm", pesoActual:"82 kg", pesoDeseado:"No especificado", ejercicioRegular:"No", nivelForma:"Medio", estres:"Alto", sueno:"Bueno (6 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"Cuerpo en general", dias:"2", preferencia:"Gimnasio",
+ notas:"Rodilla izquierda con ligamentos muy dañados: evitar cargas de impacto o rotación brusca sobre esa rodilla. Ciática ocasional: vigilar ejercicios de flexión lumbar cargada. Diabetes e hipertensión: progresar con cuidado la intensidad cardiovascular.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Emma Doñate", pareja:null,
+ diagnostico:"No", medicacion:"No — menciona migrañas", lesionOperacion:"Sí — fijación lumbar L3, L4, L5, S1", evitar:"No", sintomas:"Ninguno marcado", revision:"No especificada",
+ altura:"170 cm", pesoActual:"67 kg", pesoDeseado:"No especificado", ejercicioRegular:"No — piscina ocasional", nivelForma:"Muy bajo", estres:"Bajo", sueno:"Bueno (8 h)", alimentacion:"Equilibrada", fumaAlcohol:"Sí — medio paquete y alcohol ocasionalmente",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"Cuerpo en general", dias:"2", preferencia:"Gimnasio",
+ notas:"Fijación lumbar L3-L4-L5-S1: evitar flexión/extensión lumbar cargada y movimientos de impacto o rotación brusca de columna. Nivel de forma física muy bajo: progresar despacio.", activo:true, fechaInicio:"2026-07-01"},
+{nombre:"Mai", pareja:null,
+ diagnostico:"No", medicacion:"No", lesionOperacion:"Sí — rotura de LCA en rodilla derecha (antigua) y de menisco en rodilla izquierda (antigua)", evitar:"No", sintomas:"Ninguno marcado", revision:"Hace 1 año — todo ok",
+ altura:"168 cm", pesoActual:"58 kg", pesoDeseado:"No especificado", ejercicioRegular:"Sí — gimnasio 3 veces/semana", nivelForma:"Bueno", estres:"Medio", sueno:"Bueno (7–8 h)", alimentacion:"Equilibrada", fumaAlcohol:"No",
+ principal:"Ganancia muscular, tonificación, salud general", zona:"No especificada", dias:"3", preferencia:"Combinado",
+ notas:"Antecedentes de LCA (rodilla derecha) y menisco (rodilla izquierda), ambas lesiones antiguas y sin limitación funcional actual ni restricción médica: puede hacer cualquier ejercicio, pero vigilar cargas de impacto alto y rotación brusca en ambas rodillas. Buen nivel de forma física de partida (ya entrena 3x/semana).", activo:true, fechaInicio:"2026-08-28"},
 {nombre:"Maite", pareja:null,
  diagnostico:"Sí — artrosis en ambas rodillas (origen genético)", medicacion:"No especificado", lesionOperacion:"Sí — operada de LCA en una rodilla y de menisco en la otra (ambas antiguas)", evitar:"No — sin indicación médica de evitar ejercicios; puede realizar todo tipo de entrenamiento, antecedentes a tener en cuenta pero sin limitación funcional", sintomas:"Ninguno marcado", revision:"No especificada",
  altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No especificado", nivelForma:"No especificado", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
  principal:"Conseguir hacer una dominada estricta sin asistencia (progresión motivacional a medio/largo plazo)", zona:"Glúteo (sin hip thrust, no le gusta)", dias:"3", preferencia:"Full body",
- notas:"Artrosis en ambas rodillas (origen genético) y antecedentes de cirugía de LCA (una rodilla) y menisco (la otra), ambas antiguas: tomar solo como antecedente, sin limitación funcional actual, puede hacer todo tipo de ejercicio con normalidad. Objetivo central y motivacional: progresión hacia la dominada estricta sin asistencia, sabiendo que no se conseguirá en una semana. Incluir trabajo de glúteo en las sesiones, nunca hip thrust (no le gusta). Full body, 3 días/semana, 40 años.", activo:true, fechaInicio:"2026-08-28"}
-]; // Versión para clientes: solo Maite, sin datos de otros clientes por privacidad
+ notas:"Artrosis en ambas rodillas (origen genético) y antecedentes de cirugía de LCA (una rodilla) y menisco (la otra), ambas antiguas: tomar solo como antecedente, sin limitación funcional actual, puede hacer todo tipo de ejercicio con normalidad. Objetivo central y motivacional: progresión hacia la dominada estricta sin asistencia, sabiendo que no se conseguirá en una semana. Incluir trabajo de glúteo en las sesiones, nunca hip thrust (no le gusta). Desde el 08/09/2026: eliminar de forma permanente los ejercicios de glúteo o pierna con banda elástica, banda circular o miniband (usar en su lugar mancuerna, kettlebell, polea, plataforma inestable, aro de pilates, bola blanda o peso corporal). Su gimnasio no dispone de landmine: no usar ningún ejercicio con ese material (sustituir por mancuerna, kettlebell, polea, barra olímpica o aro de pilates). Full body, 3 días/semana, 40 años.", activo:true, fechaInicio:"2026-08-28"},
+{nombre:"Jimmy", pareja:"Cris",
+ diagnostico:"No especificado", medicacion:"No especificado", lesionOperacion:"Sí — lesión de muñeca que limita mucho el movimiento", evitar:"Sí — apoyos de muñeca y carga en flexión/extensión de muñeca", sintomas:"No especificado", revision:"No especificada",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No — mucho tiempo sin hacer deporte", nivelForma:"Muy bajo", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
+ principal:"Retomar la actividad física, salud general", zona:"Cuerpo en general", dias:"No especificado", preferencia:"Casa — solo peso corporal",
+ notas:"Pareja de 35 años, entrena en casa sin material, solo con el propio peso corporal. Sesiones de 30-40 minutos (no las sesiones estándar de 60 min). Lesión de muñeca: evitar apoyos de muñeca en carga (flexiones, plancha, cuadrupedia) — usar puños, antebrazos o variantes sin apoyo de mano. Mucho tiempo sin entrenar: progresión muy gradual. Entrena en pareja con Cris.", activo:true, fechaInicio:"2026-09-13"},
+{nombre:"Cris", pareja:"Jimmy",
+ diagnostico:"No especificado", medicacion:"No especificado", lesionOperacion:"No especificada", evitar:"No especificado", sintomas:"No especificado", revision:"No especificada",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"No — mucho tiempo sin hacer deporte", nivelForma:"Muy bajo", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
+ principal:"Retomar la actividad física, salud general", zona:"Cuerpo en general", dias:"No especificado", preferencia:"Casa — solo peso corporal",
+ notas:"Pareja de 35 años, entrena en casa sin material, solo con el propio peso corporal. Sesiones de 30-40 minutos (no las sesiones estándar de 60 min). Mucho tiempo sin entrenar: progresión muy gradual. Entrena en pareja con Jimmy, que tiene lesión de muñeca (adaptar ejercicios en pareja que impliquen apoyo de manos).", activo:true, fechaInicio:"2026-09-13"},
+{nombre:"Inma Next", pareja:null,
+ diagnostico:"No especificado", medicacion:"No especificado", lesionOperacion:"No especificada", evitar:"No especificado", sintomas:"No especificado", revision:"No especificada",
+ altura:"No especificada", pesoActual:"No especificado", pesoDeseado:"No especificado", ejercicioRegular:"Sí — camina todos los días; por lo demás, poco activa", nivelForma:"Bajo", estres:"No especificado", sueno:"No especificado", alimentacion:"No especificada", fumaAlcohol:"No especificado",
+ principal:"Pérdida de peso", zona:"General", dias:"No especificado", preferencia:"Casa — gimnasio propio con material limitado",
+ notas:"Mujer de 50 años, con sobrepeso y poco activa (aparte de caminar a diario), empezando su rutina. Entrena en su gimnasio de casa: material limitado a cajón de pliometría, mancuernas, peso corporal y barra Z (no tiene el resto del material del centro). Progresión gradual dado el nivel de forma bajo.", activo:true, fechaInicio:"2026-09-13"}
+];
 
 const DEFAULT_CLIENTS = RAW_CLIENTS.map(r=>({
   id: uid(),
@@ -365,7 +531,7 @@ const SALA = {
   ]
 };
 
-const DATA_VERSION = 11;
+const DATA_VERSION = 18;
 
 // Horario semanal tipo, extraído de las capturas del chat "programación de clases y entrenamientos".
 // Es un patrón recurrente de lunes a viernes (se repite igual las semanas 2, 3, 4 y 5 de julio 2026),
@@ -373,12 +539,49 @@ const DATA_VERSION = 11;
 const HORAS_BASE = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];
 const DEFAULT_HORARIO = {
   dias: ['Lunes','Martes','Miércoles','Jueves','Viernes'],
-  horas: ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'],
-  grid: {}, notas: '', excepciones: {}, franjasReservadas: [], notasPorFranja: {}, duracionPorFranja: {}, plantillasFuturas: [], franjasForzadas: []
+  horas: ['08:00','09:00','10:00','11:00','11:30','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'],
+  grid: {
+    'Lunes|08:00':'Oficina','Lunes|09:00':'Oficina','Lunes|10:00':'Pilates VIP','Lunes|11:00':'Pilates VIP 2','Lunes|11:30':'',
+    'Lunes|12:00':'Oficina','Lunes|13:00':'Raquel Clemente','Lunes|14:00':'Oficina','Lunes|15:00':'Oficina','Lunes|16:00':'','Lunes|17:00':'','Lunes|18:00':'','Lunes|19:00':'',
+    'Martes|08:00':'','Martes|09:00':'Oficina','Martes|10:00':'Fernando Belenchón','Martes|11:00':'M. Jesús Salvador','Martes|11:30':'',
+    'Martes|12:00':'Benito Muñoz','Martes|13:00':'Oficina','Martes|14:00':'Oficina','Martes|15:00':'','Martes|16:00':'Alba y Nacho','Martes|17:00':'Oficina','Martes|18:00':'Alfonso Pueyo','Martes|19:00':'',
+    'Miércoles|08:00':'Oficina','Miércoles|09:00':'Aroa Torrijos','Miércoles|10:00':'Pilates VIP','Miércoles|11:00':'Pilates VIP 2','Miércoles|11:30':'',
+    'Miércoles|12:00':'Oficina','Miércoles|13:00':'Concepción y Carmen','Miércoles|14:00':'Ricardo Mosteo','Miércoles|15:00':'Oficina','Miércoles|16:00':'','Miércoles|17:00':'','Miércoles|18:00':'','Miércoles|19:00':'',
+    'Jueves|08:00':'','Jueves|09:00':'Oficina','Jueves|10:00':'Oficina','Jueves|11:00':'Oficina','Jueves|11:30':'',
+    'Jueves|12:00':'Oficina','Jueves|13:00':'Oficina','Jueves|14:00':'Oficina','Jueves|15:00':'','Jueves|16:00':'','Jueves|17:00':'Puri Villarroya','Jueves|18:00':'Conchi y Benito','Jueves|19:00':'Elena Edo',
+    'Viernes|08:00':'','Viernes|09:00':'Oficina','Viernes|10:00':'Pilates VIP','Viernes|11:00':'Pilar Pérez','Viernes|11:30':'',
+    'Viernes|12:00':'Angelita','Viernes|13:00':'Oficina','Viernes|14:00':'Oficina','Viernes|15:00':'','Viernes|16:00':'','Viernes|17:00':'','Viernes|18:00':'','Viernes|19:00':''
+  },
+  notas: '',
+  excepciones: {}, // overrides puntuales por fecha concreta: 'YYYY-MM-DD|HH:MM' -> texto (tiene prioridad sobre el patrón semanal)
+  franjasReservadas: [], // 'YYYY-MM-DD|HH:MM' que deben mostrarse esa semana aunque estén vacías (p.ej. la mitad libre de una hora partida por una entrevista)
+  notasPorFranja: {}, // 'YYYY-MM-DD|HH:MM' -> texto de nota específica de esa franja concreta
+  duracionPorFranja: {}, // 'YYYY-MM-DD|HH:MM' -> duración en minutos, cuando difiere del valor por defecto del tipo (60 min, o 30 para entrevistas)
+  plantillasFuturas: [], // [{desde:'YYYY-MM-DD', grid:{...}}] patrones semanales que entran en vigor a partir de una fecha, sin tocar el patrón actual
+  franjasForzadas: [] // ['fecha|hora',...] excepciones que el entrenador confirmó a propósito, aunque coincidan con un cliente inactivo/pendiente
 };
 
 // Categorías de clase: Funcional, Pilates, y las dos de Pilates VIP ya existentes.
-const DEFAULT_GRUPOS = []; // Versión para clientes: sin grupos del centro
+const DEFAULT_GRUPOS = [
+  { id: uid(), nombre:'Funcional', tipo:'rotativa', horarios:[
+      { id: uid(), dias:['Lunes','Miércoles'], hora:'16:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Lunes','Miércoles'], hora:'17:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Martes','Jueves'], hora:'17:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' }
+  ]},
+  { id: uid(), nombre:'Pilates', tipo:'dirigida', horarios:[
+      { id: uid(), dias:['Lunes','Miércoles'], hora:'18:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Lunes','Miércoles'], hora:'19:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Martes','Jueves'], hora:'10:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Martes','Jueves'], hora:'11:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' },
+      { id: uid(), dias:['Martes','Jueves'], hora:'16:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-09-01' }
+  ]},
+  { id: uid(), nombre:'Pilates VIP', tipo:'dirigida', horarios:[
+      { id: uid(), dias:['Lunes','Miércoles','Viernes'], hora:'10:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-07-01' }
+  ]},
+  { id: uid(), nombre:'Pilates VIP 2', tipo:'dirigida', horarios:[
+      { id: uid(), dias:['Lunes','Miércoles'], hora:'11:00', aforoMaximo:6, inscritos:[], weeks:[], fechaInicio:'2026-07-01' }
+  ]}
+];
 
 // Catálogo inicial de ejercicios (propuesta base) — sin peso muerto, usando el material real disponible.
 // Las imágenes se dejan en blanco a propósito: se añaden después vía URL o subida de archivo.
@@ -395,6 +598,9 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Puente de glúteo con banda', grupoMuscular:'Glúteo', material:'Bandas elásticas',
     descripcion:'Tumbado boca arriba, banda por encima de las rodillas, elevar la cadera separando las rodillas ligeramente.',
     precauciones:'Ejercicio de bajo impacto, apto para niveles bajos de forma física.', zonasRiesgo:'', videoUrl:'', imagenUrl:'ejercicios/Puente%20de%20gl%C3%BAteo%20con%20banda.jpg' },
+  { id: uid(), nombre:'Puente de glúteo', grupoMuscular:'Glúteo / Core', material:'Peso corporal',
+    descripcion:'Tumbado boca arriba con rodillas flexionadas y pies apoyados, elevar la cadera contrayendo el glúteo y bajar con control.',
+    precauciones:'Ejercicio de bajo impacto y muy seguro para la zona lumbar; ideal como base para niveles de forma física muy bajos.', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo en polea sentado', grupoMuscular:'Espalda', material:'Rack de dos poleas',
     descripcion:'Tirar de la polea hacia el abdomen manteniendo la espalda recta, apretando omóplatos al final del recorrido.',
     precauciones:'Controlar el rango si hay antecedentes de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'ejercicios/Remo%20en%20polea%20sentado.jpg' },
@@ -1571,6 +1777,9 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Dominada asistida con banda ligera', grupoMuscular:'Espalda', material:'Barra de dominadas, Bandas elásticas',
     descripcion:'Banda de asistencia ligera anclada en la barra, ofreciendo solo una pequeña ayuda en la tracción.',
     precauciones:'Progresión avanzada, cerca ya de la dominada sin asistencia.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Dominada en máquina de peso asistido', grupoMuscular:'Espalda', material:'Máquina de peso asistido',
+    descripcion:'Máquina guiada con contrapeso seleccionable que asiste el movimiento de dominada: cuanto más peso se selecciona, más ayuda ofrece la máquina para subir.',
+    precauciones:'Ir reduciendo el peso de asistencia de forma progresiva a medida que se gana fuerza, buscando 1-2 repeticiones en reserva en cada serie.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Remo invertido con agarre supino', grupoMuscular:'Espalda / Brazo', material:'Barra de dominadas',
     descripcion:'Remo invertido con las palmas mirando hacia el propio cuerpo, más énfasis en el bíceps.',
     precauciones:'', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
@@ -2166,7 +2375,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Kettlebell Snatch a máxima intensidad', grupoMuscular:'Hombro / Espalda / Piernas', material:'Kettlebell',
     descripcion:'Series de Kettlebell Snatch encadenadas al ritmo más alto posible, alternando de brazo cada pocas repeticiones.',
     precauciones:'Nivel muy avanzado; alta exigencia técnica y cardiovascular combinadas; evitar en molestias de hombro o lumbares.', zonasRiesgo:'hombro, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Complejo de barra: Clean + Front Squat + Push Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Barra olímpica con discos',
+  { id: uid(), nombre:'Complejo de barra. Clean + Front Squat + Push Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Barra olímpica con discos',
     descripcion:'Encadenar sin soltar la barra un clean, una sentadilla frontal y un push press en una sola serie continua, repitiendo el complejo completo.',
     precauciones:'Nivel muy avanzado; combina varios levantamientos técnicos exigentes en una sola serie; evitar en molestias de hombro, rodilla o lumbares.', zonasRiesgo:'hombro, rodilla, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Muscle-Up en anillas adaptado a barra', grupoMuscular:'Espalda / Hombro / Brazo', material:'Barra de dominadas',
@@ -2178,7 +2387,7 @@ const DEFAULT_EXERCISES = [
   { id: uid(), nombre:'Sprint máximo con cambios de dirección', grupoMuscular:'Piernas / Cardio / Potencia', material:'Peso corporal',
     descripcion:'Serie de sprints cortos a máxima velocidad con cambios de dirección bruscos cada pocos metros.',
     precauciones:'Nivel muy avanzado; alto riesgo de lesión sin buen calentamiento previo; no recomendado en molestias de rodilla o tobillo.', zonasRiesgo:'rodilla, tobillo, cadera', videoUrl:'', imagenUrl:'' },
-  { id: uid(), nombre:'Complejo de mancuernas: Clean + Squat + Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Mancuernas',
+  { id: uid(), nombre:'Complejo de mancuernas. Clean + Squat + Press', grupoMuscular:'Cuerpo completo / Potencia', material:'Mancuernas',
     descripcion:'Encadenar sin soltar las mancuernas un clean, una sentadilla y un press por encima de la cabeza, repitiendo el complejo completo sin pausa.',
     precauciones:'Nivel muy avanzado; combina varios patrones exigentes en una sola serie; evitar en molestias de hombro, rodilla o lumbares.', zonasRiesgo:'hombro, rodilla, lumbar, muñeca', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sentadilla búlgara con salto y mancuernas', grupoMuscular:'Piernas / Potencia', material:'Mancuernas',
@@ -2219,122 +2428,418 @@ const DEFAULT_EXERCISES = [
     precauciones:'Nivel muy avanzado; requiere base sólida de fondos estrictos antes de añadir carga; evitar en molestias de hombro o muñeca.', zonasRiesgo:'hombro, muñeca, codo', videoUrl:'', imagenUrl:'' },
   { id: uid(), nombre:'Sprint en bici indoor a resistencia máxima', grupoMuscular:'Piernas / Cardio / Potencia', material:'Bici ciclo indoor',
     descripcion:'Pedalear a máxima intensidad con resistencia alta durante series cortas de 15-20 segundos, con recuperación breve entre series.',
-    precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' }
+    precauciones:'Nivel muy avanzado; formato de altísima intensidad cardiovascular; no recomendado en problemas cardiovasculares sin supervisión médica.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Goblet Squat con mancuerna', grupoMuscular:'Piernas', material:'Mancuernas',
+    descripcion:'Sentadilla sujetando una mancuerna en vertical pegada al pecho con ambas manos.',
+    precauciones:'Vigilar que la rodilla no sobrepase mucho la punta del pie en clientes con molestias articulares.', zonasRiesgo:'rodilla, cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Press de pecho en suelo con mancuernas (Floor Press)', grupoMuscular:'Pecho', material:'Mancuernas',
+    descripcion:'Tumbada en el suelo, empujar las mancuernas hacia arriba; los codos tocan el suelo al final del recorrido, lo que limita el rango de forma segura.',
+    precauciones:'Alternativa segura al press de banca cuando no hay banco disponible; evitar en cirugía torácica/mamaria reciente.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Step-up al cajón de pliometría', grupoMuscular:'Piernas', material:'Cajón de pliometría',
+    descripcion:'Subir al cajón de pliometría con una pierna, apoyar el pie completo y extender la cadera arriba; bajar controlando el movimiento.',
+    precauciones:'Evitar en fascitis plantar activa o inestabilidad de rodilla; reducir altura del cajón si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Step-up alterno al cajón', grupoMuscular:'Piernas', material:'Cajón de pliometría',
+    descripcion:'Igual que el step-up al cajón, alternando la pierna que sube en cada repetición sin pausa entre lados.',
+    precauciones:'Evitar en fascitis plantar activa o inestabilidad de rodilla; reducir altura del cajón si hace falta.', zonasRiesgo:'rodilla, tobillo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Curl de bíceps con barra Z', grupoMuscular:'Brazo', material:'Barra Z',
+    descripcion:'Curl de bíceps con barra Z, agarre en la zona angulada para reducir la tensión en la muñeca frente a la barra recta.',
+    precauciones:'', zonasRiesgo:'', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Press militar con barra Z', grupoMuscular:'Hombro', material:'Barra Z',
+    descripcion:'Press de hombro de pie o sentada empujando la barra Z desde la altura de los hombros hasta la extensión completa de brazos.',
+    precauciones:'Reducir carga o rango en molestias de hombro.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Extensión de tríceps tumbada con barra Z (Skull Crusher)', grupoMuscular:'Brazo', material:'Barra Z',
+    descripcion:'Tumbada, bajar la barra Z hacia la frente flexionando solo el codo y volver a extender.',
+    precauciones:'Codos fijos y peso ligero al principio; evitar en molestias de codo.', zonasRiesgo:'codo', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo con barra Z', grupoMuscular:'Espalda', material:'Barra Z',
+    descripcion:'Con el tronco inclinado hacia delante y espalda recta, tirar de la barra Z hacia el abdomen.',
+    precauciones:'Evitar en molestias lumbares agudas; mantener espalda neutra.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla con barra Z', grupoMuscular:'Piernas', material:'Barra Z',
+    descripcion:'Sentadilla con la barra Z apoyada sobre los trapecios, como una sentadilla con barra convencional pero con menos carga.',
+    precauciones:'Peso ligero mientras se aprende la técnica; vigilar profundidad y alineación de rodilla.', zonasRiesgo:'rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Sentadilla sumo con mancuerna', grupoMuscular:'Piernas / Cadera', material:'Mancuernas',
+    descripcion:'Sentadilla con pies muy separados y puntas hacia fuera, sujetando una mancuerna con ambas manos entre las piernas.',
+    precauciones:'', zonasRiesgo:'cadera, rodilla', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Flexión inclinada apoyando las manos en el cajón', grupoMuscular:'Pecho / Core', material:'Cajón de pliometría, Peso corporal',
+    descripcion:'Flexión de brazos con las manos apoyadas en el cajón en vez de en el suelo, reduciendo la exigencia respecto a una flexión estándar.',
+    precauciones:'Cuanto más alto el apoyo, más fácil; bajar la altura del cajón según progrese la fuerza.', zonasRiesgo:'hombro, muñeca', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Remo a una mano con mancuerna apoyada en el cajón', grupoMuscular:'Espalda', material:'Mancuernas, Cajón de pliometría',
+    descripcion:'Igual que el remo a una mano con mancuerna en banco, usando el cajón de pliometría como apoyo cuando no hay banco disponible.',
+    precauciones:'Cuidado con molestias de hombro en el brazo que rema.', zonasRiesgo:'hombro', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Elevación de cadera con pies en el cajón (Hip Thrust pies elevados)', grupoMuscular:'Glúteo', material:'Cajón de pliometría, Peso corporal',
+    descripcion:'Tumbada con la espalda alta apoyada en el suelo y los pies sobre el cajón, elevar la cadera contrayendo el glúteo.',
+    precauciones:'Alternativa segura al peso muerto para trabajar cadena posterior sin flexión lumbar cargada.', zonasRiesgo:'cadera', videoUrl:'', imagenUrl:'' },
+  { id: uid(), nombre:'Russian Twist con mancuerna', grupoMuscular:'Core', material:'Mancuernas',
+    descripcion:'Sentada con el tronco inclinado hacia atrás y pies ligeramente elevados, rotar el tronco de lado a lado sujetando una mancuerna.',
+    precauciones:'Peso ligero o sin peso al principio; evitar en molestias lumbares.', zonasRiesgo:'lumbar', videoUrl:'', imagenUrl:'' }
 ];
 
 // ---------- Semillas de programas (planes diseñados fuera de la app, para auto-cargarse una sola vez) ----------
-// Ver el mismo bloque en la versión del entrenador (index.html) para la explicación completa. Aquí solo lleva
-// el plan de Maite, que es la única clienta presente en esta copia (versión para clientes: sin datos de otros
-// clientes por privacidad).
+// Cada entrada es UNA semana concreta del programa de un cliente. Al cargar el estado (ver loadState más abajo),
+// si ese cliente existe y esa semana (por número) todavía no está en su programa, se crea automáticamente
+// resolviendo cada ejercicio por NOMBRE contra el catálogo ya cargado en este navegador — así no depende de
+// IDs, que se generan al azar en cada instalación. Es seguro volver a desplegar la app con esta lista:
+// cada semilla se marca como aplicada (state.programasSemillaAplicada) y no se vuelve a tocar, aunque el
+// entrenador ya la haya editado a mano; tampoco pisa nunca una semana con ese mismo número creada manualmente.
 const DEFAULT_PROGRAMS_SEED = [
-  { cliente:"Maite", numero:1, dias:{
+  { cliente:"Maite", numero:1, revision:7, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"5", descanso:"90s", notas:"Banda de asistencia ligera; buscar 1-2 reps en reserva."},
-      {nombre:"Goblet Squat con kettlebell", series:"4", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo con banda", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Remo en polea sentado", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Plancha frontal", series:"3", reps:"30s", descanso:"45s", notas:""},
-      {nombre:"Pallof press con banda", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"5", descanso:"90s", notas:"Nivel de asistencia en la máquina que permita completar las series con 1-2 repeticiones en reserva; si lo consigue con buena técnica, bajar el peso de asistencia la semana siguiente."},
+      {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Man Maker con mancuernas", series:"3", reps:"6", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
+      {nombre:"Push Press con barra olímpica", series:"3", reps:"8", descanso:"90s", notas:""},
+      {nombre:"Goblet Squat con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Cable Woodchop", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Single-Leg Reach en plataforma inestable", series:"3", reps:"6/lado", descanso:"45s", notas:""},
+      {nombre:"Remo con dos kettlebells", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Sentadilla en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""}
     ],
     B:[
       {nombre:"Negativas de dominada", series:"3", reps:"5", descanso:"90s", notas:"Bajada controlada de 4-5s."},
-      {nombre:"Zancada búlgara con banco", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
-      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""},
-      {nombre:"Press de banca con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Face pull con banda", series:"3", reps:"15", descanso:"45s", notas:""},
-      {nombre:"Dead bug", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+      {nombre:"Thruster con mancuernas", series:"3", reps:"8", descanso:"75s", notas:"Ejercicio compuesto de alta exigencia; empezar con carga moderada."},
+      {nombre:"Plancha lateral", series:"3", reps:"20s/lado", descanso:"45s", notas:""},
+      {nombre:"Wallball Squat and Press", series:"3", reps:"8", descanso:"60s", notas:""},
+      {nombre:"Press militar en guía Smith", series:"3", reps:"8", descanso:"60s", notas:""},
+      {nombre:"Russian Twist con bola blanda", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Press Arnold con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Press banca en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Kettlebell Row", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con mancuerna", series:"3", reps:"12", descanso:"45s", notas:""}
     ],
     C:[
       {nombre:"Activación escapular en dominada (Scapular Pull-Up)", series:"3", reps:"8", descanso:"60s", notas:"Base antes de la dominada completa."},
-      {nombre:"Remo invertido (Australian Pull-Up)", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Step-up con step", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"12/lado", descanso:"45s", notas:""},
-      {nombre:"Press landmine a una mano", series:"3", reps:"10/lado", descanso:"60s", notas:""},
-      {nombre:"Plancha lateral", series:"3", reps:"30s/lado", descanso:"45s", notas:""},
-      {nombre:"Wallball a diana hyrox", series:"3", reps:"10", descanso:"60s", notas:""}
+      {nombre:"Kettlebell Swing a dos manos", series:"3", reps:"12", descanso:"60s", notas:"Bisagra de cadera, no sentadilla: impulso desde el glúteo, rodillas suaves. Impacto muy bajo, seguro para las rodillas."},
+      {nombre:"Zancada con mancuernas", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Farmer's walk con mancuernas", series:"3", reps:"40m", descanso:"60s", notas:""},
+      {nombre:"Step-up con step", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Wallball a diana hyrox", series:"3", reps:"8", descanso:"60s", notas:""},
+      {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"8", descanso:"60s", notas:""},
+      {nombre:"Pallof Press en polea", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Press de hombro a una mano con kettlebell", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:2, dias:{
+  { cliente:"Maite", numero:2, revision:7, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, un grado menos de asistencia."},
-      {nombre:"Sentadilla en guía Smith", series:"4", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo con banda circular", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Jalón al pecho en polea", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Press Arnold con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Bird dog", series:"3", reps:"10/lado", descanso:"45s", notas:""},
-      {nombre:"Rotación externa en polea a 90 grados", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Si la semana 1 fue cómoda, bajar un escalón el peso de asistencia de la máquina."},
+      {nombre:"Puente de glúteo con aro entre las rodillas", series:"3", reps:"13", descanso:"45s", notas:""},
+      {nombre:"Russian Twist con bola blanda", series:"3", reps:"11/lado", descanso:"45s", notas:""},
+      {nombre:"Press de hombro a media rodilla con mancuerna", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Press Arnold con mancuernas", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Kettlebell Swing a dos manos", series:"3", reps:"13", descanso:"60s", notas:"Bisagra de cadera, no sentadilla: impulso desde el glúteo, rodillas suaves. Impacto muy bajo, seguro para las rodillas."},
+      {nombre:"Renegade Row con mancuernas", series:"3", reps:"6", descanso:"75s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"25s", descanso:"45s", notas:""},
+      {nombre:"Dead bug", series:"3", reps:"10", descanso:"45s", notas:""},
+      {nombre:"Sentadilla sumo con mancuerna", series:"3", reps:"12", descanso:"60s", notas:""}
     ],
     B:[
       {nombre:"Negativas de dominada", series:"3", reps:"5", descanso:"90s", notas:"Bajada de 6s."},
-      {nombre:"Zancada con mancuernas", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
-      {nombre:"Clamshell con banda circular", series:"3", reps:"15/lado", descanso:"45s", notas:""},
-      {nombre:"Press banca en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Remo invertido (Australian Pull-Up)", series:"3", reps:"10", descanso:"60s", notas:""},
       {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"10/lado", descanso:"60s", notas:""},
-      {nombre:"Plancha con elevación de pierna", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+      {nombre:"Remo unilateral en polea de pie", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Pallof Press en polea", series:"3", reps:"11/lado", descanso:"45s", notas:""},
+      {nombre:"Man Maker con mancuernas", series:"3", reps:"7", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
+      {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"9", descanso:"60s", notas:""},
+      {nombre:"Remo con dos kettlebells", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Cable Woodchop", series:"3", reps:"11/lado", descanso:"45s", notas:""},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"13/lado", descanso:"45s", notas:""}
     ],
     C:[
       {nombre:"Mantenimiento isométrico en dominada (Pull-Up Hold)", series:"3", reps:"10-15s", descanso:"60s", notas:"Con ayuda para subir, aguantar arriba."},
-      {nombre:"Remo invertido con agarre supino", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Landmine Squat", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Extensión de cadera cuadrupedia con miniband", series:"3", reps:"12/lado", descanso:"45s", notas:""},
-      {nombre:"Press de hombro alterno con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Rodamiento de aro de pilates (core)", series:"3", reps:"10", descanso:"45s", notas:""},
-      {nombre:"Wallball Squat and Press", series:"3", reps:"10", descanso:"60s", notas:""}
+      {nombre:"Thruster con mancuernas", series:"3", reps:"9", descanso:"75s", notas:"Ejercicio compuesto de alta exigencia; empezar con carga moderada."},
+      {nombre:"Puente de glúteo con pies en plataforma inestable", series:"3", reps:"13", descanso:"45s", notas:""},
+      {nombre:"Zancada con mancuernas", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Front Squat con barra olímpica", series:"3", reps:"8", descanso:"90s", notas:"Compuesto pesado; técnica antes que carga."},
+      {nombre:"Goblet Squat con kettlebell", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Press banca con barra olímpica", series:"3", reps:"8", descanso:"75s", notas:""},
+      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Sentadilla búlgara con kettlebell", series:"3", reps:"8/lado", descanso:"60s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:3, dias:{
+  { cliente:"Maite", numero:3, revision:7, dias:{
     A:[
-      {nombre:"Dominada asistida con banda ligera", series:"4", reps:"6", descanso:"90s", notas:"Reducir asistencia otro grado si el RIR lo permite."},
-      {nombre:"Sentadilla búlgara con pie en el cajón", series:"3", reps:"8/pierna", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Remo con landmine", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Press de hombro con banda", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Dead Hang (suspensión activa)", series:"3", reps:"20s", descanso:"45s", notas:""},
-      {nombre:"Pallof Press de rodillas", series:"3", reps:"10/lado", descanso:"45s", notas:""}
+      {nombre:"Dominada en máquina de peso asistido", series:"4", reps:"6", descanso:"90s", notas:"Reducir otro escalón el peso de asistencia de la máquina si el RIR lo permite."},
+      {nombre:"Man Maker con mancuernas", series:"3", reps:"8", descanso:"90s", notas:"Ejercicio muy exigente: combina burpee, remo, clean y press. Bajar el peso si hace falta para mantener la técnica."},
+      {nombre:"Remo Pendlay con barra olímpica", series:"3", reps:"10", descanso:"75s", notas:"Compuesto de espalda con barra; técnica antes que carga."},
+      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"14/lado", descanso:"45s", notas:""},
+      {nombre:"Rodamiento de aro de pilates (core)", series:"3", reps:"8", descanso:"45s", notas:""},
+      {nombre:"Front Squat con barra olímpica", series:"3", reps:"9", descanso:"90s", notas:"Compuesto pesado; técnica antes que carga."},
+      {nombre:"Kettlebell Row", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Press banca en guía Smith", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Remo en polea sentado", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Standing Band Chest Press", series:"3", reps:"12", descanso:"45s", notas:""}
     ],
     B:[
       {nombre:"Negativas de dominada", series:"3", reps:"4", descanso:"90s", notas:"Bajada de 8s, casi al límite del control."},
-      {nombre:"Sentadilla sumo con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"10", descanso:"45s", notas:"Pausa de 2s arriba."},
-      {nombre:"Press banca con barra olímpica", series:"3", reps:"8", descanso:"75s", notas:""},
-      {nombre:"Remo sentado con banda", series:"3", reps:"12", descanso:"45s", notas:""},
-      {nombre:"Hollow Body Hold", series:"3", reps:"20s", descanso:"45s", notas:""}
+      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Kettlebell Swing a dos manos", series:"3", reps:"14", descanso:"60s", notas:"Bisagra de cadera, no sentadilla: impulso desde el glúteo, rodillas suaves. Impacto muy bajo, seguro para las rodillas."},
+      {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"14", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"30s", descanso:"45s", notas:""},
+      {nombre:"Press Arnold con mancuernas", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Press de aro por encima de la cabeza", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Dead bug", series:"3", reps:"11", descanso:"45s", notas:""},
+      {nombre:"Pallof Press en polea", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla sumo con kettlebell", series:"3", reps:"13", descanso:"60s", notas:""}
     ],
     C:[
-      {nombre:"Activación escapular en dominada (Scapular Pull-Up)", series:"3", reps:"10", descanso:"60s", notas:"Cerrar la serie con un intento de dominada completa, sin forzar."},
-      {nombre:"Remo invertido con pies elevados", series:"3", reps:"8", descanso:"60s", notas:""},
-      {nombre:"Step-Up explosivo con salto al cajón", series:"3", reps:"8/pierna", descanso:"60s", notas:""},
-      {nombre:"Zancada frontal con banda circular en rodillas", series:"3", reps:"10/lado", descanso:"45s", notas:""},
-      {nombre:"Landmine Overhead Press a una mano", series:"3", reps:"8/lado", descanso:"60s", notas:""},
-      {nombre:"Plancha en plataforma inestable", series:"3", reps:"30s", descanso:"45s", notas:""},
-      {nombre:"Wallball Chest Pass a la diana", series:"3", reps:"10", descanso:"60s", notas:""}
+      {nombre:"Dead Hang (suspensión activa)", series:"3", reps:"20s", descanso:"45s", notas:""},
+      {nombre:"Remo unilateral en polea de pie", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Zancada con kettlebell", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Push Press con barra olímpica", series:"3", reps:"9", descanso:"90s", notas:""},
+      {nombre:"Plancha lateral", series:"3", reps:"23s/lado", descanso:"45s", notas:""},
+      {nombre:"Press de banca con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Sentadilla en guía Smith", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Renegade Row con mancuernas", series:"3", reps:"7", descanso:"75s", notas:""},
+      {nombre:"Sentadilla en plataforma inestable", series:"3", reps:"10", descanso:"60s", notas:""}
     ]
   }},
-  { cliente:"Maite", numero:4, dias:{
+  { cliente:"Maite", numero:4, revision:7, dias:{
     A:[
-      {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin banda: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
-      {nombre:"Dominada asistida con banda ligera", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
-      {nombre:"Goblet Squat con kettlebell", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Abducción de cadera en polea baja", series:"3", reps:"12/lado", descanso:"45s", notas:""},
-      {nombre:"Press de hombro sentado con mancuernas", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Plancha frontal", series:"3", reps:"35s", descanso:"45s", notas:""}
+      {nombre:"Dominada estricta (Pull-Up)", series:"1", reps:"máx. (AMRAP)", descanso:"—", notas:"Valoración sin asistencia: anotar el resultado tal cual (0 o más). Es el punto de partida real, no un examen."},
+      {nombre:"Dominada en máquina de peso asistido", series:"3", reps:"6", descanso:"90s", notas:"Trabajo normal tras la valoración."},
+      {nombre:"Plancha lateral", series:"3", reps:"26s/lado", descanso:"45s", notas:""},
+      {nombre:"Zancada con kettlebell", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Press Arnold con mancuernas", series:"3", reps:"13", descanso:"60s", notas:""},
+      {nombre:"Cable Woodchop", series:"3", reps:"12/lado", descanso:"45s", notas:""},
+      {nombre:"Pallof Press en polea", series:"3", reps:"13/lado", descanso:"45s", notas:""},
+      {nombre:"Press banca en guía Smith", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Face Pull en polea", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Press banca con barra olímpica", series:"3", reps:"9", descanso:"75s", notas:""},
+      {nombre:"Sentadilla a una pierna en plataforma inestable", series:"3", reps:"8/lado", descanso:"60s", notas:""}
     ],
     B:[
       {nombre:"Negativas de dominada", series:"3", reps:"4", descanso:"90s", notas:"Bajada de 10s, el máximo control que consiga."},
-      {nombre:"Zancada búlgara con banco", series:"3", reps:"10/pierna", descanso:"60s", notas:""},
-      {nombre:"Puente de glúteo con banda", series:"3", reps:"15", descanso:"45s", notas:""},
-      {nombre:"Jalón con agarre supino", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Face Pull en polea", series:"3", reps:"15", descanso:"45s", notas:""},
-      {nombre:"Russian Twist con bola blanda", series:"3", reps:"12/lado", descanso:"45s", notas:""}
+      {nombre:"Wallball a diana hyrox", series:"3", reps:"9", descanso:"60s", notas:""},
+      {nombre:"Sentadilla en guía Smith", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Dead bug", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Remo a una mano con mancuerna en banco", series:"3", reps:"11/lado", descanso:"60s", notas:""},
+      {nombre:"Kettlebell Row", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Press de hombro a una mano con kettlebell", series:"3", reps:"11/lado", descanso:"60s", notas:""},
+      {nombre:"Wallball Squat and Press", series:"3", reps:"9", descanso:"60s", notas:""},
+      {nombre:"Single-Leg Reach en plataforma inestable", series:"3", reps:"7/lado", descanso:"45s", notas:""},
+      {nombre:"Puente de glúteo con mancuerna", series:"3", reps:"14", descanso:"45s", notas:""}
     ],
     C:[
       {nombre:"Remo invertido (Australian Pull-Up)", series:"4", reps:"10", descanso:"60s", notas:"Cierre de bloque: sube el volumen de tracción."},
-      {nombre:"Sentadilla en guía Smith", series:"3", reps:"10", descanso:"60s", notas:""},
-      {nombre:"Extensión de cadera cuadrupedia con banda circular", series:"3", reps:"12/lado", descanso:"45s", notas:""},
-      {nombre:"Press landmine a una mano", series:"3", reps:"10/lado", descanso:"60s", notas:""},
-      {nombre:"Plancha lateral", series:"3", reps:"30s/lado", descanso:"45s", notas:""},
-      {nombre:"Wallball a diana hyrox", series:"3", reps:"12", descanso:"60s", notas:""}
+      {nombre:"Front Squat con barra olímpica", series:"3", reps:"10", descanso:"90s", notas:"Compuesto pesado; técnica antes que carga."},
+      {nombre:"Zancada búlgara con banco", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Renegade Row con mancuernas", series:"3", reps:"8", descanso:"75s", notas:""},
+      {nombre:"Thruster con mancuernas", series:"3", reps:"10", descanso:"75s", notas:"Ejercicio compuesto de alta exigencia; empezar con carga moderada."},
+      {nombre:"Step-up con step", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Farmer's walk con mancuernas", series:"3", reps:"44m", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con bola blanda entre rodillas", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Remo unilateral en polea de pie", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Remo con dos kettlebells", series:"3", reps:"12", descanso:"60s", notas:""}
+    ]
+  }},
+  { cliente:"Pilar Cloux", numero:1, revision:5, dias:{
+    A:[
+      {nombre:"Superman Hold", series:"3", reps:"10s", descanso:"60s", notas:"Rango pequeño, sin rebote."},
+      {nombre:"Plancha lateral", series:"2", reps:"12s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."},
+      {nombre:"Scapular Wall Slide", series:"3", reps:"8", descanso:"60s", notas:"De pie contra la pared, brazos en 'W'. Ejercicio clave contra la cifosis; no carga la clavícula."},
+      {nombre:"Sentadilla con apoyo en pared (deslizante)", series:"3", reps:"8", descanso:"45s", notas:"Deslizar la espalda por la pared al bajar y subir; alternativa dinámica al Wall Sit."},
+      {nombre:"Bird dog", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Wall Sit", series:"3", reps:"15s", descanso:"45s", notas:""},
+      {nombre:"Combo zancada lateral a zancada frontal", series:"3", reps:"6/lado", descanso:"45s", notas:"Alternar una zancada lateral y una frontal por repetición, con control."},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"6/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Elevaciones Y-T-W tumbado boca abajo", series:"3", reps:"6", descanso:"60s", notas:"Sin peso, movimiento pequeño y controlado; parar si molesta el cuello o el hombro."},
+      {nombre:"Sit-to-Stand", series:"3", reps:"10", descanso:"45s", notas:""},
+      {nombre:"Russian Twist sin material", series:"3", reps:"8/lado", descanso:"45s", notas:"Giro de tronco controlado, rango pequeño por la escoliosis, sin prisa."},
+      {nombre:"Hollow Body Hold", series:"2", reps:"10s", descanso:"60s", notas:"Mantener la zona lumbar pegada al suelo; reducir el tiempo si cuesta."}
+    ],
+    B:[
+      {nombre:"Elevación de pierna lateral tumbada", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla con pausa (Pause Squat)", series:"3", reps:"8", descanso:"45s", notas:""},
+      {nombre:"Hollow Body Hold", series:"2", reps:"11s", descanso:"60s", notas:"Mantener la zona lumbar pegada al suelo; reducir el tiempo si cuesta."},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"8", descanso:"60s", notas:"Pausa de 2s arriba."},
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"8", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."},
+      {nombre:"Puente de glúteo", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Estocada lateral", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla isométrica con pulso (Pulse Squat)", series:"3", reps:"8", descanso:"45s", notas:"Bajar a sentadilla parcial y hacer pulsos pequeños y controlados, sin rebote."},
+      {nombre:"Plancha con elevación de pierna", series:"3", reps:"6/lado", descanso:"60s", notas:"Apoyo en antebrazos; levantar una pierna manteniendo la cadera estable."},
+      {nombre:"Tandem Stance (equilibrio en línea)", series:"2", reps:"20s/lado", descanso:"45s", notas:"Un pie delante del otro en línea recta; apoyo cerca si hace falta para el equilibrio."},
+      {nombre:"Wall Sit", series:"3", reps:"19s", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Dead bug", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Fire Hydrant (perro de fuego)", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"15s", descanso:"60s", notas:"Apoyo siempre en antebrazos, nunca en manos extendidas, para no cargar la clavícula mal soldada."},
+      {nombre:"Tandem Stance (equilibrio en línea)", series:"2", reps:"24s/lado", descanso:"45s", notas:"Un pie delante del otro en línea recta; apoyo cerca si hace falta para el equilibrio."},
+      {nombre:"Single-Leg Balance Reach", series:"2", reps:"6/lado", descanso:"45s", notas:"De pie con apoyo cerca; alcanzar hacia delante con la pierna libre sin perder el equilibrio."},
+      {nombre:"Russian Twist sin material", series:"3", reps:"9/lado", descanso:"45s", notas:"Giro de tronco controlado, rango pequeño por la escoliosis, sin prisa."},
+      {nombre:"Clock Reach (equilibrio en reloj)", series:"2", reps:"6/lado", descanso:"45s", notas:"De pie, alcanzar con el pie libre hacia distintos puntos alrededor manteniendo el equilibrio; apoyo cerca."},
+      {nombre:"Zancada cruzada (Curtsy Lunge)", series:"3", reps:"6/lado", descanso:"45s", notas:""},
+      {nombre:"Glute Bridge March", series:"3", reps:"8", descanso:"60s", notas:"Puente de glúteo sostenido, alternando la elevación de rodillas sin bajar la cadera."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"6/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"7/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Puente de glúteo", series:"3", reps:"11", descanso:"60s", notas:""}
+    ]
+  }},
+  { cliente:"Pilar Cloux", numero:2, revision:5, dias:{
+    A:[
+      {nombre:"Side Plank with Rotation", series:"2", reps:"8/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Elevaciones Y-T-W tumbado boca abajo", series:"3", reps:"7", descanso:"60s", notas:"Sin peso, movimiento pequeño y controlado; parar si molesta el cuello o el hombro."},
+      {nombre:"Sit-to-Stand", series:"3", reps:"11", descanso:"45s", notas:""},
+      {nombre:"Elevación de pierna lateral tumbada", series:"3", reps:"9/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla con pausa (Pause Squat)", series:"3", reps:"9", descanso:"45s", notas:""},
+      {nombre:"Hollow Body Hold", series:"2", reps:"12s", descanso:"60s", notas:"Mantener la zona lumbar pegada al suelo; reducir el tiempo si cuesta."},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"9", descanso:"60s", notas:"Pausa de 2s arriba."},
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"9", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."},
+      {nombre:"Puente de glúteo", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"11", descanso:"60s", notas:""},
+      {nombre:"Single-Leg Balance Reach", series:"2", reps:"7/lado", descanso:"45s", notas:"De pie con apoyo cerca; alcanzar hacia delante con la pierna libre sin perder el equilibrio."},
+      {nombre:"Plancha lateral", series:"2", reps:"14s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."}
+    ],
+    B:[
+      {nombre:"Estocada lateral", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla isométrica con pulso (Pulse Squat)", series:"3", reps:"9", descanso:"45s", notas:"Bajar a sentadilla parcial y hacer pulsos pequeños y controlados, sin rebote."},
+      {nombre:"Plancha con elevación de pierna", series:"3", reps:"7/lado", descanso:"60s", notas:"Apoyo en antebrazos; levantar una pierna manteniendo la cadera estable."},
+      {nombre:"Dead bug", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Fire Hydrant (perro de fuego)", series:"3", reps:"9/lado", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"19s", descanso:"60s", notas:"Apoyo siempre en antebrazos, nunca en manos extendidas, para no cargar la clavícula mal soldada."},
+      {nombre:"Tandem Stance (equilibrio en línea)", series:"2", reps:"28s/lado", descanso:"45s", notas:"Un pie delante del otro en línea recta; apoyo cerca si hace falta para el equilibrio."},
+      {nombre:"Single-Leg Balance Reach", series:"2", reps:"8/lado", descanso:"45s", notas:"De pie con apoyo cerca; alcanzar hacia delante con la pierna libre sin perder el equilibrio."},
+      {nombre:"Russian Twist sin material", series:"3", reps:"10/lado", descanso:"45s", notas:"Giro de tronco controlado, rango pequeño por la escoliosis, sin prisa."},
+      {nombre:"Clock Reach (equilibrio en reloj)", series:"2", reps:"7/lado", descanso:"45s", notas:"De pie, alcanzar con el pie libre hacia distintos puntos alrededor manteniendo el equilibrio; apoyo cerca."},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"9/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Sentadilla con apoyo en pared (deslizante)", series:"3", reps:"9", descanso:"45s", notas:"Deslizar la espalda por la pared al bajar y subir; alternativa dinámica al Wall Sit."}
+    ],
+    C:[
+      {nombre:"Zancada cruzada (Curtsy Lunge)", series:"3", reps:"7/lado", descanso:"45s", notas:""},
+      {nombre:"Glute Bridge March", series:"3", reps:"9", descanso:"60s", notas:"Puente de glúteo sostenido, alternando la elevación de rodillas sin bajar la cadera."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"7/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."},
+      {nombre:"Superman Hold", series:"3", reps:"12s", descanso:"60s", notas:"Rango pequeño, sin rebote."},
+      {nombre:"Plancha lateral", series:"2", reps:"16s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."},
+      {nombre:"Scapular Wall Slide", series:"3", reps:"9", descanso:"60s", notas:"De pie contra la pared, brazos en 'W'. Ejercicio clave contra la cifosis; no carga la clavícula."},
+      {nombre:"Sentadilla con apoyo en pared (deslizante)", series:"3", reps:"10", descanso:"45s", notas:"Deslizar la espalda por la pared al bajar y subir; alternativa dinámica al Wall Sit."},
+      {nombre:"Bird dog", series:"3", reps:"9/lado", descanso:"60s", notas:""},
+      {nombre:"Wall Sit", series:"3", reps:"23s", descanso:"45s", notas:""},
+      {nombre:"Combo zancada lateral a zancada frontal", series:"3", reps:"7/lado", descanso:"45s", notas:"Alternar una zancada lateral y una frontal por repetición, con control."},
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"10", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."},
+      {nombre:"Plancha frontal", series:"3", reps:"23s", descanso:"60s", notas:"Apoyo siempre en antebrazos, nunca en manos extendidas, para no cargar la clavícula mal soldada."}
+    ]
+  }},
+  { cliente:"Pilar Cloux", numero:3, revision:5, dias:{
+    A:[
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"11", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."},
+      {nombre:"Puente de glúteo", series:"3", reps:"13", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Estocada lateral", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla isométrica con pulso (Pulse Squat)", series:"3", reps:"10", descanso:"45s", notas:"Bajar a sentadilla parcial y hacer pulsos pequeños y controlados, sin rebote."},
+      {nombre:"Plancha con elevación de pierna", series:"3", reps:"8/lado", descanso:"60s", notas:"Apoyo en antebrazos; levantar una pierna manteniendo la cadera estable."},
+      {nombre:"Dead bug", series:"3", reps:"10/lado", descanso:"60s", notas:""},
+      {nombre:"Fire Hydrant (perro de fuego)", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"27s", descanso:"60s", notas:"Apoyo siempre en antebrazos, nunca en manos extendidas, para no cargar la clavícula mal soldada."},
+      {nombre:"Tandem Stance (equilibrio en línea)", series:"2", reps:"32s/lado", descanso:"45s", notas:"Un pie delante del otro en línea recta; apoyo cerca si hace falta para el equilibrio."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"8/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."},
+      {nombre:"Bird dog", series:"3", reps:"10/lado", descanso:"60s", notas:""}
+    ],
+    B:[
+      {nombre:"Single-Leg Balance Reach", series:"2", reps:"9/lado", descanso:"45s", notas:"De pie con apoyo cerca; alcanzar hacia delante con la pierna libre sin perder el equilibrio."},
+      {nombre:"Russian Twist sin material", series:"3", reps:"11/lado", descanso:"45s", notas:"Giro de tronco controlado, rango pequeño por la escoliosis, sin prisa."},
+      {nombre:"Clock Reach (equilibrio en reloj)", series:"2", reps:"8/lado", descanso:"45s", notas:"De pie, alcanzar con el pie libre hacia distintos puntos alrededor manteniendo el equilibrio; apoyo cerca."},
+      {nombre:"Zancada cruzada (Curtsy Lunge)", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Glute Bridge March", series:"3", reps:"10", descanso:"60s", notas:"Puente de glúteo sostenido, alternando la elevación de rodillas sin bajar la cadera."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"9/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."},
+      {nombre:"Superman Hold", series:"3", reps:"14s", descanso:"60s", notas:"Rango pequeño, sin rebote."},
+      {nombre:"Plancha lateral", series:"2", reps:"18s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."},
+      {nombre:"Scapular Wall Slide", series:"3", reps:"10", descanso:"60s", notas:"De pie contra la pared, brazos en 'W'. Ejercicio clave contra la cifosis; no carga la clavícula."},
+      {nombre:"Sentadilla con apoyo en pared (deslizante)", series:"3", reps:"11", descanso:"45s", notas:"Deslizar la espalda por la pared al bajar y subir; alternativa dinámica al Wall Sit."},
+      {nombre:"Puente de glúteo", series:"3", reps:"14", descanso:"60s", notas:""},
+      {nombre:"Sit-to-Stand", series:"3", reps:"12", descanso:"45s", notas:""}
+    ],
+    C:[
+      {nombre:"Bird dog", series:"3", reps:"11/lado", descanso:"60s", notas:""},
+      {nombre:"Wall Sit", series:"3", reps:"27s", descanso:"45s", notas:""},
+      {nombre:"Combo zancada lateral a zancada frontal", series:"3", reps:"8/lado", descanso:"45s", notas:"Alternar una zancada lateral y una frontal por repetición, con control."},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"10/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Elevaciones Y-T-W tumbado boca abajo", series:"3", reps:"8", descanso:"60s", notas:"Sin peso, movimiento pequeño y controlado; parar si molesta el cuello o el hombro."},
+      {nombre:"Sit-to-Stand", series:"3", reps:"13", descanso:"45s", notas:""},
+      {nombre:"Elevación de pierna lateral tumbada", series:"3", reps:"10/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla con pausa (Pause Squat)", series:"3", reps:"10", descanso:"45s", notas:""},
+      {nombre:"Hollow Body Hold", series:"2", reps:"13s", descanso:"60s", notas:"Mantener la zona lumbar pegada al suelo; reducir el tiempo si cuesta."},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"10", descanso:"60s", notas:"Pausa de 2s arriba."},
+      {nombre:"Plancha lateral", series:"2", reps:"20s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."},
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"12", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."}
+    ]
+  }},
+  { cliente:"Pilar Cloux", numero:4, revision:5, dias:{
+    A:[
+      {nombre:"Fire Hydrant (perro de fuego)", series:"3", reps:"11/lado", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"1", reps:"máx. (aguante)", descanso:"—", notas:"Valoración: aguantar el máximo tiempo posible con buena técnica, apoyo en antebrazos. Anotar el resultado tal cual, sin forzar — es el punto de partida real."},
+      {nombre:"Tandem Stance (equilibrio en línea)", series:"2", reps:"36s/lado", descanso:"45s", notas:"Un pie delante del otro en línea recta; apoyo cerca si hace falta para el equilibrio."},
+      {nombre:"Single-Leg Balance Reach", series:"2", reps:"10/lado", descanso:"45s", notas:"De pie con apoyo cerca; alcanzar hacia delante con la pierna libre sin perder el equilibrio."},
+      {nombre:"Russian Twist sin material", series:"3", reps:"12/lado", descanso:"45s", notas:"Giro de tronco controlado, rango pequeño por la escoliosis, sin prisa."},
+      {nombre:"Clock Reach (equilibrio en reloj)", series:"2", reps:"9/lado", descanso:"45s", notas:"De pie, alcanzar con el pie libre hacia distintos puntos alrededor manteniendo el equilibrio; apoyo cerca."},
+      {nombre:"Zancada cruzada (Curtsy Lunge)", series:"3", reps:"9/lado", descanso:"45s", notas:""},
+      {nombre:"Glute Bridge March", series:"3", reps:"11", descanso:"60s", notas:"Puente de glúteo sostenido, alternando la elevación de rodillas sin bajar la cadera."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"10/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."},
+      {nombre:"Superman Hold", series:"3", reps:"16s", descanso:"60s", notas:"Rango pequeño, sin rebote."},
+      {nombre:"Scapular Wall Slide", series:"4", reps:"11", descanso:"60s", notas:"De pie contra la pared, brazos en 'W'. Cierre de bloque: sube ligeramente el volumen del trabajo postural clave."},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"13", descanso:"60s", notas:""}
+    ],
+    B:[
+      {nombre:"Plancha lateral", series:"2", reps:"22s/lado", descanso:"60s", notas:"Apoyo en antebrazo; si nota molestia en la clavícula/hombro, apoyar la rodilla inferior o reducir el tiempo."},
+      {nombre:"Scapular Wall Slide", series:"3", reps:"12", descanso:"60s", notas:"De pie contra la pared, brazos en 'W'. Ejercicio clave contra la cifosis; no carga la clavícula."},
+      {nombre:"Sentadilla con apoyo en pared (deslizante)", series:"3", reps:"12", descanso:"45s", notas:"Deslizar la espalda por la pared al bajar y subir; alternativa dinámica al Wall Sit."},
+      {nombre:"Bird dog", series:"3", reps:"12/lado", descanso:"60s", notas:""},
+      {nombre:"Wall Sit", series:"3", reps:"31s", descanso:"45s", notas:""},
+      {nombre:"Combo zancada lateral a zancada frontal", series:"3", reps:"9/lado", descanso:"45s", notas:"Alternar una zancada lateral y una frontal por repetición, con control."},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"11/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Elevaciones Y-T-W tumbado boca abajo", series:"3", reps:"9", descanso:"60s", notas:"Sin peso, movimiento pequeño y controlado; parar si molesta el cuello o el hombro."},
+      {nombre:"Sit-to-Stand", series:"3", reps:"14", descanso:"45s", notas:""},
+      {nombre:"Elevación de pierna lateral tumbada", series:"3", reps:"11/lado", descanso:"45s", notas:""},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"11", descanso:"60s", notas:"Pausa de 2s arriba."},
+      {nombre:"Puente de glúteo a una pierna", series:"3", reps:"11/lado", descanso:"60s", notas:"Progresión del puente de glúteo a dos piernas; mantener la cadera nivelada."}
+    ],
+    C:[
+      {nombre:"Sentadilla con pausa (Pause Squat)", series:"3", reps:"11", descanso:"45s", notas:""},
+      {nombre:"Hollow Body Hold", series:"2", reps:"14s", descanso:"60s", notas:"Mantener la zona lumbar pegada al suelo; reducir el tiempo si cuesta."},
+      {nombre:"Puente de glúteo con pausa isométrica", series:"3", reps:"12", descanso:"60s", notas:"Pausa de 2s arriba."},
+      {nombre:"Elevación de piernas (Leg Raise)", series:"3", reps:"13", descanso:"45s", notas:"Tumbada boca arriba, controlar la bajada sin despegar la zona lumbar del suelo."},
+      {nombre:"Puente de glúteo", series:"3", reps:"15", descanso:"60s", notas:""},
+      {nombre:"Puente de glúteo con elevación de brazos", series:"3", reps:"14", descanso:"60s", notas:""},
+      {nombre:"Estocada lateral", series:"3", reps:"8/lado", descanso:"45s", notas:""},
+      {nombre:"Sentadilla isométrica con pulso (Pulse Squat)", series:"3", reps:"11", descanso:"45s", notas:"Bajar a sentadilla parcial y hacer pulsos pequeños y controlados, sin rebote."},
+      {nombre:"Plancha con elevación de pierna", series:"3", reps:"9/lado", descanso:"60s", notas:"Apoyo en antebrazos; levantar una pierna manteniendo la cadera estable."},
+      {nombre:"Dead bug", series:"3", reps:"11/lado", descanso:"60s", notas:""},
+      {nombre:"Side Plank with Rotation", series:"2", reps:"12/lado", descanso:"60s", notas:"Desde plancha lateral en antebrazo, rotar el tronco llevando el brazo libre por debajo; movimiento pequeño y controlado por la escoliosis."},
+      {nombre:"Superman Hold", series:"3", reps:"18s", descanso:"60s", notas:"Rango pequeño, sin rebote."}
+    ]
+  }},
+  { cliente:"Inma Next", numero:1, revision:2, dias:{
+    A:[
+      {nombre:"Goblet Squat con mancuerna", series:"3", reps:"12", descanso:"60s", notas:"Bajar solo hasta donde la técnica sea limpia; profundidad parcial si hace falta."},
+      {nombre:"Press de pecho en suelo con mancuernas (Floor Press)", series:"3", reps:"10", descanso:"60s", notas:"Sin banco: tumbada en el suelo, codos apoyando al final del recorrido."},
+      {nombre:"Step-up al cajón de pliometría", series:"3", reps:"10/lado", descanso:"60s", notas:"Altura del cajón baja al principio; subir sin impulso, controlando la bajada."},
+      {nombre:"Curl de bíceps con barra Z", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Plancha frontal", series:"3", reps:"20s", descanso:"45s", notas:"Empezar con apoyo de rodillas si la plancha completa es muy exigente."},
+      {nombre:"Elevaciones laterales con mancuernas", series:"3", reps:"12", descanso:"45s", notas:"Peso ligero, sin balanceo del tronco."},
+      {nombre:"Puente de glúteo", series:"3", reps:"15", descanso:"45s", notas:""},
+      {nombre:"Marcha con elevación de rodillas", series:"3", reps:"30s", descanso:"30s", notas:"Cardio de bajo impacto, sin salto."}
+    ],
+    B:[
+      {nombre:"Remo a una mano con mancuerna apoyada en el cajón", series:"3", reps:"10/lado", descanso:"60s", notas:"El cajón hace de apoyo en lugar de banco."},
+      {nombre:"Zancada con mancuernas", series:"3", reps:"10/lado", descanso:"60s", notas:"Rango cómodo, sin forzar la rodilla delantera más allá de la punta del pie."},
+      {nombre:"Press militar con barra Z", series:"3", reps:"10", descanso:"60s", notas:""},
+      {nombre:"Elevación de cadera con pies en el cajón (Hip Thrust pies elevados)", series:"3", reps:"12", descanso:"60s", notas:"Espalda alta apoyada en el suelo, pies sobre el cajón."},
+      {nombre:"Extensión de tríceps tumbada con barra Z (Skull Crusher)", series:"3", reps:"12", descanso:"45s", notas:"Codos fijos, peso ligero al principio."},
+      {nombre:"Dead Bug", series:"3", reps:"10/lado", descanso:"45s", notas:"Controlar la zona lumbar pegada al suelo."},
+      {nombre:"Sentadilla sumo con mancuerna", series:"3", reps:"12", descanso:"60s", notas:""},
+      {nombre:"Plancha lateral", series:"3", reps:"20s/lado", descanso:"45s", notas:"Empezar con apoyo de rodilla si la plancha lateral completa es muy exigente."}
+    ],
+    C:[
+      {nombre:"Sentadilla con barra Z", series:"3", reps:"10", descanso:"60s", notas:"Barra sobre los trapecios, peso ligero para aprender la técnica."},
+      {nombre:"Flexión inclinada apoyando las manos en el cajón", series:"3", reps:"10", descanso:"60s", notas:"Cuanto más alto el apoyo, más fácil; bajar la altura del cajón según progrese."},
+      {nombre:"Step-up alterno al cajón", series:"3", reps:"8/lado", descanso:"60s", notas:""},
+      {nombre:"Curl martillo con mancuernas", series:"3", reps:"12", descanso:"45s", notas:""},
+      {nombre:"Remo con barra Z", series:"3", reps:"12", descanso:"60s", notas:"Espalda recta, tirar hacia el abdomen."},
+      {nombre:"Russian Twist con mancuerna", series:"3", reps:"10/lado", descanso:"45s", notas:"Peso ligero o sin peso al principio."},
+      {nombre:"Wall Sit", series:"3", reps:"25s", descanso:"45s", notas:""},
+      {nombre:"Mountain Climber", series:"3", reps:"20s", descanso:"30s", notas:"Ritmo suave, sin prisa; priorizar técnica sobre velocidad dado el nivel de forma inicial."}
     ]
   }}
 ];
@@ -2342,36 +2847,41 @@ const DEFAULT_PROGRAMS_SEED = [
 function aplicarSemillasDePrograma(){
   try{
     if(!state.programs) state.programs = {};
-    if(!state.programasSemillaAplicada) state.programasSemillaAplicada = {};
+    if(!state.programasSemillaRevision) state.programasSemillaRevision = {};
     DEFAULT_PROGRAMS_SEED.forEach(seed=>{
       const cliente = state.clients.find(c=>c.nombre.trim().toLowerCase()===seed.cliente.trim().toLowerCase());
       if(!cliente) return;
       const key = unitKeyFor(cliente);
       const seedId = key + '::semana' + seed.numero;
-      if(state.programasSemillaAplicada[seedId]) return;
+      const revision = seed.revision || 1;
+      const revisionAplicada = state.programasSemillaRevision[seedId] || 0;
+      if(revisionAplicada >= revision) return; // esta revisión (o una más nueva) ya está aplicada
       if(!state.programs[key]) state.programs[key] = { weeks: [] };
-      const yaExiste = state.programs[key].weeks.some(w=>w.numero===seed.numero);
-      if(!yaExiste){
-        const items = [];
-        ['A','B','C'].forEach((diaLabel, diaIdx)=>{
-          (seed.dias[diaLabel] || []).forEach(it=>{
-            const ex = state.exercises.find(e=>e.nombre.trim().toLowerCase()===it.nombre.trim().toLowerCase());
-            if(!ex) return; // ejercicio no encontrado por nombre: se omite en vez de romper la semilla entera
-            items.push({ id: uid(), exerciseId: ex.id, diaSesion: diaIdx+1, series: it.series||'3', reps: it.reps||'12', carga: it.carga||'', descanso: it.descanso||'45s', notas: it.notas||'' });
-          });
+      const items = [];
+      ['A','B','C'].forEach((diaLabel, diaIdx)=>{
+        (seed.dias[diaLabel] || []).forEach(it=>{
+          const ex = state.exercises.find(e=>e.nombre.trim().toLowerCase()===it.nombre.trim().toLowerCase());
+          if(!ex) return; // ejercicio no encontrado por nombre: se omite en vez de romper la semilla entera
+          items.push({ id: uid(), exerciseId: ex.id, diaSesion: diaIdx+1, series: it.series||'3', reps: it.reps||'12', carga: it.carga||'', descanso: it.descanso||'45s', notas: it.notas||'' });
         });
-        if(items.length>0){
+      });
+      if(items.length>0){
+        const idx = state.programs[key].weeks.findIndex(w=>w.numero===seed.numero);
+        if(idx>=0){
+          // ya existía esta semana (creada por una revisión anterior o a mano): se sustituyen sus ejercicios, conservando el id de la semana
+          state.programs[key].weeks[idx] = { id: state.programs[key].weeks[idx].id, numero: seed.numero, items, ultimaModificacion: new Date().toISOString() };
+        }else{
           state.programs[key].weeks.push({ id: uid(), numero: seed.numero, items, ultimaModificacion: new Date().toISOString() });
         }
       }
-      state.programasSemillaAplicada[seedId] = true;
+      state.programasSemillaRevision[seedId] = revision;
     });
   }catch(err){
     // si algo falla al aplicar una semilla, no debe romper la carga del resto de la app
   }
 }
 
-const APP_VERSION = '2026-08-28-1';
+const APP_VERSION = '2026-09-22-1';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -4775,7 +5285,7 @@ function homeView(){
   const optProgreso=document.createElement('div'); optProgreso.className='card'; optProgreso.style.cssText='padding:26px 24px;cursor:pointer;text-align:left;';
   optProgreso.innerHTML=`${iconBadge('orange','<path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/>')}<span class="tag" style="background:rgba(255,107,53,.16);color:var(--accent);">Tu evolución</span><h3 style="font-size:20px;margin:10px 0 8px;max-width:90%;">Mi progreso</h3><p style="max-width:90%;">Peso corporal, sesiones completadas y evolución de cargas.</p>`;
   optProgreso.onclick=()=>{ appScreen='miProgreso'; render(); };
-  grid.appendChild(optTemporizador); grid.appendChild(optPerfil); grid.appendChild(optBateria); grid.appendChild(optProgreso);
+  grid.appendChild(optPersonal); grid.appendChild(optGrupos); grid.appendChild(optHorarios); grid.appendChild(optTemporizador); grid.appendChild(optPerfil); grid.appendChild(optBateria); grid.appendChild(optProgreso);
   wrap.appendChild(grid);
 
   const backupFooter=document.createElement('div');
@@ -6007,7 +6517,7 @@ function grupoPlanificacionView(){
     const jumpWrap=document.createElement('div'); jumpWrap.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;';
     jumpWrap.innerHTML=`<label style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">Ir directamente a:</label>`;
     const jumpSelect=document.createElement('select'); jumpSelect.style.cssText='max-width:220px;';
-    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + horario.weeks.map(w=>`<option value="${w.id||''}">Semana ${w.numero}</option>`).join('');
+    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + horario.weeks.map(w=>`<option value="${w.id||''}">${w.suelta?'Sesión suelta '+(w.numero||''):'Semana '+w.numero}</option>`).join('');
     jumpSelect.onchange=()=>{
       const target = horario.weeks.find(w=>w.id===jumpSelect.value);
       if(!target) return;
@@ -6031,13 +6541,81 @@ function grupoPlanificacionView(){
 
   const addWeekBtn=document.createElement('button');
   addWeekBtn.className='btn btn-accent'; addWeekBtn.style.marginTop='6px';
-  addWeekBtn.textContent='+ Añadir semana '+(horario.weeks.length+1);
+  addWeekBtn.textContent='+ Añadir semana '+(horario.weeks.filter(w=>!w.suelta).length+1);
   addWeekBtn.onclick=()=>{
-    horario.weeks.push({numero:horario.weeks.length+1, notas:'', items:[]});
-    scheduleSave(); render();
+    pedirNumeroDiasSemana((dias)=>{
+      horario.weeks.push({numero:horario.weeks.filter(w=>!w.suelta).length+1, notas:'', items:[], numDias:dias});
+      scheduleSave(); render();
+    });
   };
   wrap.appendChild(addWeekBtn);
+  const addSesionBtn=document.createElement('button');
+  addSesionBtn.className='btn'; addSesionBtn.style.marginTop='6px'; addSesionBtn.style.marginLeft='8px';
+  addSesionBtn.textContent='+ Añadir sesión suelta';
+  addSesionBtn.onclick=()=>{
+    horario.weeks.push({numero:horario.weeks.filter(w=>w.suelta).length+1, suelta:true, notas:'', items:[], numDias:1});
+    scheduleSave(); render();
+  };
+  wrap.appendChild(addSesionBtn);
   return wrap;
+}
+
+// ---------- Días por semana / sesiones sueltas ----------
+// Antes cada semana era una lista plana de ejercicios; ahora una semana puede tener varios días de
+// entrenamiento (guardados en item.diaSesion) y el entrenador fija cuántos días tendrá al crearla, para
+// poder ir añadiendo ejercicios día a día desde el principio. diasDeSemana() es robusto con datos
+// antiguos: si no hay numDias guardado, lo infiere del mayor diaSesion ya presente en sus ejercicios.
+function diasDeSemana(week){
+  const maxItemDia = week.items.reduce((m,it)=>Math.max(m, it.diaSesion||1), 1);
+  return Math.max(week.numDias||1, maxItemDia);
+}
+// Días que ya tienen algún ejercicio añadido (para no ofrecer exportar un día todavía vacío)
+function diasConEjercicios(week){
+  return [...new Set(week.items.map(it=>it.diaSesion||1))].sort((a,b)=>a-b);
+}
+function pedirNumeroDiasSemana(onConfirm){
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-head"><h2>Nueva semana</h2><button class="close-x">✕</button></div>
+      <div class="field"><label>¿Cuántos días de entrenamiento tendrá esta semana?</label><input type="number" id="nd-dias" value="1" min="1" max="7"></div>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Podrás ir añadiendo ejercicios a cada día por separado, y exportar la semana entera o solo un día.</p>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="nd-confirm">Crear semana</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#nd-confirm').onclick=()=>{
+    const dias = Math.max(1, Math.min(7, parseInt(overlay.querySelector('#nd-dias').value)||1));
+    overlay.remove();
+    onConfirm(dias);
+  };
+}
+// Modal mínimo para elegir a qué día de la semana se añade un ejercicio (solo aparece si la semana tiene más de un día)
+function elegirDiaSemana(week, onConfirm){
+  const total = diasDeSemana(week);
+  if(total<=1){ onConfirm(undefined); return; }
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:320px;">
+      <div class="modal-head"><h2>¿Qué día?</h2><button class="close-x">✕</button></div>
+      <div class="field"><label>Día de la semana</label>
+        <select id="ed-dia">${Array.from({length:total},(_,i)=>`<option value="${i+1}">Día ${i+1}</option>`).join('')}</select>
+      </div>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="ed-confirm">Continuar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#ed-confirm').onclick=()=>{
+    const dia = parseInt(overlay.querySelector('#ed-dia').value,10);
+    overlay.remove();
+    onConfirm(dia);
+  };
 }
 
 function weekBlockGrupo(clase, horario, week, wIdx){
@@ -6054,11 +6632,12 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   arrowBtn.onclick=(e)=>{ e.stopPropagation(); if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
   head.appendChild(arrowBtn);
   const tituloWrap=document.createElement('div'); tituloWrap.style.cssText='flex:1;';
-  tituloWrap.innerHTML=`<h3 style="margin:0;">Semana ${week.numero}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
+  const etiquetaSemanaGrupo = week.suelta ? `🗓 Sesión suelta ${week.numero||''}` : `Semana ${week.numero}`;
+  tituloWrap.innerHTML=`<h3 style="margin:0;">${etiquetaSemanaGrupo}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
   tituloWrap.onclick=()=>{ if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
   head.appendChild(tituloWrap);
-  const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent='Eliminar semana';
-  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm('¿Eliminar esta semana del plan?', ()=>{ horario.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
+  const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent = week.suelta ? 'Eliminar sesión' : 'Eliminar semana';
+  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm(week.suelta?'¿Eliminar esta sesión suelta?':'¿Eliminar esta semana del plan?', ()=>{ horario.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
   head.appendChild(delWeekBtn);
   block.appendChild(head);
 
@@ -6134,13 +6713,15 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   foot.appendChild(addExBtn);
   const addRandomBtn=document.createElement('button'); addRandomBtn.className='btn btn-sm'; addRandomBtn.textContent='🎲 Añadir uno aleatorio';
   addRandomBtn.onclick=()=>{
-    const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
-    const poolBase = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c)));
-    añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
-      const cardio = esEjercicioCardioContinuo(ex);
-      const p = prescripcionAjustadaParaGrupo(ex, cardio?'1':'3', cardio?'15-20 min':'12', cardio?'—':'45s', clientesInscritos);
-      return { exerciseId: ex.id, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
-    }, 'este grupo');
+    elegirDiaSemana(week, (dia)=>{
+      const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
+      const poolBase = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c)));
+      añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
+        const cardio = esEjercicioCardioContinuo(ex);
+        const p = prescripcionAjustadaParaGrupo(ex, cardio?'1':'3', cardio?'15-20 min':'12', cardio?'—':'45s', clientesInscritos);
+        return { exerciseId: ex.id, diaSesion: dia, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
+      }, 'este grupo');
+    });
   };
   foot.appendChild(addRandomBtn);
   const randomBtn=document.createElement('button'); randomBtn.className='btn btn-sm'; randomBtn.textContent='🎲 Generar semana aleatoria';
@@ -6168,9 +6749,19 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm'; timerBtn.textContent='⏱ Hacerla con temporizador';
   timerBtn.onclick=()=>cargarSesionEnTemporizador(week, false);
   foot.appendChild(timerBtn);
-  const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost'; exportBtn.textContent='📄 Exportar sesión';
-  exportBtn.onclick=()=>exportarResumenSesion(week, null, `${clase.nombre} — Semana ${week.numero}`);
+  const diasConItemsGrupo = diasConEjercicios(week);
+  const tituloExportGrupo = week.suelta ? `${clase.nombre} — Sesión suelta ${week.numero||''}` : `${clase.nombre} — Semana ${week.numero}`;
+  const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost';
+  exportBtn.textContent = diasConItemsGrupo.length>1 ? '📄 Exportar semana completa' : '📄 Exportar sesión';
+  exportBtn.onclick=()=>exportarResumenSesion(week, null, tituloExportGrupo);
   foot.appendChild(exportBtn);
+  if(diasConItemsGrupo.length>1){
+    diasConItemsGrupo.forEach(d=>{
+      const diaBtn=document.createElement('button'); diaBtn.className='btn btn-sm btn-ghost'; diaBtn.textContent=`📄 Día ${d}`;
+      diaBtn.onclick=()=>exportarResumenSesion(week, null, tituloExportGrupo, d);
+      foot.appendChild(diaBtn);
+    });
+  }
   const notesInput=document.createElement('input'); notesInput.className='search'; notesInput.style.minWidth='260px';
   notesInput.placeholder='Notas de la semana (variedad, foco...)';
   notesInput.value=week.notas||'';
@@ -6207,6 +6798,7 @@ function openAddExerciseToGroupWeek(week, clase){
       <div class="modal-head"><h2>Añadir ejercicio</h2><button class="close-x">✕</button></div>
       ${htmlBuscadorEjercicio()}
       ${isRotativa?`<div class="field"><label>Estación</label><input id="pick-estacion" placeholder="Estación 1"></div>`:''}
+      ${diasDeSemana(week)>1?`<div class="field"><label>Día</label><select id="pick-dia">${Array.from({length:diasDeSemana(week)},(_,i)=>`<option value="${i+1}">Día ${i+1}</option>`).join('')}</select></div>`:''}
       <div class="field" style="margin-bottom:10px;"><label>Medir por</label>
         <div style="display:flex;gap:6px;">
           <button type="button" class="btn btn-sm toggle-medida" data-val="reps" style="flex:1;">Repeticiones</button>
@@ -6235,6 +6827,7 @@ function openAddExerciseToGroupWeek(week, clase){
     week.items.push({
       exerciseId: overlay.querySelector('#pick-ex').value,
       estacion: isRotativa ? overlay.querySelector('#pick-estacion').value : '',
+      diaSesion: diasDeSemana(week)>1 ? parseInt(overlay.querySelector('#pick-dia').value,10) : undefined,
       series: overlay.querySelector('#pick-series').value,
       reps: overlay.querySelector('#pick-reps').value,
       carga: overlay.querySelector('#pick-carga').value,
@@ -6258,7 +6851,7 @@ function generateRandomGroupWeek(clase, horario, week){
     overlay.innerHTML=`
       <div class="modal" style="max-width:400px;">
         <div class="modal-head"><h2>Generar semana aleatoria</h2><button class="close-x">✕</button></div>
-        <div class="field"><label>¿Cuántos días distintos se imparte esta clase esta semana?</label><input type="number" id="rw-dias" value="1" min="1" max="6"></div>
+        <div class="field"><label>¿Cuántos días distintos se imparte esta clase esta semana?</label><input type="number" id="rw-dias" value="${diasDeSemana(week)}" min="1" max="6"></div>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Se generará una sesión distinta (sin repetir ejercicios entre ellas) para cada día que indiques.</p>
         ${htmlFiltrosGeneracion()}
         <div class="actions" style="margin-top:14px;justify-content:flex-end;">
@@ -6278,6 +6871,7 @@ function generateRandomGroupWeek(clase, horario, week){
   };
 
   const doGenerate = (numDias, filtros)=>{
+    week.numDias = numDias;
     // Filtra por precauciones de todos los inscritos que sean clientes con ficha (los invitados sin ficha no se pueden filtrar)
     const clientesInscritos = horario.inscritos.filter(i=>i.tipo==='cliente').map(i=>state.clients.find(c=>c.id===i.clienteId)).filter(Boolean);
     let pool = state.exercises.filter(ex=>clientesInscritos.every(c=>isExerciseSafeForClient(ex,c,filtros.nivel)));
@@ -6488,7 +7082,7 @@ function renderClienteSessionPanel(clientId){
     const jumpWrap=document.createElement('div'); jumpWrap.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;';
     jumpWrap.innerHTML=`<label style="font-size:12px;color:var(--ink-soft);white-space:nowrap;">Ir directamente a:</label>`;
     const jumpSelect=document.createElement('select'); jumpSelect.style.cssText='max-width:220px;';
-    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + program.weeks.map(w=>`<option value="${w.id||''}">Semana ${w.numero}</option>`).join('');
+    jumpSelect.innerHTML = `<option value="">Elige una semana...</option>` + program.weeks.map(w=>`<option value="${w.id||''}">${w.suelta?'Sesión suelta '+(w.numero||''):'Semana '+w.numero}</option>`).join('');
     jumpSelect.onchange=()=>{
       const target = program.weeks.find(w=>w.id===jumpSelect.value);
       if(!target) return;
@@ -6512,12 +7106,22 @@ function renderClienteSessionPanel(clientId){
 
   const addWeekBtn=document.createElement('button');
   addWeekBtn.className='btn btn-accent'; addWeekBtn.style.marginTop='6px';
-  addWeekBtn.textContent='+ Añadir semana '+(program.weeks.length+1);
+  addWeekBtn.textContent='+ Añadir semana '+(program.weeks.filter(w=>!w.suelta).length+1);
   addWeekBtn.onclick=()=>{
-    program.weeks.push({numero:program.weeks.length+1, notas:'', items:[]});
-    scheduleSave(); render();
+    pedirNumeroDiasSemana((dias)=>{
+      program.weeks.push({numero:program.weeks.filter(w=>!w.suelta).length+1, notas:'', items:[], numDias:dias});
+      scheduleSave(); render();
+    });
   };
   wrap.appendChild(addWeekBtn);
+  const addSesionBtn=document.createElement('button');
+  addSesionBtn.className='btn'; addSesionBtn.style.marginTop='6px'; addSesionBtn.style.marginLeft='8px';
+  addSesionBtn.textContent='+ Añadir sesión suelta';
+  addSesionBtn.onclick=()=>{
+    program.weeks.push({numero:program.weeks.filter(w=>w.suelta).length+1, suelta:true, notas:'', items:[], numDias:1});
+    scheduleSave(); render();
+  };
+  wrap.appendChild(addSesionBtn);
 
   return wrap;
 }
@@ -6548,14 +7152,27 @@ function esContinuacionDeSuperset(items, idx){
   const actual = items[idx], anterior = items[idx-1];
   return !!(actual.supersetId && anterior.supersetId===actual.supersetId);
 }
-function exportarResumenSesion(week, unitClients, titulo){
+const LOGO_PHYOS_B64 = 'data:image/png;base64,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'; // logo oficial Centro Phyos (fisioterapia/osteopatía + entrenamiento), usado en la cabecera del documento exportado
+function exportarResumenSesion(week, unitClients, titulo, diaFiltro){
   const isPair = unitClients && unitClients.length===2;
+  const itemsAExportar = diaFiltro ? week.items.filter(it=>(it.diaSesion||1)===diaFiltro) : week.items;
+  const mostrarCabecerasDia = !diaFiltro && itemsAExportar.some(it=>it.diaSesion);
   let tarjetasHtml = '';
-  week.items.forEach(item=>{
+  let diaAnteriorExport = null;
+  itemsAExportar.forEach(item=>{
+    if(mostrarCabecerasDia && (item.diaSesion||1)!==diaAnteriorExport){
+      diaAnteriorExport = item.diaSesion||1;
+      tarjetasHtml += `<div class="dia-header">Día ${diaAnteriorExport}</div>`;
+    }
     const ex = state.exercises.find(e=>e.id===item.exerciseId);
     const nombre = ex ? ex.nombre : '(ejercicio eliminado)';
-    const imagen = ex && ex.imagenUrl
-      ? `<img src="${ex.imagenUrl}" class="ex-foto" onerror="this.outerHTML='&lt;div class=&quot;ex-foto-vacia&quot;&gt;&lt;/div&gt;';">`
+    // Igual que htmlImagenEjercicio() en la app: si no hay imagenUrl explícita (o incluso si la hay, como
+    // reintento), se prueba también a adivinar la foto por el nombre exacto del ejercicio con varias
+    // extensiones. Antes el export solo miraba imagenUrl a pelo, así que ejercicios con foto real en
+    // ejercicios/ pero sin imagenUrl puesta a mano salían con hueco vacío aunque en la app sí se vieran.
+    const candidatosImg = ex ? [...(ex.imagenUrl?[ex.imagenUrl.trim()]:[]), ...candidatosImagenPorNombre(ex)] : [];
+    const imagen = candidatosImg.length>0
+      ? `<img src="${escapeHtml(candidatosImg[0])}" class="ex-foto" data-fallbacks='${escapeHtml(JSON.stringify(candidatosImg.slice(1)))}' onerror="manejarErrorImagenExport(this)">`
       : `<div class="ex-foto-vacia"></div>`;
     const etiquetas = `${item.supersetId?'<span class="badge badge-ss">Superserie</span>':''}${item.soloPara?'<span class="badge badge-solo">Individual</span>':''}`;
     let statsHtml;
@@ -6575,50 +7192,92 @@ function exportarResumenSesion(week, unitClients, titulo){
         </div>
       </div>`;
   });
-  const material = materialNecesarioDeItems(week.items);
+  const material = materialNecesarioDeItems(itemsAExportar);
+  const tituloConDia = diaFiltro ? `${titulo} — Día ${diaFiltro}` : titulo;
   const fecha = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${escapeHtml(titulo)}</title>
+  const entrenador = 'M'; // identidad del entrenador que firma la sesión — cambiar aquí si algún día se quiere otro nombre/firma
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${escapeHtml(tituloConDia)}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
+      :root{ --morado:#7B4FDB; --morado-claro:#9B6DFF; --naranja:#FF6B35; --naranja-claro:#FFB347; --tinta:#181420; --tinta-suave:#6b6478; --linea:#E7E1F5; --panel:#F8F5FD; }
       *{box-sizing:border-box;}
-      body{font-family:'Inter',Arial,sans-serif;color:#232025;padding:0;margin:0;background:#fff;}
+      body{font-family:'Inter',Arial,sans-serif;color:var(--tinta);padding:0;margin:0;background:#fff;}
       .hoja{max-width:760px;margin:0 auto;padding:40px 44px 60px;}
-      .cabecera{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #181420;padding-bottom:16px;margin-bottom:24px;}
-      .marca{font-family:'Manrope',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.01em;}
-      .marca span{color:#FF6B35;}
-      .cabecera .fecha{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a8590;text-transform:uppercase;letter-spacing:.05em;}
-      h1{font-family:'Manrope',sans-serif;font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em;}
-      .subtitulo{color:#8a8590;font-size:13px;margin-bottom:24px;}
-      .material{background:#F5F2F8;border:1px solid #E5E1EC;border-radius:10px;padding:12px 16px;margin-bottom:24px;font-size:12.5px;}
-      .material strong{font-family:'Manrope',sans-serif;font-weight:700;}
-      .ex-tarjeta{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid #ECE9F0;break-inside:avoid;}
-      .ex-tarjeta:last-child{border-bottom:none;}
-      .ex-foto{width:96px;height:96px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#F0EEF3;}
-      .ex-foto-vacia{width:96px;height:96px;border-radius:10px;flex-shrink:0;background:#F0EEF3;}
+      .marca-header{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+      .marca-logo{height:54px;width:auto;flex-shrink:0;display:block;}
+      .marca-fecha{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.05em;text-align:right;white-space:nowrap;}
+      .franja-marca{height:4px;border-radius:3px;margin:16px 0 26px;background:linear-gradient(90deg,var(--morado),var(--morado-claro) 45%,var(--naranja) 85%,var(--naranja-claro));}
+      h1{font-family:'Manrope',sans-serif;font-size:25px;font-weight:800;margin:0 0 26px;letter-spacing:-.01em;}
+      .material{background:var(--panel);border:1px solid var(--linea);border-radius:10px;padding:12px 16px;margin-bottom:26px;font-size:12.5px;}
+      .material strong{font-family:'Manrope',sans-serif;font-weight:700;color:var(--morado);}
+      .ex-tarjeta{display:flex;gap:16px;padding:15px 14px 15px 16px;margin-bottom:3px;border-left:3px solid var(--morado-claro);border-radius:0 10px 10px 0;background:linear-gradient(90deg,rgba(123,79,219,.05),transparent 55%);break-inside:avoid;}
+      .ex-foto{width:96px;height:96px;object-fit:contain;object-position:center;border-radius:10px;flex-shrink:0;background:#F0EEF3;padding:6px;box-sizing:border-box;border:1px solid var(--linea);}
+      .ex-foto-vacia{width:96px;height:96px;border-radius:10px;flex-shrink:0;background:#F0EEF3;border:1px solid var(--linea);}
       .ex-info{flex:1;min-width:0;}
       .ex-nombre-fila{font-family:'Manrope',sans-serif;font-weight:700;font-size:15.5px;margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
       .badge{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:8px;font-weight:600;}
       .badge-ss{background:#EFE6FF;color:#7B4FDB;}
       .badge-solo{background:#F0EEF3;color:#8a8590;}
       .stat-persona{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:#4a4550;margin-bottom:4px;}
-      .stat-nombre{font-weight:700;color:#181420;min-width:90px;}
-      .ex-notas{font-size:12px;color:#8a8590;font-style:italic;margin-top:4px;}
-      .pie{margin-top:32px;padding-top:16px;border-top:1px solid #ECE9F0;font-size:12px;color:#8a8590;display:flex;justify-content:space-between;}
-      .btn-imprimir{margin-top:28px;padding:11px 20px;font-size:13.5px;font-family:'Manrope',sans-serif;font-weight:700;background:#181420;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+      .stat-nombre{font-weight:700;color:var(--tinta);min-width:90px;}
+      .ex-notas{font-size:12px;color:var(--tinta-suave);font-style:italic;margin-top:4px;}
+      .dia-header{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#fff;font-weight:600;padding:6px 14px;border-radius:20px;background:linear-gradient(90deg,var(--naranja),var(--naranja-claro));margin:26px 0 12px;}
+      .dia-header:first-of-type{margin-top:2px;}
+      .pie-marca{margin-top:34px;padding-top:22px;border-top:2px solid var(--linea);display:flex;align-items:center;gap:20px;}
+      .sello-wrap{flex-shrink:0;}
+      .pie-texto{font-size:12.5px;color:var(--tinta-suave);line-height:1.6;}
+      .pie-marca-nombre{font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--tinta);margin-bottom:2px;}
+      .pie-notas{margin-top:8px;font-style:italic;}
+      .btn-imprimir{margin-top:28px;padding:11px 20px;font-size:13.5px;font-family:'Manrope',sans-serif;font-weight:700;background:var(--tinta);color:#fff;border:none;border-radius:8px;cursor:pointer;}
       @media print{ .btn-imprimir{display:none;} .hoja{padding:0;} @page{margin:20mm 18mm;} }
-    </style></head>
+    </style>
+    <script>
+      // Réplica mínima de manejarErrorImagenEjercicio() de la app: si la foto de un ejercicio falla,
+      // prueba con el resto de extensiones candidatas antes de rendirse y dejar el hueco vacío.
+      function manejarErrorImagenExport(imgEl){
+        let restantes = [];
+        try{ restantes = JSON.parse(imgEl.dataset.fallbacks||'[]'); }catch(e){}
+        if(restantes.length>0){
+          const siguiente = restantes.shift();
+          imgEl.dataset.fallbacks = JSON.stringify(restantes);
+          imgEl.src = siguiente;
+        } else {
+          const vacio = document.createElement('div');
+          vacio.className = 'ex-foto-vacia';
+          imgEl.replaceWith(vacio);
+        }
+      }
+    <\/script>
+    </head>
     <body>
       <div class="hoja">
-        <div class="cabecera">
-          <div class="marca">Phyos<span>Gym</span></div>
-          <div class="fecha">Generado el ${fecha}</div>
+        <div class="marca-header">
+          <img class="marca-logo" src="${LOGO_PHYOS_B64}" alt="Centro Phyos">
+          <div class="marca-fecha">Generado el<br>${fecha}</div>
         </div>
-        <h1>${escapeHtml(titulo)}</h1>
-        <div class="subtitulo">Sesión de entrenamiento</div>
+        <div class="franja-marca"></div>
+        <h1>${escapeHtml(tituloConDia)}</h1>
         ${material.length?`<div class="material"><strong>Material necesario:</strong> ${material.map(m=>escapeHtml(m)).join(' · ')}</div>`:''}
         ${tarjetasHtml}
-        ${week.notas?`<div class="pie"><span><strong>Notas de la semana:</strong> ${escapeHtml(week.notas)}</span></div>`:''}
+        <div class="pie-marca">
+          <div class="sello-wrap">
+            <svg width="90" height="90" viewBox="0 0 140 140">
+              <defs><path id="selloCirculo" d="M 70,70 m -54,0 a 54,54 0 1,1 108,0 a 54,54 0 1,1 -108,0"/></defs>
+              <circle cx="70" cy="70" r="62" fill="none" stroke="#7B4FDB" stroke-width="1.4"/>
+              <circle cx="70" cy="70" r="45" fill="none" stroke="#7B4FDB" stroke-width="1"/>
+              <text font-family="'JetBrains Mono',monospace" font-size="8.4" letter-spacing="2.4" fill="#7B4FDB" font-weight="600">
+                <textPath href="#selloCirculo" xlink:href="#selloCirculo" startOffset="1%">CENTRO PHYOS · ENTRENAMIENTO PERSONAL ·</textPath>
+              </text>
+              <text x="70" y="66" text-anchor="middle" font-family="'Fraunces',serif" font-size="18" font-weight="700" fill="#181420">${escapeHtml(entrenador)}</text>
+              <text x="70" y="82" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.6" letter-spacing="1.5" fill="#FF6B35" font-weight="600">ENTRENADOR/A</text>
+            </svg>
+          </div>
+          <div class="pie-texto">
+            <div class="pie-marca-nombre">Centro Phyos</div>
+            ${week.notas?`<div class="pie-notas"><strong>Notas de la semana:</strong> ${escapeHtml(week.notas)}</div>`:''}
+          </div>
+        </div>
         <button class="btn-imprimir" onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
       </div>
     </body></html>`;
@@ -7084,11 +7743,12 @@ function weekBlock(unitClients, program, week, wIdx){
   arrowBtn.onclick=(e)=>{ e.stopPropagation(); if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
   head.appendChild(arrowBtn);
   const tituloWrap=document.createElement('div'); tituloWrap.style.cssText='flex:1;';
-  tituloWrap.innerHTML=`<h3 style="margin:0;">Semana ${week.numero}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
+  const etiquetaSemana = week.suelta ? `🗓 Sesión suelta ${week.numero||''}` : `Semana ${week.numero}`;
+  tituloWrap.innerHTML=`<h3 style="margin:0;">${etiquetaSemana}</h3><div style="font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Últimos cambios: ${formatearFechaModificacion(week.ultimaModificacion)}</div>`;
   tituloWrap.onclick=()=>{ if(colapsada) semanasColapsadas.delete(week.id); else semanasColapsadas.add(week.id); render(); };
   head.appendChild(tituloWrap);
-  const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent='Eliminar semana';
-  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm('¿Eliminar esta semana del plan?', ()=>{ program.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
+  const delWeekBtn=document.createElement('button'); delWeekBtn.className='btn btn-sm btn-ghost'; delWeekBtn.textContent = week.suelta ? 'Eliminar sesión' : 'Eliminar semana';
+  delWeekBtn.onclick=(e)=>{ e.stopPropagation(); showConfirm(week.suelta?'¿Eliminar esta sesión suelta?':'¿Eliminar esta semana del plan?', ()=>{ program.weeks.splice(wIdx,1); scheduleSave(); render(); }); };
   head.appendChild(delWeekBtn);
   block.appendChild(head);
 
@@ -7239,22 +7899,24 @@ function weekBlock(unitClients, program, week, wIdx){
   foot.appendChild(addExBtn);
   const addRandomBtn=document.createElement('button'); addRandomBtn.className='btn btn-sm'; addRandomBtn.textContent='🎲 Añadir uno aleatorio';
   addRandomBtn.onclick=()=>{
-    let poolBase = state.exercises.filter(ex=>isExerciseSafeForUnit(ex, unitClients));
-    poolBase = poolBase.filter(ex=>!ex.esDinamicaGrupal);
-    if(!isPair) poolBase = poolBase.filter(ex=>!ex.esPareja);
-    añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
-      const cardio = esEjercicioCardioContinuo(ex);
-      const baseSeries = cardio?'1':'3', baseReps = cardio?'15-20 min':'12', baseDescanso = cardio?'—':'45s';
-      if(!isPair){
-        const p = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
-        return { exerciseId: ex.id, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
-      }
-      const pa = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
-      const pb = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[1]);
-      return { exerciseId: ex.id, esPareja: !!ex.esPareja, soloPara: null,
-        a: { series:pa.series, reps:pa.reps, carga:pa.carga, descanso:pa.descanso, notas:pa.nota },
-        b: { series:pb.series, reps:pb.reps, carga:pb.carga, descanso:pb.descanso, notas:pb.nota } };
-    }, unitClients.map(c=>c.nombre).join(' y '));
+    elegirDiaSemana(week, (dia)=>{
+      let poolBase = state.exercises.filter(ex=>isExerciseSafeForUnit(ex, unitClients));
+      poolBase = poolBase.filter(ex=>!ex.esDinamicaGrupal);
+      if(!isPair) poolBase = poolBase.filter(ex=>!ex.esPareja);
+      añadirEjercicioAleatorioAWeek(week, poolBase, (ex)=>{
+        const cardio = esEjercicioCardioContinuo(ex);
+        const baseSeries = cardio?'1':'3', baseReps = cardio?'15-20 min':'12', baseDescanso = cardio?'—':'45s';
+        if(!isPair){
+          const p = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
+          return { exerciseId: ex.id, diaSesion: dia, series: p.series, reps: p.reps, carga: p.carga, descanso: p.descanso, notas: p.nota };
+        }
+        const pa = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[0]);
+        const pb = prescripcionAjustadaParaCliente(ex, baseSeries, baseReps, baseDescanso, unitClients[1]);
+        return { exerciseId: ex.id, diaSesion: dia, esPareja: !!ex.esPareja, soloPara: null,
+          a: { series:pa.series, reps:pa.reps, carga:pa.carga, descanso:pa.descanso, notas:pa.nota },
+          b: { series:pb.series, reps:pb.reps, carga:pb.carga, descanso:pb.descanso, notas:pb.nota } };
+      }, unitClients.map(c=>c.nombre).join(' y '));
+    });
   };
   foot.appendChild(addRandomBtn);
   const randomBtn=document.createElement('button'); randomBtn.className='btn btn-sm'; randomBtn.textContent='🎲 Generar semana aleatoria';
@@ -7280,9 +7942,20 @@ function weekBlock(unitClients, program, week, wIdx){
   const timerBtn=document.createElement('button'); timerBtn.className='btn btn-sm'; timerBtn.textContent='⏱ Hacerla con temporizador';
   timerBtn.onclick=()=>cargarSesionEnTemporizador(week, isPair);
   foot.appendChild(timerBtn);
-  const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost'; exportBtn.textContent='📄 Exportar sesión';
-  exportBtn.onclick=()=>exportarResumenSesion(week, unitClients, `Semana ${week.numero} — ${unitClients.map(c=>c.nombre).join(' & ')}`);
+  const diasConItemsUnidad = diasConEjercicios(week);
+  const etiquetaUnidadExport = week.suelta ? `Sesión suelta ${week.numero||''}` : `Semana ${week.numero}`;
+  const tituloExportUnidad = `${etiquetaUnidadExport} — ${unitClients.map(c=>c.nombre).join(' & ')}`;
+  const exportBtn=document.createElement('button'); exportBtn.className='btn btn-sm btn-ghost';
+  exportBtn.textContent = diasConItemsUnidad.length>1 ? '📄 Exportar semana completa' : '📄 Exportar sesión';
+  exportBtn.onclick=()=>exportarResumenSesion(week, unitClients, tituloExportUnidad);
   foot.appendChild(exportBtn);
+  if(diasConItemsUnidad.length>1){
+    diasConItemsUnidad.forEach(d=>{
+      const diaBtn=document.createElement('button'); diaBtn.className='btn btn-sm btn-ghost'; diaBtn.textContent=`📄 Día ${d}`;
+      diaBtn.onclick=()=>exportarResumenSesion(week, unitClients, tituloExportUnidad, d);
+      foot.appendChild(diaBtn);
+    });
+  }
   const notesInput=document.createElement('input'); notesInput.className='search'; notesInput.style.minWidth='260px';
   notesInput.placeholder='Notas de la semana (variedad, foco...)';
   notesInput.value=week.notas||'';
@@ -7319,6 +7992,7 @@ function openAddExerciseToWeek(week, unitClients){
     <div class="modal" style="max-width:${isPair?'620px':'460px'};">
       <div class="modal-head"><h2>Añadir ejercicio</h2><button class="close-x">✕</button></div>
       ${htmlBuscadorEjercicio()}
+      ${diasDeSemana(week)>1?`<div class="field"><label>Día</label><select id="pick-dia">${Array.from({length:diasDeSemana(week)},(_,i)=>`<option value="${i+1}">Día ${i+1}</option>`).join('')}</select></div>`:''}
       ${isPair?`<div class="field" style="margin:4px 0 12px;"><label style="display:flex;align-items:center;gap:6px;flex-direction:row;text-transform:none;font-size:13px;"><input type="checkbox" id="pick-espareja" style="width:auto;"> Es un ejercicio ejecutado en pareja (a la vez, agarrados o enfrentados)</label></div>`:''}
       ${isPair?`<div class="field" style="margin-bottom:12px;"><label>Este ejercicio es para</label>
         <select id="pick-para">
@@ -7385,9 +8059,11 @@ function openAddExerciseToWeek(week, unitClients){
   }
   overlay.querySelector('#confirm-add').onclick=()=>{
     const g=id=>overlay.querySelector('#'+id).value;
+    const diaElegido = diasDeSemana(week)>1 ? parseInt(overlay.querySelector('#pick-dia').value,10) : undefined;
     if(!isPair){
       week.items.push({
         exerciseId: g('pick-ex'),
+        diaSesion: diaElegido,
         series: g('pick-series-a'), reps: g('pick-reps-a'), carga: g('pick-carga-a'),
         descanso: g('pick-descanso-a'), notas: g('pick-notas-a'),
       });
@@ -7395,6 +8071,7 @@ function openAddExerciseToWeek(week, unitClients){
       const paraModo = overlay.querySelector('#pick-para').value;
       week.items.push({
         exerciseId: g('pick-ex'),
+        diaSesion: diaElegido,
         esPareja: overlay.querySelector('#pick-espareja').checked,
         soloPara: paraModo==='ambos' ? null : paraModo,
         a: { series:g('pick-series-a'), reps:g('pick-reps-a'), carga:g('pick-carga-a'), descanso:g('pick-descanso-a'), notas:g('pick-notas-a') },
@@ -7875,7 +8552,7 @@ function generateRandomWeek(program, week, unitClients){
     overlay.innerHTML=`
       <div class="modal" style="max-width:400px;">
         <div class="modal-head"><h2>Generar semana aleatoria</h2><button class="close-x">✕</button></div>
-        <div class="field"><label>¿Cuántos días de entrenamiento distintos tendrá esta semana?</label><input type="number" id="rw-dias" value="1" min="1" max="6"></div>
+        <div class="field"><label>¿Cuántos días de entrenamiento distintos tendrá esta semana?</label><input type="number" id="rw-dias" value="${diasDeSemana(week)}" min="1" max="6"></div>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:-4px;">Se generará una sesión distinta (sin repetir ejercicios entre ellas) para cada día que indiques.</p>
         ${htmlFiltrosGeneracion()}
         <div class="actions" style="margin-top:14px;justify-content:flex-end;">
@@ -7895,6 +8572,7 @@ function generateRandomWeek(program, week, unitClients){
   };
 
   const doGenerate = (numDias, filtros)=>{
+    week.numDias = numDias;
     let pool = state.exercises.filter(ex=>isExerciseSafeForUnit(ex, unitClients, filtros.nivel));
     // Las dinámicas de grupo (relevos, circuitos por equipos, juegos grupales...) no son viables para 1 o 2 personas
     pool = pool.filter(ex=>!ex.esDinamicaGrupal);
