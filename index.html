@@ -2881,7 +2881,7 @@ function aplicarSemillasDePrograma(){
   }
 }
 
-const APP_VERSION = '2026-10-14-1';
+const APP_VERSION = '2026-11-06-1';
 let state = null;
 function comprobarVersionNueva(){
   fetch('./index.html?_=' + Date.now(), {cache:'no-store'})
@@ -5921,7 +5921,7 @@ function bateriaView(){
       const card=document.createElement('div'); card.className='card ex-card';
       const imagenHtml = htmlImagenEjercicio(ex, 'ex-card-img');
       card.innerHTML=`
-        <div class="ex-img-wrap">${imagenHtml}</div>
+        <div class="ex-img-wrap" style="cursor:pointer;" title="Ver ficha del ejercicio">${imagenHtml}</div>
         <span class="tag">${escapeHtml(ex.grupoMuscular||'General')}</span>
         ${ex.esPareja?'<span class="tag" style="background:rgba(127,179,217,.16);color:var(--accent-b);">En pareja</span>':''}
         ${ex.esDinamicaGrupal?'<span class="tag" style="background:rgba(232,178,78,.16);color:var(--accent-2);">Dinámica de grupo</span>':''}
@@ -5932,12 +5932,16 @@ function bateriaView(){
         ${ex.zonasRiesgo?`<p style="font-size:11.5px;"><strong>Precaución si:</strong> ${escapeHtml(ex.zonasRiesgo)}</p>`:''}
         ${ex.precauciones?`<div class="precaucion">⚠ ${escapeHtml(ex.precauciones)}</div>`:''}
       `;
+      const imgWrap = card.querySelector('.ex-img-wrap');
+      if(imgWrap) imgWrap.onclick=()=>abrirInfoEjercicio(ex);
       const actions=document.createElement('div'); actions.className='actions';
+      const addSesionBtn=document.createElement('button'); addSesionBtn.className='btn btn-sm btn-accent'; addSesionBtn.textContent='+ Añadir a sesión';
+      addSesionBtn.onclick=()=>abrirAnadirASesionDesdeBateria(ex);
       const editBtn=document.createElement('button'); editBtn.className='btn btn-sm'; editBtn.textContent='Editar';
       editBtn.onclick=()=>openExerciseModal(ex.id);
       const delBtn=document.createElement('button'); delBtn.className='btn btn-sm btn-danger'; delBtn.textContent='Eliminar';
       delBtn.onclick=()=>{ showConfirm('¿Eliminar este ejercicio de la batería?', ()=>{ state.exercises=state.exercises.filter(x=>x.id!==ex.id); scheduleSave(); renderGrid(); }); };
-      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      actions.appendChild(addSesionBtn); actions.appendChild(editBtn); actions.appendChild(delBtn);
       card.appendChild(actions);
       grid.appendChild(card);
     });
@@ -6766,7 +6770,7 @@ function weekBlockGrupo(clase, horario, week, wIdx){
   return block;
 }
 
-function openAddExerciseToGroupWeek(week, clase, horario){
+function openAddExerciseToGroupWeek(week, clase, horario, exerciseIdPre){
   if(state.exercises.length===0){
     showAlert('La batería de ejercicios está vacía. Añade ejercicios primero en la pestaña "Batería de ejercicios".');
     return;
@@ -6803,6 +6807,7 @@ function openAddExerciseToGroupWeek(week, clase, horario){
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   conectarBuscadorEjercicio(overlay, clientesRiesgo);
+  aplicarPreseleccionEjercicio(overlay, exerciseIdPre);
   conectarToggleMedida(overlay, ['']);
   overlay.querySelector('#confirm-add').onclick=()=>{
     week.items.push({
@@ -7572,6 +7577,7 @@ function abrirInfoEjercicio(ex){
       ${ex.precauciones?`<div class="precaucion">⚠ ${escapeHtml(ex.precauciones)}</div>`:''}
       ${ex.videoUrl?`<p style="margin-top:10px;"><a href="${escapeHtml(ex.videoUrl)}" target="_blank" rel="noopener" style="color:var(--accent);">▶ Ver vídeo</a></p>`:''}
       <div class="actions" style="margin-top:16px;justify-content:flex-end;">
+        <button class="btn btn-sm btn-accent" id="info-anadir-sesion">+ Añadir a la sesión de...</button>
         <button class="btn btn-sm" id="info-editar">✎ Editar ficha del ejercicio</button>
       </div>
     </div>`;
@@ -7579,6 +7585,121 @@ function abrirInfoEjercicio(ex){
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   overlay.querySelector('#info-editar').onclick=()=>{ overlay.remove(); openExerciseModal(ex.id); };
+  overlay.querySelector('#info-anadir-sesion').onclick=()=>{ overlay.remove(); abrirAnadirASesionDesdeBateria(ex); };
+}
+
+// ---------- Añadir ejercicio a una sesión directamente desde la Batería de ejercicios ----------
+// Permite elegir primero el destino (cliente/pareja o clase en grupo) y la semana/sesión concreta,
+// y reutiliza los modales de "Añadir ejercicio" ya existentes con el ejercicio preseleccionado.
+function listaUnidadesEntrenamiento(){
+  const vistos = new Set();
+  const unidades = [];
+  state.clients.forEach(c=>{
+    const key = unitKeyFor(c);
+    if(vistos.has(key)) return;
+    vistos.add(key);
+    const unitClients = getUnitClients(c);
+    unidades.push({ key, unitClients, label: unitClients.map(u=>u.nombre).join(' & ') });
+  });
+  unidades.sort((a,b)=>a.label.localeCompare(b.label,'es'));
+  return unidades;
+}
+function listaDestinosGrupales(){
+  const destinos = [];
+  (state.grupos||[]).forEach(clase=>{
+    (clase.horarios||[]).forEach(horario=>{
+      const diasTxt = (horario.dias||[]).join('/');
+      const label = `${clase.nombre}${diasTxt?' — '+diasTxt:''}${horario.hora?' '+horario.hora:''}`;
+      destinos.push({ clase, horario, label });
+    });
+  });
+  destinos.sort((a,b)=>a.label.localeCompare(b.label,'es'));
+  return destinos;
+}
+function abrirAnadirASesionDesdeBateria(ex){
+  const unidades = listaUnidadesEntrenamiento();
+  const destinosGrupo = listaDestinosGrupales();
+  if(unidades.length===0 && destinosGrupo.length===0){
+    showAlert('Todavía no hay clientes ni clases creadas para añadir este ejercicio a una sesión.');
+    return;
+  }
+  const overlay=document.createElement('div'); overlay.className='overlay';
+  overlay.innerHTML=`
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2>Añadir a la sesión de...</h2><button class="close-x">✕</button></div>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:-6px;">${escapeHtml(ex.nombre)}</p>
+      <div class="field"><label>Cliente / pareja / clase</label>
+        <select id="pick-destino">
+          <option value="">Elige...</option>
+          ${unidades.length?`<optgroup label="Clientes / parejas">${unidades.map((u,i)=>`<option value="unidad:${i}">${escapeHtml(u.label)}</option>`).join('')}</optgroup>`:''}
+          ${destinosGrupo.length?`<optgroup label="Clases en grupo">${destinosGrupo.map((d,i)=>`<option value="grupo:${i}">${escapeHtml(d.label)}</option>`).join('')}</optgroup>`:''}
+        </select>
+      </div>
+      <div class="field" id="pick-semana-wrap" style="display:none;"><label>Semana / sesión</label>
+        <select id="pick-semana"></select>
+      </div>
+      <p id="pick-sin-semanas" style="display:none;font-size:12.5px;color:var(--ink-soft);">Este destino todavía no tiene ninguna semana creada. Crea una semana primero desde su ficha.</p>
+      <div class="actions" style="margin-top:14px;justify-content:flex-end;">
+        <button class="btn btn-accent" id="confirm-destino" disabled>Continuar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').onclick=()=>overlay.remove();
+  overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
+
+  const selDestino = overlay.querySelector('#pick-destino');
+  const semanaWrap = overlay.querySelector('#pick-semana-wrap');
+  const selSemana = overlay.querySelector('#pick-semana');
+  const sinSemanas = overlay.querySelector('#pick-sin-semanas');
+  const confirmBtn = overlay.querySelector('#confirm-destino');
+
+  function weeksParaDestino(){
+    const val = selDestino.value;
+    if(!val) return null;
+    const [tipo, idxStr] = val.split(':');
+    const idx = parseInt(idxStr,10);
+    if(tipo==='unidad'){
+      const u = unidades[idx];
+      const key = u.key;
+      if(!state.programs[key]) state.programs[key] = { weeks: [] };
+      return { weeks: state.programs[key].weeks };
+    } else {
+      const d = destinosGrupo[idx];
+      if(!d.horario.weeks) d.horario.weeks = [];
+      return { weeks: d.horario.weeks };
+    }
+  }
+
+  selDestino.onchange=()=>{
+    const info = weeksParaDestino();
+    if(!info || info.weeks.length===0){
+      semanaWrap.style.display='none';
+      sinSemanas.style.display = info ? '' : 'none';
+      confirmBtn.disabled = true;
+      return;
+    }
+    sinSemanas.style.display='none';
+    semanaWrap.style.display='';
+    selSemana.innerHTML = info.weeks.map((w,wi)=>`<option value="${wi}">${w.suelta?'Sesión suelta '+(w.numero||''):'Semana '+w.numero}</option>`).join('');
+    confirmBtn.disabled = false;
+  };
+
+  confirmBtn.onclick=()=>{
+    const val = selDestino.value;
+    if(!val) return;
+    const [tipo, idxStr] = val.split(':');
+    const idx = parseInt(idxStr,10);
+    const info = weeksParaDestino();
+    if(!info) return;
+    const week = info.weeks[parseInt(selSemana.value,10)];
+    if(!week) return;
+    overlay.remove();
+    if(tipo==='unidad'){
+      openAddExerciseToWeek(week, unidades[idx].unitClients, ex.id);
+    } else {
+      openAddExerciseToGroupWeek(week, destinosGrupo[idx].clase, destinosGrupo[idx].horario, ex.id);
+    }
+  };
 }
 function flechaColapso(colapsado){
   return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .15s;transform:rotate(${colapsado?'-90':'0'}deg);flex-shrink:0;"><path d="M6 9l6 6 6-6"/></svg>`;
@@ -7665,6 +7786,23 @@ function conectarBuscadorEjercicio(overlay, clientesRiesgo){
   select.addEventListener('change', actualizarAvisoRiesgo);
   actualizar();
   actualizarAvisoRiesgo();
+}
+// Preselecciona un ejercicio concreto en el buscador (usado al venir desde "+ Añadir a sesión" de la Batería).
+// Si el ejercicio está oculto por el filtro de "no recomendados", activa el interruptor para mostrarlo igualmente.
+function aplicarPreseleccionEjercicio(overlay, exerciseIdPre){
+  if(!exerciseIdPre) return;
+  const select = overlay.querySelector('#pick-ex');
+  if(!select) return;
+  select.value = exerciseIdPre;
+  if(select.value !== exerciseIdPre){
+    const toggle = overlay.querySelector('#pick-riesgo-toggle');
+    if(toggle && !toggle.checked){
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change'));
+      select.value = exerciseIdPre;
+    }
+  }
+  select.dispatchEvent(new Event('change'));
 }
 // Interruptor "Repeticiones / Tiempo" para el campo de reps al añadir un ejercicio
 function conectarToggleMedida(overlay, sufijos){
@@ -7998,7 +8136,7 @@ function weekBlock(unitClients, program, week, wIdx){
   return block;
 }
 
-function openAddExerciseToWeek(week, unitClients){
+function openAddExerciseToWeek(week, unitClients, exerciseIdPre){
   if(state.exercises.length===0){
     showAlert('La batería de ejercicios está vacía. Añade ejercicios primero en la pestaña "Batería de ejercicios".');
     return;
@@ -8054,6 +8192,7 @@ function openAddExerciseToWeek(week, unitClients){
   overlay.querySelector('.close-x').onclick=()=>overlay.remove();
   overlay.onclick=(e)=>{ if(e.target===overlay) overlay.remove(); };
   conectarBuscadorEjercicio(overlay, unitClients);
+  aplicarPreseleccionEjercicio(overlay, exerciseIdPre);
   conectarToggleMedida(overlay, isPair ? ['a','b'] : ['a']);
   if(isPair){
     const parejaCheck = overlay.querySelector('#pick-espareja');
